@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -9,34 +10,111 @@ namespace ShippingBasketAPI.Data.Repository
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        public Task AddAsync(T entity)
+        private readonly ApplicationDbContext _context;
+        private readonly DbSet<T> _dbSet;
+
+        public GenericRepository(ApplicationDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+            _dbSet = _context.Set<T>();
+        }
+
+        public async Task<T> AddAsync(T entity)
+        {
+            await _dbSet.AddAsync(entity);
+            return entity;
         }
 
         public Task DeleteAsync(T entity)
         {
-            throw new NotImplementedException();
+            if (_context.Entry(entity).State == EntityState.Detached)
+            {
+                _dbSet.Attach(entity);
+            }
+            _dbSet.Remove(entity);
+            return Task.CompletedTask;
         }
 
         public Task DeleteRangeAsync(IEnumerable<T> entities)
         {
-            throw new NotImplementedException();
+            foreach (var entity in entities)
+            {
+                if (_context.Entry(entity).State == EntityState.Detached)
+                {
+                    _dbSet.Attach(entity);
+                }
+            }
+            _dbSet.RemoveRange(entities);
+            return Task.CompletedTask;
         }
+
+        #region IDisposable member
+        private bool disposed = false;
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposed)
+            {
+                if (disposing)
+                {
+                    _context.Dispose();
+                }
+            }
+            this.disposed = true;
+        }
+        #endregion
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
-        public Task<IEnumerable<T>> GetAllAsync(string? includeProperties = null, Expression<Func<T, bool>>? predicate = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null)
+        public async Task<IEnumerable<T>> GetAllAsync(string? includeProperties = null, Expression<Func<T, bool>>? predicate = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null)
         {
-            throw new NotImplementedException();
+            IQueryable<T> query = _dbSet;
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+
+            if (includeProperties != null)
+            {
+                foreach (var property in includeProperties.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(property.Trim());
+                }
+            }
+
+            if (orderBy != null)
+            {
+                return await orderBy(query).ToListAsync<T>();
+            }
+
+            return await query.ToListAsync<T>();
         }
 
-        public Task<T> GetTAsync(Expression<Func<T, bool>> predicate, string? includeProperties = null)
+        public async Task<T> GetTAsync(Expression<Func<T, bool>> predicate, string? includeProperties = null)
         {
-            throw new NotImplementedException();
+            IQueryable<T> query = _dbSet;
+            if (predicate != null)
+            {
+                query.Where(predicate);
+            }
+            if (includeProperties != null)
+            {
+                foreach (var property in includeProperties.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(property.Trim());
+                }
+            }
+            return (await query.FirstOrDefaultAsync())!;
+        }
+
+        public Task UpdateAsync(T entity)
+        {
+            _context.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
+            return Task.CompletedTask;
         }
     }
 }
