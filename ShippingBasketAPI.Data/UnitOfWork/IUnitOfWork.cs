@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace ShippingBasketAPI.Data.UnitOfWork
 {
-    public interface IUnitOfWork
+    public interface IUnitOfWork : IDisposable
     {
         IGenericRepository<T> GenericRepository<T>() where T : class;
-        void Save();
+        Task SaveAsync();
     }
 }

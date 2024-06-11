@@ -9,14 +9,43 @@ namespace ShippingBasketAPI.Data.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
     {
-        public IGenericRepository<T> GenericRepository<T>() where T : class
+        private readonly ApplicationDbContext _context;
+
+        public UnitOfWork(ApplicationDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
 
-        public void Save()
+        #region IDisposable member
+        private bool disposed = false;
+        protected virtual void Dispose(bool disposing)
         {
-            throw new NotImplementedException();
+            if (!this.disposed)
+            {
+                if (disposing)
+                {
+                    _context.Dispose();
+                }
+            }
+            this.disposed = true;
+        }
+        #endregion
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        public IGenericRepository<T> GenericRepository<T>() where T : class
+        {
+            IGenericRepository<T> genericRepository = new GenericRepository<T>(_context);
+            return genericRepository;
+        }
+
+        public async Task SaveAsync()
+        {
+            await _context.SaveChangesAsync();
         }
     }
 }
