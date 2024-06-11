@@ -29,7 +29,7 @@ namespace ShippingBasketAPI.Data.Repository
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<T>> GetAllAsync(string? includeProperties = null, Expression<Func<T, bool>>? predicate = null)
+        public Task<IEnumerable<T>> GetAllAsync(string? includeProperties = null, Expression<Func<T, bool>>? predicate = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null)
         {
             throw new NotImplementedException();
         }
