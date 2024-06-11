@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace ShippingBasketAPI.Data.Repository
 {
-    public interface IGenericRepository<T> where T : class
+    public interface IGenericRepository<T> : IDisposable where T : class
     {
-        public Task<IEnumerable<T>> GetAll(string? includeProperties = null, Expression<Func<T, bool>>? predicate = null);
-        public Task<T> GetT(Expression<Func<T, bool>> predicate, string? includeProperties = null);
-        public Task Add(T entity);
-        public Task Delete(T entity);
-        public Task DeleteRange(IEnumerable<T> entities);
+        public Task<IEnumerable<T>> GetAllAsync(string? includeProperties = null, Expression<Func<T, bool>>? predicate = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null);
+        public Task<T> GetTAsync(Expression<Func<T, bool>> predicate, string? includeProperties = null);
+        public Task AddAsync(T entity);
+        public Task DeleteAsync(T entity);
+        public Task DeleteRangeAsync(IEnumerable<T> entities);
     }
 }
