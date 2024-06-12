@@ -20,7 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DTOs\ShoppingBasketAPI.DTOs.csproj" />
     <ProjectReference Include="..\ShippingBasketAPI.Data\ShippingBasketAPI.Data.csproj" />
+    <ProjectReference Include="..\ShoppingBasketAPI.Services\ShoppingBasketAPI.Services.csproj" />
   </ItemGroup>
 
 </Project>

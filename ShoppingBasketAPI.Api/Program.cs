@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using ShippingBasketAPI.Data;
 using ShippingBasketAPI.Data.UnitOfWork;
+using ShoppingBasketAPI.Services.IServices;
+using ShoppingBasketAPI.Services.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<ICategoryServices, CategoryService>();
 
 var app = builder.Build();
 
