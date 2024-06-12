@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ShippingBasketAPI.Data\ShippingBasketAPI.Data.csproj" />
-    <ProjectReference Include="..\ShoppingBasketAPI.DTOs\ShoppingBasketAPI.DTOs.csproj" />
   </ItemGroup>
 
 </Project>
