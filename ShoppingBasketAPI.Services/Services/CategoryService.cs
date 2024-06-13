@@ -1,4 +1,4 @@
-﻿using ShippingBasketAPI.Data.UnitOfWork;
+﻿using ShoppingBasketAPI.Data.UnitOfWork;
 using ShoppingBasketAPI.DTOs;
 using ShoppingBasketAPI.Services.IServices;
 using System;

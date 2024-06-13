@@ -1,11 +1,11 @@
-﻿using ShippingBasketAPI.Data.Repository;
+﻿using ShoppingBasketAPI.Data.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShippingBasketAPI.Data.UnitOfWork
+namespace ShoppingBasketAPI.Data.UnitOfWork
 {
     public interface IUnitOfWork : IDisposable
     {

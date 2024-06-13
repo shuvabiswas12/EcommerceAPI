@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShippingBasketAPI.Data.Entities
+namespace ShippingBasketAPI.Domain
 {
     public class ApplicationUser : IdentityUser
     {

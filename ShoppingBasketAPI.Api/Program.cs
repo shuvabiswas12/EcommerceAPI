@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using ShippingBasketAPI.Data;
-using ShippingBasketAPI.Data.UnitOfWork;
+using ShoppingBasketAPI.Data;
+using ShoppingBasketAPI.Data.UnitOfWork;
 using ShoppingBasketAPI.Services.IServices;
 using ShoppingBasketAPI.Services.Services;
 

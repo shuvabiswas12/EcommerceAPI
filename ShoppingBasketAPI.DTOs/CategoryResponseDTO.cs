@@ -1,4 +1,4 @@
-﻿using ShoppingBasketAPI.Api.Models;
+﻿using ShoppingBasketAPI.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;

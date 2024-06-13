@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShippingBasketAPI.Data.Repository
+namespace ShoppingBasketAPI.Data.Repository
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {

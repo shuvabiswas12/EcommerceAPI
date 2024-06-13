@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using ShippingBasketAPI.Data.Entities;
-using ShoppingBasketAPI.Api.Models;
+using ShoppingBasketAPI.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShippingBasketAPI.Data
+namespace ShoppingBasketAPI.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {

@@ -5,11 +5,13 @@ VisualStudioVersion = 17.10.34928.147
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShoppingBasketAPI.Api", "ShoppingBasketAPI.Api\ShoppingBasketAPI.Api.csproj", "{3A264D65-D7DE-42E9-A091-56AEFDFB28BE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShippingBasketAPI.Data", "ShippingBasketAPI.Data\ShippingBasketAPI.Data.csproj", "{209D3DCA-15AB-4911-915A-48A10188987A}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShoppingBasketAPI.Services", "ShoppingBasketAPI.Services\ShoppingBasketAPI.Services.csproj", "{1ABA3F97-9E7E-423E-BD43-D11B879BE4BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShoppingBasketAPI.DTOs", "ShoppingBasketAPI.DTOs\ShoppingBasketAPI.DTOs.csproj", "{C951C325-4F05-4774-B0E0-E4D97DCD8DA7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShoppingBasketAPI.DTOs", "ShoppingBasketAPI.DTOs\ShoppingBasketAPI.DTOs.csproj", "{C951C325-4F05-4774-B0E0-E4D97DCD8DA7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShoppingBasketAPI.Domain", "ShoppingBasketAPI.Domain\ShoppingBasketAPI.Domain.csproj", "{2FE14BFB-2692-45BD-B459-B22997A8CA0F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShoppingBasketAPI.Data", "ShoppingBasketAPI.Data\ShoppingBasketAPI.Data.csproj", "{C5186234-DAB4-47F6-B449-44E86A690A21}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,10 +23,6 @@ Global
 		{3A264D65-D7DE-42E9-A091-56AEFDFB28BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A264D65-D7DE-42E9-A091-56AEFDFB28BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A264D65-D7DE-42E9-A091-56AEFDFB28BE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{209D3DCA-15AB-4911-915A-48A10188987A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{209D3DCA-15AB-4911-915A-48A10188987A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{209D3DCA-15AB-4911-915A-48A10188987A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{209D3DCA-15AB-4911-915A-48A10188987A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1ABA3F97-9E7E-423E-BD43-D11B879BE4BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1ABA3F97-9E7E-423E-BD43-D11B879BE4BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1ABA3F97-9E7E-423E-BD43-D11B879BE4BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,6 +31,14 @@ Global
 		{C951C325-4F05-4774-B0E0-E4D97DCD8DA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C951C325-4F05-4774-B0E0-E4D97DCD8DA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C951C325-4F05-4774-B0E0-E4D97DCD8DA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FE14BFB-2692-45BD-B459-B22997A8CA0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FE14BFB-2692-45BD-B459-B22997A8CA0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FE14BFB-2692-45BD-B459-B22997A8CA0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FE14BFB-2692-45BD-B459-B22997A8CA0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5186234-DAB4-47F6-B449-44E86A690A21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5186234-DAB4-47F6-B449-44E86A690A21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5186234-DAB4-47F6-B449-44E86A690A21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5186234-DAB4-47F6-B449-44E86A690A21}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

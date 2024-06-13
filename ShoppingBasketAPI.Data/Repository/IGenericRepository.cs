@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShippingBasketAPI.Data.Repository
+namespace ShoppingBasketAPI.Data.Repository
 {
     public interface IGenericRepository<T> : IDisposable where T : class
     {
