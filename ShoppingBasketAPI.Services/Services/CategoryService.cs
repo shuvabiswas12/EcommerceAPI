@@ -1,4 +1,5 @@
 ﻿using ShoppingBasketAPI.Data.UnitOfWork;
+using ShoppingBasketAPI.Domain;
 using ShoppingBasketAPI.DTOs;
 using ShoppingBasketAPI.Services.IServices;
 using System;
@@ -23,14 +24,24 @@ namespace ShoppingBasketAPI.Services.Services
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<CategoryResponseDTO>> GetAllCategories()
+        public async Task<CategoryResponseDTO> GetAllCategories()
         {
-            throw new NotImplementedException();
+            var result = await _unitOfWork.GenericRepository<Category>().GetAllAsync();
+            var categories = new CategoryResponseDTO
+            {
+                Categories = result,
+                TotalCategories = result.Count()
+            };
+            return categories;
         }
 
-        public Task<CategoryResponseDTO> GetCategoryById(object id)
+        public async Task<Category> GetCategoryById(object id)
         {
-            throw new NotImplementedException();
+            if (!Guid.TryParse(id.ToString(), out _))
+            {
+                throw new Exception(message: "Given ID should be a valid.");
+            }
+            return await _unitOfWork.GenericRepository<Category>().GetTAsync(predicate: x => x.Id == id.ToString());
         }
 
         public Task<CategoryResponseDTO> UpdateCategory(object id, string categoryName)

@@ -35,6 +35,15 @@ namespace ShoppingBasketAPI.Data
             // Composite primary key
             builder.Entity<Image>()
                 .HasKey(x => new { x.ProductId, x.ImageUrl });
+
+            // Data seeding
+            builder.Entity<Category>().HasData(
+                new Category { Id = Guid.NewGuid().ToString(), Name = "Electronics", CreatedDate = DateTime.Now },
+                new Category { Id = Guid.NewGuid().ToString(), Name = "Cloths", CreatedDate = DateTime.Now },
+                new Category { Id = Guid.NewGuid().ToString(), Name = "Fruits", CreatedDate = DateTime.Now },
+                new Category { Id = Guid.NewGuid().ToString(), Name = "Vegetables", CreatedDate = DateTime.Now },
+                new Category { Id = Guid.NewGuid().ToString(), Name = "Households", CreatedDate = DateTime.Now }
+                );
         }
     }
 }
