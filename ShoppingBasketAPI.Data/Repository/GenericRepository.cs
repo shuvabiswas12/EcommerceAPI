@@ -98,7 +98,7 @@ namespace ShoppingBasketAPI.Data.Repository
             IQueryable<T> query = _dbSet;
             if (predicate != null)
             {
-                query.Where(predicate);
+                query = query.Where(predicate);
             }
             if (includeProperties != null)
             {
