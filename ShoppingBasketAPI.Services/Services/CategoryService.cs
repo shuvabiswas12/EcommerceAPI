@@ -19,9 +19,15 @@ namespace ShoppingBasketAPI.Services.Services
             _unitOfWork = unitOfWork;
         }
 
-        public Task DeleteCategory(object id)
+        public async Task DeleteCategory(object id)
         {
-            throw new NotImplementedException();
+            var dataToDelete = await _unitOfWork.GenericRepository<Category>().GetTAsync(predicate: x => x.Id == id.ToString());
+            if (dataToDelete == null)
+            {
+                throw new Exception(message: "Data Not Found.");
+            }
+            await _unitOfWork.GenericRepository<Category>().DeleteAsync(dataToDelete);
+            await _unitOfWork.SaveAsync();
         }
 
         public async Task<CategoryResponseDTO> GetAllCategories()
@@ -37,16 +43,19 @@ namespace ShoppingBasketAPI.Services.Services
 
         public async Task<Category> GetCategoryById(object id)
         {
-            if (!Guid.TryParse(id.ToString(), out _))
-            {
-                throw new Exception(message: "Given ID should be a valid.");
-            }
             return await _unitOfWork.GenericRepository<Category>().GetTAsync(predicate: x => x.Id == id.ToString());
         }
 
-        public Task<CategoryResponseDTO> UpdateCategory(object id, string categoryName)
+        public async Task<Category> UpdateCategory(object id, string categoryName)
         {
-            throw new NotImplementedException();
+            var dataToUpdate = await _unitOfWork.GenericRepository<Category>().GetTAsync(predicate: x => x.Id == id.ToString());
+            if (dataToUpdate == null)
+            {
+                throw new Exception(message: "Data not found.");
+            }
+            dataToUpdate.Name = categoryName;
+            await _unitOfWork.SaveAsync();
+            return dataToUpdate;
         }
     }
 }

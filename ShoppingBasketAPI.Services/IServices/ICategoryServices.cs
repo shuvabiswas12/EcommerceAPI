@@ -13,6 +13,6 @@ namespace ShoppingBasketAPI.Services.IServices
         public Task<CategoryResponseDTO> GetAllCategories();
         public Task<Category> GetCategoryById(object id);
         public Task DeleteCategory(object id);
-        public Task<CategoryResponseDTO> UpdateCategory(object id, string categoryName);
+        public Task<Category> UpdateCategory(object id, string categoryName);
     }
 }
