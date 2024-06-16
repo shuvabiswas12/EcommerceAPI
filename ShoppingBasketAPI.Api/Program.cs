@@ -16,7 +16,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<ICategoryServices, CategoryService>();
+builder.Services.AddScoped<ICategoryServices, CategoryServices>();
+//builder.Services.AddScoped<IProductServices, ProductServices>();
 
 var app = builder.Build();
 
