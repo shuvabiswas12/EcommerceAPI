@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShoppingBasketAPI.Data;
 
@@ -11,9 +12,11 @@ using ShoppingBasketAPI.Data;
 namespace ShoppingBasketAPI.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240616191749_added_data_seeding_for_products_table")]
+    partial class added_data_seeding_for_products_table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -256,13 +259,6 @@ namespace ShoppingBasketAPI.Data.Migrations
                     b.HasKey("ProductId", "ImageUrl");
 
                     b.ToTable("Images");
-
-                    b.HasData(
-                        new
-                        {
-                            ProductId = "d72e6d76-ffb8-4b6a-b2b7-5945f84992d9",
-                            ImageUrl = "https://technave.com/data/files/mall/article/202103171440419975.jpg"
-                        });
                 });
 
             modelBuilder.Entity("ShoppingBasketAPI.Domain.Product", b =>
@@ -285,6 +281,15 @@ namespace ShoppingBasketAPI.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Products");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "d72e6d76-ffb8-4b6a-b2b7-5945f84992d9",
+                            Description = "***Galaxy A52 is rated as IP67. Based on test conditions for submersion in up to 1 meter of freshwater for up to 30 minutes. Not advised for beach, pool use and soapy water. In case you spill liquids containing sugar on the phone, please rinse the device in clean, stagnant water while clicking keys. Safe against low water pressure only. High water pressure such as running tap water or shower may damage the device.",
+                            Name = "Samsung Galaxy A52 4g",
+                            Price = 25000m
+                        });
                 });
 
             modelBuilder.Entity("ShoppingBasketAPI.Domain.ApplicationUser", b =>

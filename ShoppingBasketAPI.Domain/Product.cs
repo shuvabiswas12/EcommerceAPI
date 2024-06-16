@@ -18,6 +18,6 @@ namespace ShoppingBasketAPI.Domain
         [Required, Precision(10, 2)] public decimal Price { get; set; }
 
         // One to many relationship
-        public required ICollection<Image> Images { get; set; } = new List<Image>();
+        public ICollection<Image> Images { get; set; } = new List<Image>();
     }
 }
