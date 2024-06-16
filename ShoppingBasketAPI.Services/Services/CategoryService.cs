@@ -24,7 +24,7 @@ namespace ShoppingBasketAPI.Services.Services
             var dataToDelete = await _unitOfWork.GenericRepository<Category>().GetTAsync(predicate: x => x.Id == id.ToString());
             if (dataToDelete == null)
             {
-                throw new Exception(message: "Data Not Found.");
+                throw new Exception(message: "Category Not Found.");
             }
             await _unitOfWork.GenericRepository<Category>().DeleteAsync(dataToDelete);
             await _unitOfWork.SaveAsync();
@@ -51,11 +51,20 @@ namespace ShoppingBasketAPI.Services.Services
             var dataToUpdate = await _unitOfWork.GenericRepository<Category>().GetTAsync(predicate: x => x.Id == id.ToString());
             if (dataToUpdate == null)
             {
-                throw new Exception(message: "Data not found.");
+                throw new Exception(message: "Category not found.");
             }
             dataToUpdate.Name = categoryName;
             await _unitOfWork.SaveAsync();
             return dataToUpdate;
+        }
+
+        public async Task<Category> CreateCategory(Category category)
+        {
+            if (category == null)
+                throw new Exception("Could not create category.");
+            var createdCategory = await _unitOfWork.GenericRepository<Category>().AddAsync(category);
+            await _unitOfWork.SaveAsync();
+            return createdCategory;
         }
     }
 }
