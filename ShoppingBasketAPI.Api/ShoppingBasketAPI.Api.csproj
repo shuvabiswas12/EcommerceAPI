@@ -24,6 +24,7 @@
 		<ProjectReference Include="..\ShoppingBasketAPI.Data\ShoppingBasketAPI.Data.csproj" />
 		<ProjectReference Include="..\ShoppingBasketAPI.DTOs\ShoppingBasketAPI.DTOs.csproj" />
 		<ProjectReference Include="..\ShoppingBasketAPI.Services\ShoppingBasketAPI.Services.csproj" />
+		<ProjectReference Include="..\ShoppingBasketAPI.Utilities\ShoppingBasketAPI.Utilities.csproj" />
 	</ItemGroup>
 
 </Project>
