@@ -9,10 +9,9 @@ namespace ShoppingBasketAPI.DTOs
 {
     public class ProductUpdateRequestDTO
     {
-        public string Id { get; set; }
-        [NotEmpty(errorMessage: "Name field is required.")] public string Name { get; set; } = null!;
-        [NotEmpty(errorMessage: "Description field is required.")] public string Description { get; set; } = null!;
-        [GreaterThan(0, "Price field must be greater than zero.")] public decimal Price { get; set; }
-        [MinimumOneImageUrl("At least one image URL is required.")] public ICollection<string> ImageUrls { get; set; } = new List<string>();
+        public string? Name { get; set; } = null;
+        public string? Description { get; set; } = null;
+        public decimal? Price { get; set; } = 0m;
+        public ICollection<string>? ImageUrls { get; set; } = new List<string>();
     }
 }

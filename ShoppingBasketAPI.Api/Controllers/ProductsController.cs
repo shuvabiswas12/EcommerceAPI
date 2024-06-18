@@ -122,21 +122,12 @@ namespace ShoppingBasketAPI.Api.Controllers
         /***
          * Updating product.
          */
-        [HttpPut("")]
-        public async Task<IActionResult> UpdateProduct([FromBody] ProductUpdateRequestDTO productDto)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProduct(string id, [FromBody] ProductUpdateRequestDTO productDto)
         {
-            var product = new Product
-            {
-                Id = productDto.Id,
-                Name = productDto.Name,
-                Price = productDto.Price,
-                Description = productDto.Description,
-                Images = productDto.ImageUrls.Select(u => new Image { ImageUrl = u, ProductId = productDto.Id }).ToList()
-            };
-
             try
             {
-                product = await _productService.UpdateProduct(product);
+                var product = await _productService.UpdateProduct(id, productDto);
                 return Ok(product);
             }
             catch (Exception ex)
