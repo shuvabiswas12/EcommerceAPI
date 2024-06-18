@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ShoppingBasketAPI.Domain;
 using ShoppingBasketAPI.DTOs;
 using ShoppingBasketAPI.Services.IServices;
+using ShoppingBasketAPI.Utilities;
 
 namespace ShoppingBasketAPI.Api.Controllers
 {
@@ -11,10 +11,12 @@ namespace ShoppingBasketAPI.Api.Controllers
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryServices _categoryServices;
+        private readonly ILogger<CategoriesController> _logger;
 
-        public CategoriesController(ICategoryServices categoryServices)
+        public CategoriesController(ICategoryServices categoryServices, ILogger<CategoriesController> logger)
         {
             this._categoryServices = categoryServices;
+            this._logger = logger;
         }
 
         /***
@@ -24,8 +26,16 @@ namespace ShoppingBasketAPI.Api.Controllers
         [HttpGet("")]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _categoryServices.GetAllCategories();
-            return Ok(result);
+            try
+            {
+                var result = await _categoryServices.GetAllCategories();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occured while getting all category.");
+                return StatusCode(500, new { Error = GlobalErrorMessage.ErrorMessage });
+            }
         }
 
         /***
@@ -39,8 +49,16 @@ namespace ShoppingBasketAPI.Api.Controllers
             {
                 return BadRequest(new { error = "Must be filled with a category name." });
             }
-            Category category = await _categoryServices.CreateCategory(new Category { Name = createCategory.Name.Trim() });
-            return Ok(new { category });
+            try
+            {
+                Category category = await _categoryServices.CreateCategory(new Category { Name = createCategory.Name.Trim() });
+                return Ok(new { category });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occured while creating category.");
+                return StatusCode(500, new { Error = GlobalErrorMessage.ErrorMessage });
+            }
         }
 
         /***
@@ -61,7 +79,8 @@ namespace ShoppingBasketAPI.Api.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                _logger.LogError(ex, "An error occured while updating category.");
+                return StatusCode(500, new { Error = GlobalErrorMessage.ErrorMessage });
             }
         }
 
@@ -72,12 +91,20 @@ namespace ShoppingBasketAPI.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
         {
-            var result = await _categoryServices.GetCategoryById(id);
-            if (result == null)
+            try
             {
-                return NotFound();
+                var result = await _categoryServices.GetCategoryById(id);
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                return Ok(result);
             }
-            return Ok(result);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occured while getting category.");
+                return StatusCode(500, new { Error = GlobalErrorMessage.ErrorMessage });
+            }
         }
 
         /***
@@ -98,7 +125,8 @@ namespace ShoppingBasketAPI.Api.Controllers
             }
             catch (Exception ex)
             {
-                return NotFound(ex.Message);
+                _logger.LogError(ex, "An error occured while deleting category.");
+                return StatusCode(500, new { Error = GlobalErrorMessage.ErrorMessage });
             }
         }
     }

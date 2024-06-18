@@ -13,13 +13,13 @@ namespace ShoppingBasketAPI.Api.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private IProductServices _productService;
-        private ILogger<ProductsController> _logger;
+        private readonly IProductServices _productService;
+        private readonly ILogger<ProductsController> _logger;
 
         public ProductsController(IProductServices productService, ILogger<ProductsController> logger)
         {
-            _productService = productService;
-            _logger = logger;
+            this._productService = productService;
+            this._logger = logger;
         }
 
         /***
