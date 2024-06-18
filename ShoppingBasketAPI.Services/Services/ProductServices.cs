@@ -21,11 +21,6 @@ namespace ShoppingBasketAPI.Services.Services
 
         public async Task<Product> CreateProduct(Product product)
         {
-            if (product == null)
-            {
-                throw new Exception(message: "Could not create product.");
-            }
-
             var createdProduct = await _unitOfWork.GenericRepository<Product>().AddAsync(product);
             await _unitOfWork.SaveAsync();
             return createdProduct;
