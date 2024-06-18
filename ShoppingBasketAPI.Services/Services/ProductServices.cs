@@ -54,9 +54,9 @@ namespace ShoppingBasketAPI.Services.Services
             return productResult;
         }
 
-        public async Task<Product> UpdateProduct(object id, Product product)
+        public async Task<Product> UpdateProduct(Product product)
         {
-            var productToUpdate = await _unitOfWork.GenericRepository<Product>().GetTAsync(x => x.Id == id.ToString(), includeProperties: "Images");
+            var productToUpdate = await _unitOfWork.GenericRepository<Product>().GetTAsync(x => x.Id == product.Id.ToString(), includeProperties: "Images");
             if (productToUpdate == null)
             {
                 throw new Exception(message: "Product not found.");
