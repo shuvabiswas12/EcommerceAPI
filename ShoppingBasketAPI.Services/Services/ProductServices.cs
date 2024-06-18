@@ -19,8 +19,16 @@ namespace ShoppingBasketAPI.Services.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Product> CreateProduct(Product product)
+        public async Task<Product> CreateProduct(ProductCreateRequestDTO productDto)
         {
+            var product = new Product
+            {
+                Name = productDto.Name.Trim(),
+                Description = productDto.Description.Trim(),
+                Price = productDto.Price,
+                Images = productDto.ImageUrls.Select(url => new Image { ImageUrl = url }).ToList(),
+            };
+
             var createdProduct = await _unitOfWork.GenericRepository<Product>().AddAsync(product);
             await _unitOfWork.SaveAsync();
             return createdProduct;

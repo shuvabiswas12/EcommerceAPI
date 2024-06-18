@@ -14,6 +14,6 @@ namespace ShoppingBasketAPI.Services.IServices
         public Task<Product> GetProductById(object id);
         public Task DeleteProduct(object id);
         public Task<Product> UpdateProduct(Object id, ProductUpdateRequestDTO productDto);
-        public Task<Product> CreateProduct(Product product);
+        public Task<Product> CreateProduct(ProductCreateRequestDTO productDto);
     }
 }

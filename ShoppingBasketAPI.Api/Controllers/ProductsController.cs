@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using ShoppingBasketAPI.Domain;
 using ShoppingBasketAPI.DTOs;
 using ShoppingBasketAPI.Services.IServices;
 using ShoppingBasketAPI.Utilities;
@@ -82,15 +80,7 @@ namespace ShoppingBasketAPI.Api.Controllers
 
             try
             {
-                var newProduct = new Product
-                {
-                    Name = productDto.Name.Trim(),
-                    Description = productDto.Description.Trim(),
-                    Price = productDto.Price,
-                    Images = productDto.ImageUrls.Select(url => new Image { ImageUrl = url }).ToList(),
-                };
-
-                newProduct = await _productService.CreateProduct(newProduct);
+                var newProduct = await _productService.CreateProduct(productDto);
                 return Ok(newProduct);
             }
             catch (Exception ex)
@@ -100,10 +90,10 @@ namespace ShoppingBasketAPI.Api.Controllers
             }
         }
 
-
         /***
          * Deleting product.
          */
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct([FromRoute] string id)
         {
@@ -122,6 +112,7 @@ namespace ShoppingBasketAPI.Api.Controllers
         /***
          * Updating product.
          */
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct(string id, [FromBody] ProductUpdateRequestDTO productDto)
         {

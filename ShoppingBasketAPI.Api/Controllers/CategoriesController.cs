@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ShoppingBasketAPI.Domain;
 using ShoppingBasketAPI.DTOs;
 using ShoppingBasketAPI.Services.IServices;
 using ShoppingBasketAPI.Utilities;
@@ -51,7 +50,7 @@ namespace ShoppingBasketAPI.Api.Controllers
             }
             try
             {
-                Category category = await _categoryServices.CreateCategory(new Category { Name = createCategory.Name.Trim() });
+                var category = await _categoryServices.CreateCategory(createCategory);
                 return Ok(new { category });
             }
             catch (Exception ex)
@@ -74,7 +73,7 @@ namespace ShoppingBasketAPI.Api.Controllers
             }
             try
             {
-                Category updatedCategory = await _categoryServices.UpdateCategory(categoryToUpdate.Id.Trim(), categoryToUpdate.Name.Trim());
+                var updatedCategory = await _categoryServices.UpdateCategory(categoryToUpdate.Id.Trim(), categoryToUpdate.Name.Trim());
                 return Ok(updatedCategory);
             }
             catch (Exception ex)
@@ -116,12 +115,12 @@ namespace ShoppingBasketAPI.Api.Controllers
         {
             if (id.Trim().Length == 0)
             {
-                return BadRequest(new { error = "missing category id." });
+                return BadRequest(new { Error = "missing category id." });
             }
             try
             {
                 await _categoryServices.DeleteCategory(id);
-                return Ok(new { message = "Deleted." });
+                return Ok(new { Message = GlobalDeleteMessage.DeleteMessage });
             }
             catch (Exception ex)
             {

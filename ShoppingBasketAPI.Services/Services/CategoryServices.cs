@@ -58,10 +58,9 @@ namespace ShoppingBasketAPI.Services.Services
             return dataToUpdate;
         }
 
-        public async Task<Category> CreateCategory(Category category)
+        public async Task<Category> CreateCategory(CategoryCreateRequestDTO createCategory)
         {
-            if (category == null)
-                throw new Exception("Could not create category.");
+            Category category = new Category { Name = createCategory.Name.Trim() };
             var createdCategory = await _unitOfWork.GenericRepository<Category>().AddAsync(category);
             await _unitOfWork.SaveAsync();
             return createdCategory;
