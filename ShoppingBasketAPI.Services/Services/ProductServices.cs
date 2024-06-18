@@ -54,18 +54,17 @@ namespace ShoppingBasketAPI.Services.Services
             return productResult;
         }
 
-        public async Task<Product> UpdateProduct(Product product)
+        public async Task<Product> UpdateProduct(Object id, ProductUpdateRequestDTO productDto)
         {
-            var productToUpdate = await _unitOfWork.GenericRepository<Product>().GetTAsync(x => x.Id == product.Id.ToString(), includeProperties: "Images");
+            var productToUpdate = await _unitOfWork.GenericRepository<Product>().GetTAsync(x => x.Id == id.ToString(), includeProperties: "Images");
             if (productToUpdate == null)
             {
                 throw new Exception(message: "Product not found.");
             }
-
-            productToUpdate.Name = product.Name;
-            productToUpdate.Description = product.Description;
-            productToUpdate.Price = product.Price;
-            productToUpdate.Images = product.Images;
+            if (!string.IsNullOrEmpty(productDto!.Name)) productToUpdate.Name = productDto!.Name;
+            if (!string.IsNullOrEmpty(productDto!.Description)) productToUpdate.Description = productDto!.Description;
+            if (productDto!.Price > 0) productToUpdate.Price = (decimal)productDto!.Price;
+            if (productDto!.ImageUrls!.Any()) productToUpdate.Images = productDto!.ImageUrls!.Select(u => new Image { ImageUrl = u, ProductId = productToUpdate.Id }).ToList();
 
             await _unitOfWork.SaveAsync();
             return productToUpdate;

@@ -13,7 +13,7 @@ namespace ShoppingBasketAPI.Services.IServices
         public Task<ProductResponseDTO> GetAllProduct();
         public Task<Product> GetProductById(object id);
         public Task DeleteProduct(object id);
-        public Task<Product> UpdateProduct(Product product);
+        public Task<Product> UpdateProduct(Object id, ProductUpdateRequestDTO productDto);
         public Task<Product> CreateProduct(Product product);
     }
 }
