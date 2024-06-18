@@ -29,6 +29,7 @@ namespace ShoppingBasketAPI.Utilities.Validation
                             errors.AddModelError(property.Name, requiredAttribute.ErrorMessage);
                         }
                     }
+
                     else if (attribute is GreaterThanAttribute greaterThanAttribute)
                     {
                         if (value is decimal decimalValue)
@@ -39,6 +40,7 @@ namespace ShoppingBasketAPI.Utilities.Validation
                             }
                         }
                     }
+
                     else if (attribute is MinimumOneImageUrlAttribute minimumOneImageUrlAttribute)
                     {
                         if (value is ICollection<string> imageUrls && !imageUrls.Any(u => !string.IsNullOrWhiteSpace(u)))
@@ -46,6 +48,7 @@ namespace ShoppingBasketAPI.Utilities.Validation
                             errors.AddModelError(property.Name, minimumOneImageUrlAttribute.ErrorMessage);
                         }
                     }
+
                 }
             }
             return errors;
