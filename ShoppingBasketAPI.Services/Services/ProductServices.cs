@@ -61,7 +61,12 @@ namespace ShoppingBasketAPI.Services.Services
             {
                 throw new Exception(message: "Product not found.");
             }
-            productToUpdate = product;
+
+            productToUpdate.Name = product.Name;
+            productToUpdate.Description = product.Description;
+            productToUpdate.Price = product.Price;
+            productToUpdate.Images = product.Images;
+
             await _unitOfWork.SaveAsync();
             return productToUpdate;
         }

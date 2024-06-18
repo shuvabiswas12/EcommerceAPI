@@ -45,8 +45,8 @@ namespace ShoppingBasketAPI.Api.Controllers
          * Get single product by product id.
          */
 
-        [HttpGet("id")]
-        public async Task<IActionResult> GetProductsById(string id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetProductsById([FromRoute] string id)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace ShoppingBasketAPI.Api.Controllers
          */
 
         [HttpPost("")]
-        public async Task<IActionResult> CreateProduct(ProductCreateRequestDTO productDto)
+        public async Task<IActionResult> CreateProduct([FromBody] ProductCreateRequestDTO productDto)
         {
             var modelState = ModelValidator.ValidateModel(productDto);
             if (!modelState.IsValid)
@@ -96,6 +96,52 @@ namespace ShoppingBasketAPI.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occured while creating new product.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = GlobalErrorMessage.ErrorMessage });
+            }
+        }
+
+
+        /***
+         * Deleting product.
+         */
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduct([FromRoute] string id)
+        {
+            try
+            {
+                await _productService.DeleteProduct(id);
+                return Ok(new { Message = GlobalDeleteMessage.DeleteMessage });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occured while deleting product.");
+                return StatusCode(500, new { Error = GlobalErrorMessage.ErrorMessage });
+            }
+        }
+
+        /***
+         * Updating product.
+         */
+        [HttpPut("")]
+        public async Task<IActionResult> UpdateProduct([FromBody] ProductUpdateRequestDTO productDto)
+        {
+            var product = new Product
+            {
+                Id = productDto.Id,
+                Name = productDto.Name,
+                Price = productDto.Price,
+                Description = productDto.Description,
+                Images = productDto.ImageUrls.Select(u => new Image { ImageUrl = u, ProductId = productDto.Id }).ToList()
+            };
+
+            try
+            {
+                product = await _productService.UpdateProduct(product);
+                return Ok(product);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occured while updating the product.");
                 return StatusCode(StatusCodes.Status500InternalServerError, new { Error = GlobalErrorMessage.ErrorMessage });
             }
         }
