@@ -33,7 +33,7 @@ namespace ShoppingBasketAPI.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occured while getting all category.");
-                return StatusCode(500, new { Error = GlobalErrorMessage.ErrorMessage });
+                return StatusCode(500, new { Error = ResponseMessages.StatusCode_500_ErrorMessage });
             }
         }
 
@@ -56,7 +56,7 @@ namespace ShoppingBasketAPI.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occured while creating category.");
-                return StatusCode(500, new { Error = GlobalErrorMessage.ErrorMessage });
+                return StatusCode(500, new { Error = ResponseMessages.StatusCode_500_ErrorMessage });
             }
         }
 
@@ -79,7 +79,7 @@ namespace ShoppingBasketAPI.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occured while updating category.");
-                return StatusCode(500, new { Error = GlobalErrorMessage.ErrorMessage });
+                return StatusCode(500, new { Error = ResponseMessages.StatusCode_500_ErrorMessage });
             }
         }
 
@@ -102,7 +102,7 @@ namespace ShoppingBasketAPI.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occured while getting category.");
-                return StatusCode(500, new { Error = GlobalErrorMessage.ErrorMessage });
+                return StatusCode(500, new { Error = ResponseMessages.StatusCode_500_ErrorMessage });
             }
         }
 
@@ -120,12 +120,12 @@ namespace ShoppingBasketAPI.Api.Controllers
             try
             {
                 await _categoryServices.DeleteCategory(id);
-                return Ok(new { Message = GlobalDeleteMessage.DeleteMessage });
+                return Ok(new { Message = ResponseMessages.StatusCode_200_DeleteMessage });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occured while deleting category.");
-                return StatusCode(500, new { Error = GlobalErrorMessage.ErrorMessage });
+                return StatusCode(500, new { Error = ResponseMessages.StatusCode_500_ErrorMessage });
             }
         }
     }

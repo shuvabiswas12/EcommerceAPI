@@ -35,7 +35,7 @@ namespace ShoppingBasketAPI.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occured while getting all product.");
-                return StatusCode(500, new { Error = GlobalErrorMessage.ErrorMessage });
+                return StatusCode(500, new { Error = ResponseMessages.StatusCode_500_ErrorMessage });
             }
         }
 
@@ -54,7 +54,7 @@ namespace ShoppingBasketAPI.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occured while getting product by id.");
-                return StatusCode(500, new { Error = GlobalErrorMessage.ErrorMessage });
+                return StatusCode(500, new { Error = ResponseMessages.StatusCode_500_ErrorMessage });
             }
         }
 
@@ -86,7 +86,7 @@ namespace ShoppingBasketAPI.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occured while creating new product.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = GlobalErrorMessage.ErrorMessage });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = ResponseMessages.StatusCode_500_ErrorMessage });
             }
         }
 
@@ -100,12 +100,12 @@ namespace ShoppingBasketAPI.Api.Controllers
             try
             {
                 await _productService.DeleteProduct(id);
-                return Ok(new { Message = GlobalDeleteMessage.DeleteMessage });
+                return Ok(new { Message = ResponseMessages.StatusCode_200_DeleteMessage });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occured while deleting product.");
-                return StatusCode(500, new { Error = GlobalErrorMessage.ErrorMessage });
+                return StatusCode(500, new { Error = ResponseMessages.StatusCode_500_ErrorMessage });
             }
         }
 
@@ -124,7 +124,7 @@ namespace ShoppingBasketAPI.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occured while updating the product.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = GlobalErrorMessage.ErrorMessage });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = ResponseMessages.StatusCode_500_ErrorMessage });
             }
         }
     }
