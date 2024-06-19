@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace ShoppingBasketAPI.Utilities.Exceptions
 {
+    [Serializable]
     public class NotFoundException : Exception
     {
         public NotFoundException()
