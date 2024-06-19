@@ -38,12 +38,11 @@ namespace ShoppingBasketAPI.Utilities.Middlewares
             context.Response.ContentType = "application/json";
             int statusCode = (int)HttpStatusCode.InternalServerError;
             context.Response.StatusCode = statusCode;
-            var errorResponse = new
+            var errorResponse = new GlobalErrorResponse
             {
-                Error = ex.Message,
+                Error = ResponseMessages.StatusCode_500_ErrorMessage,
                 StatusCode = statusCode
             };
-            var jsonResponse = JsonSerializer.Serialize(errorResponse);
             await context.Response.WriteAsync(errorResponse.ToString());
         }
     }
