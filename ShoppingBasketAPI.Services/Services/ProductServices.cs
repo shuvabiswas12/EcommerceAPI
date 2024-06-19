@@ -2,6 +2,7 @@
 using ShoppingBasketAPI.Domain;
 using ShoppingBasketAPI.DTOs;
 using ShoppingBasketAPI.Services.IServices;
+using ShoppingBasketAPI.Utilities.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +40,7 @@ namespace ShoppingBasketAPI.Services.Services
             var productToDelete = await _unitOfWork.GenericRepository<Product>().GetTAsync(x => x.Id == id.ToString(), includeProperties: "Images");
             if (productToDelete == null)
             {
-                throw new Exception("Product not found.");
+                throw new NotFoundException("Product not found.");
             }
             await _unitOfWork.GenericRepository<Product>().DeleteAsync(productToDelete);
             await _unitOfWork.SaveAsync();
@@ -67,7 +68,7 @@ namespace ShoppingBasketAPI.Services.Services
             var productToUpdate = await _unitOfWork.GenericRepository<Product>().GetTAsync(x => x.Id == id.ToString(), includeProperties: "Images");
             if (productToUpdate == null)
             {
-                throw new Exception(message: "Product not found.");
+                throw new NotFoundException(message: "Product not found.");
             }
             if (!string.IsNullOrEmpty(productDto!.Name)) productToUpdate.Name = productDto!.Name;
             if (!string.IsNullOrEmpty(productDto!.Description)) productToUpdate.Description = productDto!.Description;

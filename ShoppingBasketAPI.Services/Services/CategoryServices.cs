@@ -2,6 +2,7 @@
 using ShoppingBasketAPI.Domain;
 using ShoppingBasketAPI.DTOs;
 using ShoppingBasketAPI.Services.IServices;
+using ShoppingBasketAPI.Utilities.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace ShoppingBasketAPI.Services.Services
             var dataToDelete = await _unitOfWork.GenericRepository<Category>().GetTAsync(predicate: x => x.Id == id.ToString());
             if (dataToDelete == null)
             {
-                throw new Exception(message: "Category Not Found.");
+                throw new NotFoundException(message: "Category Not Found.");
             }
             await _unitOfWork.GenericRepository<Category>().DeleteAsync(dataToDelete);
             await _unitOfWork.SaveAsync();
@@ -51,7 +52,7 @@ namespace ShoppingBasketAPI.Services.Services
             var dataToUpdate = await _unitOfWork.GenericRepository<Category>().GetTAsync(predicate: x => x.Id == id.ToString());
             if (dataToUpdate == null)
             {
-                throw new Exception(message: "Category not found.");
+                throw new NotFoundException(message: "Category not found.");
             }
             dataToUpdate.Name = categoryName;
             await _unitOfWork.SaveAsync();

@@ -2,6 +2,7 @@
 using ShoppingBasketAPI.DTOs;
 using ShoppingBasketAPI.Services.IServices;
 using ShoppingBasketAPI.Utilities;
+using ShoppingBasketAPI.Utilities.Exceptions;
 
 namespace ShoppingBasketAPI.Api.Controllers
 {
@@ -76,6 +77,11 @@ namespace ShoppingBasketAPI.Api.Controllers
                 var updatedCategory = await _categoryServices.UpdateCategory(categoryToUpdate.Id.Trim(), categoryToUpdate.Name.Trim());
                 return Ok(updatedCategory);
             }
+            catch (NotFoundException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return NotFound(new { Error = ex.Message });
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occured while updating category.");
@@ -121,6 +127,11 @@ namespace ShoppingBasketAPI.Api.Controllers
             {
                 await _categoryServices.DeleteCategory(id);
                 return Ok(new { Message = ResponseMessages.StatusCode_200_DeleteMessage });
+            }
+            catch (NotFoundException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return NotFound(new { Error = ex.Message });
             }
             catch (Exception ex)
             {

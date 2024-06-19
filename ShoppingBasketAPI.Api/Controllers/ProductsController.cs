@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ShoppingBasketAPI.DTOs;
 using ShoppingBasketAPI.Services.IServices;
 using ShoppingBasketAPI.Utilities;
+using ShoppingBasketAPI.Utilities.Exceptions;
 using ShoppingBasketAPI.Utilities.Validation;
 
 namespace ShoppingBasketAPI.Api.Controllers
@@ -102,6 +103,11 @@ namespace ShoppingBasketAPI.Api.Controllers
                 await _productService.DeleteProduct(id);
                 return Ok(new { Message = ResponseMessages.StatusCode_200_DeleteMessage });
             }
+            catch (NotFoundException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return NotFound(new { Error = ex.Message });
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occured while deleting product.");
@@ -120,6 +126,11 @@ namespace ShoppingBasketAPI.Api.Controllers
             {
                 var product = await _productService.UpdateProduct(id, productDto);
                 return Ok(product);
+            }
+            catch (NotFoundException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return NotFound(new { Error = ex.Message });
             }
             catch (Exception ex)
             {
