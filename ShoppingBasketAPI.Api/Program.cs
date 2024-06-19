@@ -3,6 +3,7 @@ using ShoppingBasketAPI.Data;
 using ShoppingBasketAPI.Data.UnitOfWork;
 using ShoppingBasketAPI.Services.IServices;
 using ShoppingBasketAPI.Services.Services;
+using ShoppingBasketAPI.Utilities.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+// Custom middleware for exception handling globaly.
+app.UseMiddleware<ExceptionHandleMiddleware>();
 
 app.MapControllers();
 
