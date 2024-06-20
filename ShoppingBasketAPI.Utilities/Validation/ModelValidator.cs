@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ShoppingBasketAPI.Utilities.Validation
@@ -46,6 +47,33 @@ namespace ShoppingBasketAPI.Utilities.Validation
                         if (value is ICollection<string> imageUrls && !imageUrls.Any(u => !string.IsNullOrWhiteSpace(u)))
                         {
                             errors.AddModelError(property.Name, minimumOneImageUrlAttribute.ErrorMessage);
+                        }
+                    }
+
+                    else if (attribute is ValidEmailAddressAttribute validEmailAddressAttribute)
+                    {
+                        // Regex pattern for validating email addresses from Gmail, Yahoo, or Hotmail
+                        string pattern = @"^[a-zA-Z0-9._%+-]+@(gmail|yahoo|hotmail)\.(com|co\.uk)$";
+                        Regex regex = new Regex(pattern);
+                        var isValid = regex.IsMatch(value!.ToString()!);
+                        if (!isValid)
+                        {
+                            errors.AddModelError(property.Name, errorMessage: validEmailAddressAttribute.ErrorMessage);
+                        }
+                    }
+
+                    else if (attribute is ValidPasswordAttribute validPasswordAttribute)
+                    {
+                        /***
+                         * Password must be at least 8 characters long and contain at least one uppercase letter,
+                         * one lowercase letter, one digit, and one special symbol (@, #, $).
+                         */
+                        string pattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$]).{8,}$";
+                        Regex regex = new Regex(pattern);
+                        var isValid = regex.IsMatch(value!.ToString()!);
+                        if (!isValid)
+                        {
+                            errors.AddModelError(property.Name, errorMessage: validPasswordAttribute.ErrorMessage);
                         }
                     }
 
