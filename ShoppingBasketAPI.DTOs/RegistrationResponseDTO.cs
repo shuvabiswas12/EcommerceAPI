@@ -8,12 +8,17 @@ namespace ShoppingBasketAPI.DTOs
 {
     public class RegistrationResponseDTO
     {
-        public required string Message { get; set; }
         public required bool IsSuccess { get; set; }
-        public required User User { get; set; }
+        public required string Message { get; set; }
+        public required RegistrationUserInfoResponseDTO User { get; set; }
     }
-    public class User
+
+    public class RegistrationUserInfoResponseDTO
     {
         public required string Id { get; set; }
+        public RegistrationUserInfoResponseDTO(string id)
+        {
+            Id = id;
+        }
     }
 }
