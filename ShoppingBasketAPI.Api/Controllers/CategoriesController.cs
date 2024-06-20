@@ -94,16 +94,17 @@ namespace ShoppingBasketAPI.Api.Controllers
          */
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(string id)
+        public async Task<IActionResult> GetCategoryById(string id)
         {
             try
             {
                 var result = await _categoryServices.GetCategoryById(id);
-                if (result == null)
-                {
-                    return NotFound();
-                }
                 return Ok(result);
+            }
+            catch (NotFoundException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return NotFound(new { Error = ex.Message });
             }
             catch (Exception ex)
             {

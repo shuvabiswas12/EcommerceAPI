@@ -52,6 +52,11 @@ namespace ShoppingBasketAPI.Api.Controllers
                 var productResult = await _productService.GetProductById(id);
                 return Ok(productResult);
             }
+            catch (NotFoundException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return NotFound(new { Error = ex.Message });
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occured while getting product by id.");

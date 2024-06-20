@@ -60,6 +60,8 @@ namespace ShoppingBasketAPI.Services.Services
         public async Task<Product> GetProductById(object id)
         {
             var productResult = await _unitOfWork.GenericRepository<Product>().GetTAsync(x => x.Id == id.ToString(), includeProperties: "Images");
+            if (productResult == null)
+                throw new NotFoundException(message: "Product not found.");
             return productResult;
         }
 

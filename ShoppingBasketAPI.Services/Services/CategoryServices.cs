@@ -44,7 +44,10 @@ namespace ShoppingBasketAPI.Services.Services
 
         public async Task<Category> GetCategoryById(object id)
         {
-            return await _unitOfWork.GenericRepository<Category>().GetTAsync(predicate: x => x.Id == id.ToString());
+            var category = await _unitOfWork.GenericRepository<Category>().GetTAsync(predicate: x => x.Id == id.ToString());
+            if (category == null)
+                throw new NotFoundException(message: "Category not found.");
+            return category;
         }
 
         public async Task<Category> UpdateCategory(object id, string categoryName)
