@@ -14,19 +14,12 @@ namespace ShoppingBasketAPI.DTOs
         public class Data
         {
             public required string AccessToken { get; set; }
-            public required LoginUserInfoResponseDTO User { get; set; }
-        }
-    }
 
-    public class LoginUserInfoResponseDTO
-    {
-        public required string Id { get; set; }
-        public required string Email { get; set; }
-
-        public LoginUserInfoResponseDTO(string id, string email)
-        {
-            Id = id;
-            Email = email;
+            public class UserInfo
+            {
+                public required string Id { get; set; }
+                public required string Email { get; set; }
+            }
         }
     }
 }
