@@ -10,8 +10,9 @@ namespace ShoppingBasketAPI.DTOs
     {
         public required bool IsSuccess { get; set; }
         public required string Message { get; set; }
+        public required UserInfo User { get; set; }
 
-        public class User
+        public class UserInfo
         {
             public required string Id { get; set; }
         }
