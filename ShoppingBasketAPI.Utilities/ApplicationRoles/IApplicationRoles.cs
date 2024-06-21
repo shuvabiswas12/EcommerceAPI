@@ -10,5 +10,6 @@ namespace ShoppingBasketAPI.Utilities.ApplicationRoles
     {
         public static readonly string ADMIN = "Admin";
         public static readonly string EMPLOYEE = "Employee";
+        public static readonly string WEB_USER = "Web_User";
     }
 }
