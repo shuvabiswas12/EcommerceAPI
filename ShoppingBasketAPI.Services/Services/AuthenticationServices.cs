@@ -1,16 +1,21 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Azure;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using ShoppingBasketAPI.Domain;
 using ShoppingBasketAPI.DTOs;
 using ShoppingBasketAPI.Services.IServices;
 using ShoppingBasketAPI.Utilities;
+using ShoppingBasketAPI.Utilities.ApplicationRoles;
 using ShoppingBasketAPI.Utilities.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,13 +25,15 @@ namespace ShoppingBasketAPI.Services.Services
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
 
-        public AuthenticationServices(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, IConfiguration configuration)
+        public AuthenticationServices(RoleManager<IdentityRole> roleManager, SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _configuration = configuration;
+            _roleManager = roleManager;
         }
 
         public async Task<LoginResponseDTO> Login(LoginRequestDTO loginRequestDTO)
@@ -90,9 +97,63 @@ namespace ShoppingBasketAPI.Services.Services
             return new JwtSecurityTokenHandler().WriteToken(tokenProperty);
         }
 
-        public Task<RegistrationResponseDTO> Register(RegistrationRequestDTO registrationRequestDTO)
+        public async Task<RegistrationResponseDTO> Register(RegistrationRequestDTO registrationRequestDTO)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByEmailAsync(registrationRequestDTO.Email);
+            if (user is not null)
+            {
+                throw new DuplicateEmailException("This email has taken already.");
+            }
+            ApplicationUser newUser = new ApplicationUser
+            {
+                Email = registrationRequestDTO.Email,
+                UserName = registrationRequestDTO.Email,
+                SecurityStamp = Guid.NewGuid().ToString()
+            };
+            var result = await _userManager.CreateAsync(newUser, registrationRequestDTO.Password);
+
+            // If there are any errors occured
+            if (!result.Succeeded)
+            {
+                var msg = "";
+                foreach (var error in result.Errors)
+                {
+                    msg += error.Description;
+                }
+                throw new Exception(message: msg);
+            }
+
+            // Creating roles if not exists.
+            await CreateRoles();
+
+            // Add new user to a role.
+            await _userManager.AddToRoleAsync(newUser, IApplicationRoles.WEB_USER);
+            return new RegistrationResponseDTO
+            {
+                IsSuccess = true,
+                Message = "Your account has been created successfully.",
+                User = new RegistrationResponseDTO.UserInfo
+                {
+                    Id = newUser.Id
+                }
+            };
+        }
+
+        private async Task CreateRoles()
+        {
+            if (!await _roleManager.RoleExistsAsync(IApplicationRoles.ADMIN))
+            {
+                await _roleManager.CreateAsync(new IdentityRole(IApplicationRoles.ADMIN));
+            }
+            if (!await _roleManager.RoleExistsAsync(IApplicationRoles.EMPLOYEE))
+            {
+                await _roleManager.CreateAsync(new IdentityRole(IApplicationRoles.EMPLOYEE));
+            }
+            if (!await _roleManager.RoleExistsAsync(IApplicationRoles.WEB_USER))
+            {
+                await _roleManager.CreateAsync(new IdentityRole(IApplicationRoles.WEB_USER));
+            }
+            await Task.CompletedTask;
         }
     }
 }
