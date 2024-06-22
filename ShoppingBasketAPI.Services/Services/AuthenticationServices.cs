@@ -67,6 +67,9 @@ namespace ShoppingBasketAPI.Services.Services
 
         private async Task<string> GenerateJwtToken(ApplicationUser user)
         {
+            /***
+             * Claims are some information that inserts your token.
+             */
             var authClaims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Email!),
