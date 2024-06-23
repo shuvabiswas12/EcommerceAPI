@@ -57,7 +57,7 @@ namespace ShoppingBasketAPI.Services.Services
                     AccessToken = token,
                     User = new LoginResponseDTO.UserInfo
                     {
-                        Email = loginRequestDTO.Email,
+                        Email = user.Email!,
                         Id = user.Id
                     }
                 }
