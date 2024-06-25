@@ -24,7 +24,7 @@ namespace ShoppingBasketAPI.Utilities.Filters
             }
 
             var config = context.HttpContext.RequestServices.GetService<IConfiguration>();
-            var defaultApiKey = config.GetSection(key: "ApiKey").Value;
+            var defaultApiKey = config.GetSection(key: "ApiKey").Value ?? throw new Exception("ApiKey was not found in the app's json settings.");
             if (!defaultApiKey.Equals(potentialKey))
             {
                 context.Result = new UnauthorizedObjectResult(new { Error = ResponseMessages.StatusCode_401_Unauthorized, Message = "Invalid API key" });
