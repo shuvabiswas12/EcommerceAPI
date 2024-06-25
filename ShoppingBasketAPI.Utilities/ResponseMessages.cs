@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,5 +13,6 @@ namespace ShoppingBasketAPI.Utilities
         public static string StatusCode_200_CreateMessage { get; private set; } = "Created";
         public static string StatusCode_200_UpdateMessage { get; private set; } = "Updated";
         public static string StatusCode_500_ErrorMessage { get; private set; } = "An error occured while processing your request";
+        public static string StatusCode_401_Unauthorized { get; private set; } = "Unauthorized";
     }
 }

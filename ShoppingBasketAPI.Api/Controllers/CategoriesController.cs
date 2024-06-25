@@ -4,6 +4,7 @@ using ShoppingBasketAPI.DTOs;
 using ShoppingBasketAPI.Services.IServices;
 using ShoppingBasketAPI.Utilities;
 using ShoppingBasketAPI.Utilities.Exceptions;
+using ShoppingBasketAPI.Utilities.Filters;
 
 namespace ShoppingBasketAPI.Api.Controllers
 {
@@ -43,7 +44,7 @@ namespace ShoppingBasketAPI.Api.Controllers
          * Create category
          */
 
-        [HttpPost(""), Authorize(Roles = "Admin")]
+        [HttpPost(""), Authorize(Roles = "Admin"), ApiKeyRequired]
         public async Task<IActionResult> CreateCategory(CategoryCreateRequestDTO createCategory)
         {
             if (createCategory.Name.Trim().Length == 0)
@@ -66,7 +67,7 @@ namespace ShoppingBasketAPI.Api.Controllers
          * Category update
          */
 
-        [HttpPut(""), Authorize(Roles = "Admin")]
+        [HttpPut(""), Authorize(Roles = "Admin"), ApiKeyRequired]
         public async Task<IActionResult> UpdateCategory(CategoryUpdateRequestDTO categoryToUpdate)
         {
             if (categoryToUpdate.Name.Trim().Length == 0 || categoryToUpdate.Id.Trim().Length == 0)
@@ -118,7 +119,7 @@ namespace ShoppingBasketAPI.Api.Controllers
          * Delete category
          */
 
-        [HttpDelete("{id}"), Authorize(Roles = "Admin")]
+        [HttpDelete("{id}"), Authorize(Roles = "Admin"), ApiKeyRequired]
         public async Task<IActionResult> DeleteCategory(string id)
         {
             if (id.Trim().Length == 0)
