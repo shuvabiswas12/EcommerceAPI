@@ -93,6 +93,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ICategoryServices, CategoryServices>();
 builder.Services.AddScoped<IProductServices, ProductServices>();
 builder.Services.AddScoped<IAuthenticationServices, AuthenticationServices>();
+builder.Services.AddScoped<IFeaturedProductServices, FeaturedProductServices>();
 builder.Services.AddTransient<ExceptionHandleMiddleware>();
 
 var app = builder.Build();
