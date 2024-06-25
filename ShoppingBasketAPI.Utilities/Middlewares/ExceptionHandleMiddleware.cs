@@ -28,7 +28,7 @@ namespace ShoppingBasketAPI.Utilities.Middlewares
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Something went wrong.\n {ex.Message}");
+                _logger.LogError(ex, $"\n Something went wrong.\n {ex.Message} \n");
                 await HandleException(context, ex);
             }
         }
