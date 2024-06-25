@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShoppingBasketAPI.DTOs;
 using ShoppingBasketAPI.Services.IServices;
 using ShoppingBasketAPI.Utilities;
+using ShoppingBasketAPI.Utilities.ApplicationRoles;
 using ShoppingBasketAPI.Utilities.Exceptions;
 using ShoppingBasketAPI.Utilities.Validation;
 
@@ -68,7 +70,7 @@ namespace ShoppingBasketAPI.Api.Controllers
          * Create product.
          */
 
-        [HttpPost("")]
+        [HttpPost(""), Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateProduct([FromBody] ProductCreateRequestDTO productDto)
         {
             var modelState = ModelValidator.ValidateModel(productDto);
@@ -100,7 +102,7 @@ namespace ShoppingBasketAPI.Api.Controllers
          * Deleting product.
          */
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteProduct([FromRoute] string id)
         {
             try
@@ -124,7 +126,7 @@ namespace ShoppingBasketAPI.Api.Controllers
          * Updating product.
          */
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateProduct(string id, [FromBody] ProductUpdateRequestDTO productDto)
         {
             try

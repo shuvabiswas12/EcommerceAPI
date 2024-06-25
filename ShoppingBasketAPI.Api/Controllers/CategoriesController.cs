@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ShoppingBasketAPI.DTOs;
 using ShoppingBasketAPI.Services.IServices;
 using ShoppingBasketAPI.Utilities;
@@ -42,7 +43,7 @@ namespace ShoppingBasketAPI.Api.Controllers
          * Create category
          */
 
-        [HttpPost("")]
+        [HttpPost(""), Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateCategory(CategoryCreateRequestDTO createCategory)
         {
             if (createCategory.Name.Trim().Length == 0)
@@ -65,7 +66,7 @@ namespace ShoppingBasketAPI.Api.Controllers
          * Category update
          */
 
-        [HttpPut("")]
+        [HttpPut(""), Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateCategory(CategoryUpdateRequestDTO categoryToUpdate)
         {
             if (categoryToUpdate.Name.Trim().Length == 0 || categoryToUpdate.Id.Trim().Length == 0)
@@ -117,7 +118,7 @@ namespace ShoppingBasketAPI.Api.Controllers
          * Delete category
          */
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteCategory(string id)
         {
             if (id.Trim().Length == 0)
