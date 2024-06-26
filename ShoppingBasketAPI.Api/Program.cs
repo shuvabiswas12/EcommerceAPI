@@ -94,6 +94,7 @@ builder.Services.AddScoped<ICategoryServices, CategoryServices>();
 builder.Services.AddScoped<IProductServices, ProductServices>();
 builder.Services.AddScoped<IAuthenticationServices, AuthenticationServices>();
 builder.Services.AddScoped<IFeaturedProductServices, FeaturedProductServices>();
+builder.Services.AddScoped<IDiscountServices, DiscountServices>();
 builder.Services.AddTransient<ExceptionHandleMiddleware>();
 
 var app = builder.Build();
