@@ -34,7 +34,7 @@ namespace ShoppingBasketAPI.Api.Controllers
                 await _featuredProductServices.AddProductAsFeatured(new FeaturedProductRequestDTO { Id = id });
                 return StatusCode(StatusCodes.Status201Created, new { Message = "Product added as featured." });
             }
-            catch (DuplicateDataFoundException ex)
+            catch (DuplicateEntriesFoundException ex)
             {
                 _logger.LogError(ex, "\nAn error occured while adding product as featured.\n" + ex.Message + "\n");
                 return StatusCode(500, new { Error = ex.Message });

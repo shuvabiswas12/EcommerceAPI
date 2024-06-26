@@ -66,7 +66,7 @@ namespace ShoppingBasketAPI.Api.Controllers.Auth
                 var createdUser = await _authenticationServices.Register(registrationRequestDTO);
                 return Ok(createdUser);
             }
-            catch (DuplicateEmailException ex)
+            catch (DuplicateEntriesFoundException ex)
             {
                 _logger.LogError(ex, ex.Message);
                 return BadRequest(new { Error = ex.Message });

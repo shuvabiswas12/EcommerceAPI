@@ -105,7 +105,7 @@ namespace ShoppingBasketAPI.Services.Services
             var user = await _userManager.FindByEmailAsync(registrationRequestDTO.Email);
             if (user is not null)
             {
-                throw new DuplicateEmailException("This email has taken already.");
+                throw new DuplicateEntriesFoundException("This email has taken already.");
             }
             ApplicationUser newUser = new ApplicationUser
             {

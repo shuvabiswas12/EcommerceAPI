@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace ShoppingBasketAPI.Utilities.Exceptions
 {
-    public class DuplicateEmailException : Exception
+    public class DuplicateEntriesFoundException : Exception
     {
-        public DuplicateEmailException(string? message) : base(message)
+        public DuplicateEntriesFoundException(string? message) : base(message)
         {
         }
     }
