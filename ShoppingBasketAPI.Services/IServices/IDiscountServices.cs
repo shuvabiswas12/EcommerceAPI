@@ -9,7 +9,7 @@ namespace ShoppingBasketAPI.Services.IServices
 {
     public interface IDiscountServices
     {
-        public Task AddDiscount(DiscountRequestDTO discountRequestDTO);
-        public Task RemoveDiscount(DiscountRequestDTO discountRequestDTO);
+        public Task AddDiscount(string id, DiscountRequestDTO discountRequestDTO);
+        public Task RemoveDiscount(string id, DiscountRequestDTO discountRequestDTO);
     }
 }

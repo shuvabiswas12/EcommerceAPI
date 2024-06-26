@@ -1,5 +1,8 @@
-﻿using ShoppingBasketAPI.DTOs;
+﻿using ShoppingBasketAPI.Data.UnitOfWork;
+using ShoppingBasketAPI.Domain;
+using ShoppingBasketAPI.DTOs;
 using ShoppingBasketAPI.Services.IServices;
+using ShoppingBasketAPI.Utilities.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,14 +13,36 @@ namespace ShoppingBasketAPI.Services.Services
 {
     public class DiscountServices : IDiscountServices
     {
-        public async Task AddDiscount(DiscountRequestDTO discountRequestDTO)
+        private readonly IUnitOfWork _unitOfWork;
+
+        public DiscountServices(IUnitOfWork unitOfWork)
         {
-            throw new NotImplementedException();
+            _unitOfWork = unitOfWork;
         }
 
-        public async Task RemoveDiscount(DiscountRequestDTO discountRequestDTO)
+        public async Task AddDiscount(string id, DiscountRequestDTO discountRequestDTO)
         {
-            throw new NotImplementedException();
+            var isDiscountFound = await _unitOfWork.GenericRepository<Discount>().GetTAsync(d => d.ProductId == id);
+
+            if (isDiscountFound == null)
+            {
+                // Create a new discount.
+            }
+            else
+            {
+                // Update the old discount.
+            }
+        }
+
+        public async Task RemoveDiscount(string id, DiscountRequestDTO discountRequestDTO)
+        {
+            var isDiscountFound = await _unitOfWork.GenericRepository<Discount>().GetTAsync(d => d.ProductId == id);
+            if (isDiscountFound == null)
+            {
+                throw new NotFoundException(message: "There is no discount available for the product.");
+            }
+
+            // Remove the discount.
         }
     }
 }
