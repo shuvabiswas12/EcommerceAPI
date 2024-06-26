@@ -53,7 +53,7 @@ namespace ShoppingBasketAPI.Api.Controllers
 
             if (string.IsNullOrEmpty(id))
             {
-                return BadRequest(new { Errors = "Product id must be given." });
+                return BadRequest(new { Error = "Product id must be given." });
             }
 
             try
