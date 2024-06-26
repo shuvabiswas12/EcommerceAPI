@@ -3,23 +3,38 @@ using Microsoft.AspNetCore.Mvc;
 using ShoppingBasketAPI.DTOs;
 using ShoppingBasketAPI.Services.IServices;
 using ShoppingBasketAPI.Utilities;
+using ShoppingBasketAPI.Utilities.Exceptions.Handler;
 using ShoppingBasketAPI.Utilities.Validation;
 
 namespace ShoppingBasketAPI.Api.Controllers
 {
+    /// <summary>
+    /// Controller for managing discounts related to products in the Shopping Basket API.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class DiscountsController : ControllerBase
     {
         private readonly IDiscountServices _discountServices;
-        private readonly ILogger<DiscountsController> _logger;
+        private readonly ExceptionHandler<DiscountsController> _exceptionHandler;
 
-        public DiscountsController(IDiscountServices discountServices, ILogger<DiscountsController> logger)
+        /// <summary>
+        /// Constructor for DiscountsController.
+        /// </summary>
+        /// <param name="discountServices">The service handling discount operations.</param>
+        /// <param name="exceptionHandler">Exception handler for handling controller-level exceptions.</param>
+        public DiscountsController(IDiscountServices discountServices, ExceptionHandler<DiscountsController> exceptionHandler)
         {
             _discountServices = discountServices;
-            _logger = logger;
+            _exceptionHandler = exceptionHandler;
         }
 
+        /// <summary>
+        /// Sets a discount for a product identified by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the product for which to set the discount.</param>
+        /// <param name="discountRequestDTO">DTO containing discount details.</param>
+        /// <returns>Returns a status code indicating the result of the operation.</returns>
         [HttpPost("{id}")]
         public async Task<IActionResult> SetProductDiscount([FromRoute] string id, [FromBody] DiscountRequestDTO discountRequestDTO)
         {
@@ -38,11 +53,15 @@ namespace ShoppingBasketAPI.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "\nAn error occured while adding the product discount.\n" + ex.Message + "\n");
-                return StatusCode(500, new { Error = ResponseMessages.StatusCode_500_ErrorMessage });
+                return _exceptionHandler.HandleException(ex, "An error occured while adding the product discount.");
             }
         }
 
+        /// <summary>
+        /// Removes the discount for a product identified by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the product for which to remove the discount.</param>
+        /// <returns>Returns a status code indicating the result of the operation.</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> RemoveProductDiscount([FromRoute] string id)
         {
@@ -54,8 +73,7 @@ namespace ShoppingBasketAPI.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "\nAn error occured while removing the product discount.\n" + ex.Message + "\n");
-                return StatusCode(500, new { Error = ResponseMessages.StatusCode_500_ErrorMessage });
+                return _exceptionHandler.HandleException(ex, "An error occured while removing the product discount.");
             }
         }
     }

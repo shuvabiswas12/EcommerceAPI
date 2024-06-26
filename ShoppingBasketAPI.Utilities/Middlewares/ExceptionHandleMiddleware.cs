@@ -11,6 +11,9 @@ using System.Text.Json;
 
 namespace ShoppingBasketAPI.Utilities.Middlewares
 {
+    /// <summary>
+    /// This is a Global Exception Handler Middleware and it will work throughout the application by adding this in DI conatiner.
+    /// </summary>
     public class ExceptionHandleMiddleware : IMiddleware
     {
         private readonly ILogger<ExceptionHandleMiddleware> _logger;

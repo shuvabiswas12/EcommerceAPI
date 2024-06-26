@@ -9,7 +9,9 @@ using ShoppingBasketAPI.Data.UnitOfWork;
 using ShoppingBasketAPI.Domain;
 using ShoppingBasketAPI.Services.IServices;
 using ShoppingBasketAPI.Services.Services;
+using ShoppingBasketAPI.Utilities.Exceptions.Handler;
 using ShoppingBasketAPI.Utilities.Middlewares;
+using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -51,6 +53,12 @@ builder.Services.AddSwaggerGen(options =>
             new string[]{}
         }
     });
+    /***
+     * These three lines for including comments of api resources url and their activites.
+     */
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath);
 });
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -95,6 +103,7 @@ builder.Services.AddScoped<IProductServices, ProductServices>();
 builder.Services.AddScoped<IAuthenticationServices, AuthenticationServices>();
 builder.Services.AddScoped<IFeaturedProductServices, FeaturedProductServices>();
 builder.Services.AddScoped<IDiscountServices, DiscountServices>();
+builder.Services.AddScoped(typeof(ExceptionHandler<>));
 builder.Services.AddTransient<ExceptionHandleMiddleware>();
 
 var app = builder.Build();

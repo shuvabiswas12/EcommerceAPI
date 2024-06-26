@@ -6,28 +6,40 @@ using ShoppingBasketAPI.Services.IServices;
 using ShoppingBasketAPI.Utilities;
 using ShoppingBasketAPI.Utilities.ApplicationRoles;
 using ShoppingBasketAPI.Utilities.Exceptions;
+using ShoppingBasketAPI.Utilities.Exceptions.Handler;
 using ShoppingBasketAPI.Utilities.Filters;
 using ShoppingBasketAPI.Utilities.Validation;
 
 namespace ShoppingBasketAPI.Api.Controllers
 {
+    /// <summary>
+    /// Controller for managing products in the Shopping Basket API.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
     {
         private readonly IProductServices _productService;
-        private readonly ILogger<ProductsController> _logger;
+        private readonly ExceptionHandler<ProductsController> _exceptionHandler;
 
-        public ProductsController(IProductServices productService, ILogger<ProductsController> logger)
+        /// <summary>
+        /// Constructor for ProductsController.
+        /// </summary>
+        /// <param name="productService">The service handling product operations.</param>
+        /// <param name="exceptionHandler">Logger instance for logging.</param>
+        public ProductsController(IProductServices productService, ExceptionHandler<ProductsController> exceptionHandler)
         {
             this._productService = productService;
-            this._logger = logger;
+            this._exceptionHandler = exceptionHandler;
         }
 
         /***
          * Get all products.
          */
-
+        /// <summary>
+        /// Retrieves all products.
+        /// </summary>
+        /// <returns>Returns a list of all product.</returns>
         [HttpGet("")]
         public async Task<IActionResult> GetAllProducts()
         {
@@ -38,15 +50,18 @@ namespace ShoppingBasketAPI.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occured while getting all product.");
-                return StatusCode(500, new { Error = ResponseMessages.StatusCode_500_ErrorMessage });
+                return _exceptionHandler.HandleException(ex, "An error occured while getting all product.");
             }
         }
 
         /***
          * Get single product by product id.
          */
-
+        /// <summary>
+        /// Retrieves a single product by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the product to retrieve.</param>
+        /// <returns>Returns the product with the specified ID.</returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProductsById([FromRoute] string id)
         {
@@ -57,33 +72,29 @@ namespace ShoppingBasketAPI.Api.Controllers
             }
             catch (NotFoundException ex)
             {
-                _logger.LogError(ex, ex.Message);
                 return NotFound(new { Error = ex.Message });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occured while getting product by id.");
-                return StatusCode(500, new { Error = ResponseMessages.StatusCode_500_ErrorMessage });
+                return _exceptionHandler.HandleException(ex, "An error occured while getting product by id.");
             }
         }
 
         /***
          * Create product.
          */
-
+        /// <summary>
+        /// Creates a new product.
+        /// </summary>
+        /// <param name="productDto">The data for the new product.</param>
+        /// <returns>Returns the newly created product.</returns>
         [HttpPost(""), Authorize(Roles = "Admin"), ApiKeyRequired]
         public async Task<IActionResult> CreateProduct([FromBody] ProductCreateRequestDTO productDto)
         {
             var modelState = ModelValidator.ValidateModel(productDto);
             if (!modelState.IsValid)
             {
-                var errors = modelState
-                    .Where(ms => ms.Value!.Errors.Any())
-                    .ToDictionary(
-                        kvp => kvp.Key,
-                        kvp => kvp.Value!.Errors.Select(e => e.ErrorMessage).ToArray()
-                    );
-
+                var errors = ModelValidator.GetErrors(modelState);
                 return BadRequest(new { Errors = errors });
             }
 
@@ -94,15 +105,18 @@ namespace ShoppingBasketAPI.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occured while creating new product.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = ResponseMessages.StatusCode_500_ErrorMessage });
+                return _exceptionHandler.HandleException(ex, "An error occured while creating new product.");
             }
         }
 
         /***
          * Deleting product.
          */
-
+        /// <summary>
+        /// Deletes a product by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the product to delete.</param>
+        /// <returns>Returns a success message if deletion is successful.</returns>
         [HttpDelete("{id}"), Authorize(Roles = "Admin"), ApiKeyRequired]
         public async Task<IActionResult> DeleteProduct([FromRoute] string id)
         {
@@ -113,20 +127,23 @@ namespace ShoppingBasketAPI.Api.Controllers
             }
             catch (NotFoundException ex)
             {
-                _logger.LogError(ex, ex.Message);
                 return NotFound(new { Error = ex.Message });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occured while deleting product.");
-                return StatusCode(500, new { Error = ResponseMessages.StatusCode_500_ErrorMessage });
+                return _exceptionHandler.HandleException(ex, "An error occured while deleting product.");
             }
         }
 
         /***
          * Updating product.
          */
-
+        /// <summary>
+        /// Updates an existing product.
+        /// </summary>
+        /// <param name="id">The ID of the product to update.</param>
+        /// <param name="productDto">The updated data for the product.</param>
+        /// <returns>Returns the updated product.</returns>
         [HttpPut("{id}"), Authorize(Roles = "Admin"), ApiKeyRequired]
         public async Task<IActionResult> UpdateProduct(string id, [FromBody] ProductUpdateRequestDTO productDto)
         {
@@ -137,13 +154,11 @@ namespace ShoppingBasketAPI.Api.Controllers
             }
             catch (NotFoundException ex)
             {
-                _logger.LogError(ex, ex.Message);
                 return NotFound(new { Error = ex.Message });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occured while updating the product.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = ResponseMessages.StatusCode_500_ErrorMessage });
+                return _exceptionHandler.HandleException(ex, "An error occured while updating the product.");
             }
         }
     }

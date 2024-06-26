@@ -4,6 +4,8 @@
 		<TargetFramework>net7.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<DocumentationFile>E:\Asp .Net 6 Learning\ShoppingBasketAPI\ShoppingBasketAPI.Api\bin\Debug\net7.0\ShoppingBasketAPI.Api.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>
