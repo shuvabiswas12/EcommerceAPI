@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using ShoppingBasketAPI.Domain;
 using ShoppingBasketAPI.Services.IServices;
 using ShoppingBasketAPI.Services.Services;
 using ShoppingBasketAPI.Utilities.Exceptions.Handler;
+using ShoppingBasketAPI.Utilities.Filters;
 using ShoppingBasketAPI.Utilities.Middlewares;
 using System.Reflection;
 using System.Text;
@@ -26,33 +28,35 @@ builder.Services.AddEndpointsApiExplorer();
 // Configuring swagger api
 builder.Services.AddSwaggerGen(options =>
 {
+
+    //options.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1",  });
+
     /***
-     * configuring options for adding authorization field in swagger ui.
+     * Define authorization field security scheme (Bearer AccessToken).
      */
-    // options.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1",  });
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
-        Description = "Please enter a valid token",
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
         Name = "Authorization",
         Type = SecuritySchemeType.Http,
         BearerFormat = "JWT",
-        Scheme = "Bearer"
+        Scheme = "bearer"
     });
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+
+    // Define the security scheme (API Key)
+    options.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
     {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type=ReferenceType.SecurityScheme,
-                    Id="Bearer"
-                }
-            },
-            new string[]{}
-        }
+        Description = "API Key authorization header. Example: \"ApiKey: YOUR_API_KEY\"",
+        Name = "ApiKey",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "ApiKeyScheme"
     });
+
+    // Include a custom operation filter to apply security requirements based on attributes
+    options.OperationFilter<SecurityRequirementsOperationFilter>();
+
     /***
      * These three lines for including comments of api resources url and their activites.
      */
