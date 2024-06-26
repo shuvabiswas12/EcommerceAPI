@@ -14,7 +14,7 @@ namespace ShoppingBasketAPI.Services.Services
 {
     public class FeaturedProductServices : IFeaturedProductServices
     {
-        private IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
         public FeaturedProductServices(IUnitOfWork unitOfWork)
         {
