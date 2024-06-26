@@ -30,7 +30,6 @@ namespace ShoppingBasketAPI.Utilities.Validation
                             errors.AddModelError(property.Name, requiredAttribute.ErrorMessage);
                         }
                     }
-
                     else if (attribute is GreaterThanAttribute greaterThanAttribute)
                     {
                         if (value is decimal decimalValue)
@@ -41,7 +40,6 @@ namespace ShoppingBasketAPI.Utilities.Validation
                             }
                         }
                     }
-
                     else if (attribute is MinimumOneImageUrlAttribute minimumOneImageUrlAttribute)
                     {
                         if (value is ICollection<string> imageUrls && !imageUrls.Any(u => !string.IsNullOrWhiteSpace(u)))
@@ -49,7 +47,6 @@ namespace ShoppingBasketAPI.Utilities.Validation
                             errors.AddModelError(property.Name, minimumOneImageUrlAttribute.ErrorMessage);
                         }
                     }
-
                     else if (attribute is ValidEmailAddressAttribute validEmailAddressAttribute)
                     {
                         // Regex pattern for validating email addresses from Gmail, Yahoo, or Hotmail
@@ -61,7 +58,6 @@ namespace ShoppingBasketAPI.Utilities.Validation
                             errors.AddModelError(property.Name, errorMessage: validEmailAddressAttribute.ErrorMessage);
                         }
                     }
-
                     else if (attribute is ValidPasswordAttribute validPasswordAttribute)
                     {
                         /***
@@ -76,9 +72,19 @@ namespace ShoppingBasketAPI.Utilities.Validation
                             errors.AddModelError(property.Name, errorMessage: validPasswordAttribute.ErrorMessage);
                         }
                     }
-
                 }
             }
+            return errors;
+        }
+
+        public static Dictionary<string, string[]> GetErrors(ModelStateDictionary modelState)
+        {
+            var errors = modelState
+                    .Where(ms => ms.Value!.Errors.Any())
+                    .ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => kvp.Value!.Errors.Select(e => e.ErrorMessage).ToArray()
+                    );
             return errors;
         }
     }
