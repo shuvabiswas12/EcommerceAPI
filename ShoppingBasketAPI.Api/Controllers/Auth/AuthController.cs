@@ -5,6 +5,7 @@ using ShoppingBasketAPI.Services.IServices;
 using ShoppingBasketAPI.Utilities;
 using ShoppingBasketAPI.Utilities.Exceptions;
 using ShoppingBasketAPI.Utilities.Exceptions.Handler;
+using ShoppingBasketAPI.Utilities.Filters;
 using ShoppingBasketAPI.Utilities.Validation;
 
 namespace ShoppingBasketAPI.Api.Controllers.Auth
@@ -35,7 +36,7 @@ namespace ShoppingBasketAPI.Api.Controllers.Auth
         /// </summary>
         /// <param name="loginRequestDTO">DTO containing login credentials.</param>
         /// <returns>Returns an IActionResult representing the login operation result.</returns>
-        [HttpPost("Login")]
+        [HttpPost("Login"), ApiKeyRequired]
         public async Task<IActionResult> Login(LoginRequestDTO loginRequestDTO)
         {
             var modelState = ModelValidator.ValidateModel(loginRequestDTO);
@@ -64,7 +65,7 @@ namespace ShoppingBasketAPI.Api.Controllers.Auth
         /// </summary>
         /// <param name="registrationRequestDTO">DTO containing registration details.</param>
         /// <returns>Returns an IActionResult representing the registration operation result.</returns>
-        [HttpPost("Signup")]
+        [HttpPost("Signup"), ApiKeyRequired]
         public async Task<IActionResult> Register(RegistrationRequestDTO registrationRequestDTO)
         {
             var modelState = ModelValidator.ValidateModel(registrationRequestDTO);

@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShoppingBasketAPI.DTOs;
 using ShoppingBasketAPI.Services.IServices;
 using ShoppingBasketAPI.Utilities;
 using ShoppingBasketAPI.Utilities.Exceptions;
 using ShoppingBasketAPI.Utilities.Exceptions.Handler;
+using ShoppingBasketAPI.Utilities.Filters;
 using ShoppingBasketAPI.Utilities.Validation;
 
 namespace ShoppingBasketAPI.Api.Controllers
@@ -35,7 +37,7 @@ namespace ShoppingBasketAPI.Api.Controllers
         /// </summary>
         /// <param name="id">The ID of the product to set as featured.</param>
         /// <returns>Returns a status code indicating the result of the operation.</returns>
-        [HttpPost("{id}")]
+        [HttpPost("{id}"), ApiKeyRequired, Authorize(Roles = "Admin")]
         public async Task<IActionResult> SetProductAsFeatured([FromRoute] string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -64,7 +66,7 @@ namespace ShoppingBasketAPI.Api.Controllers
         /// </summary>
         /// <param name="id">The ID of the product to remove from featured.</param>
         /// <returns>Returns a status code indicating the result of the operation.</returns>
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), ApiKeyRequired, Authorize(Roles = "Admin")]
         public async Task<IActionResult> RemoveProductFromFeatured([FromRoute] string id)
         {
 

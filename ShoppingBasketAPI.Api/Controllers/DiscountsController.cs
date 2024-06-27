@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShoppingBasketAPI.DTOs;
 using ShoppingBasketAPI.Services.IServices;
 using ShoppingBasketAPI.Utilities;
 using ShoppingBasketAPI.Utilities.Exceptions.Handler;
+using ShoppingBasketAPI.Utilities.Filters;
 using ShoppingBasketAPI.Utilities.Validation;
 
 namespace ShoppingBasketAPI.Api.Controllers
@@ -35,7 +37,7 @@ namespace ShoppingBasketAPI.Api.Controllers
         /// <param name="id">The ID of the product for which to set the discount.</param>
         /// <param name="discountRequestDTO">DTO containing discount details.</param>
         /// <returns>Returns a status code indicating the result of the operation.</returns>
-        [HttpPost("{id}")]
+        [HttpPost("{id}"), ApiKeyRequired, Authorize(Roles = "Admin")]
         public async Task<IActionResult> SetProductDiscount([FromRoute] string id, [FromBody] DiscountRequestDTO discountRequestDTO)
         {
             if (id == null) return BadRequest(new { Error = "Route value id must be given." });
@@ -62,7 +64,7 @@ namespace ShoppingBasketAPI.Api.Controllers
         /// </summary>
         /// <param name="id">The ID of the product for which to remove the discount.</param>
         /// <returns>Returns a status code indicating the result of the operation.</returns>
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), ApiKeyRequired, Authorize(Roles = "Admin")]
         public async Task<IActionResult> RemoveProductDiscount([FromRoute] string id)
         {
             if (id == null) return BadRequest(new { Error = "Route value id must be given." });
