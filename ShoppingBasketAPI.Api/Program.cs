@@ -41,7 +41,7 @@ builder.Services.AddSwaggerGen(options =>
         Name = "Authorization",
         Type = SecuritySchemeType.Http,
         BearerFormat = "JWT",
-        Scheme = "bearer"
+        Scheme = JwtBearerDefaults.AuthenticationScheme
     });
 
     // Define the security scheme (API Key)
