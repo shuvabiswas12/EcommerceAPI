@@ -21,6 +21,7 @@ namespace ShoppingBasketAPI.Data
         public DbSet<Image> Images { get; set; }
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<FeaturedProduct> FeaturedProducts { get; set; }
+        public DbSet<ShoppingCart> ShoppingCarts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -40,6 +41,10 @@ namespace ShoppingBasketAPI.Data
             // Composite primary key
             builder.Entity<ProductCategory>()
                 .HasKey(x => new { x.ProductId, x.CategoryId });
+
+            // Composite primary key
+            builder.Entity<ShoppingCart>()
+                .HasKey(x => new { x.ProductId, x.ApplicationUserId, x.CreatedAt });
 
             // Primary key
             builder.Entity<Discount>()
