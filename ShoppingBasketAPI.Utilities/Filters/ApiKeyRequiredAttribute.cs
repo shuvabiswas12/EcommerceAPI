@@ -23,7 +23,7 @@ namespace ShoppingBasketAPI.Utilities.Filters
                 return;
             }
 
-            var config = context.HttpContext.RequestServices.GetService<IConfiguration>();
+            var config = context.HttpContext.RequestServices.GetService<IConfiguration>() ?? throw new Exception("Configuration json settings was not found.");
             var defaultApiKey = config.GetSection(key: "ApiKey").Value ?? throw new Exception("ApiKey was not found in the app's json settings.");
             if (!defaultApiKey.Equals(potentialKey))
             {
