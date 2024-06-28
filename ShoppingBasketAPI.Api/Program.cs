@@ -107,6 +107,7 @@ builder.Services.AddScoped<IProductServices, ProductServices>();
 builder.Services.AddScoped<IAuthenticationServices, AuthenticationServices>();
 builder.Services.AddScoped<IFeaturedProductServices, FeaturedProductServices>();
 builder.Services.AddScoped<IDiscountServices, DiscountServices>();
+builder.Services.AddScoped<IShoppingCartServices, ShoppingCartServices>();
 builder.Services.AddScoped(typeof(ExceptionHandler<>));
 builder.Services.AddTransient<ExceptionHandleMiddleware>();
 

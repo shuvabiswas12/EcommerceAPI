@@ -19,7 +19,7 @@ namespace ShoppingBasketAPI.Services.IServices
         /// A task representing the asynchronous operation, containing a 
         /// <see cref="ShoppingCartResponseDTO"/> with the details of the shopping cart.
         /// </returns>
-        public Task<ShoppingCartResponseDTO> GetShoppingCartByUserId();
+        public Task<ShoppingCartResponseDTO> GetShoppingCartsByUserId(string userId);
 
         /// <summary>
         /// Adds a new product to the shopping cart or updates the existing shopping cart.

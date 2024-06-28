@@ -1,4 +1,5 @@
 ﻿using ShoppingBasketAPI.Data.UnitOfWork;
+using ShoppingBasketAPI.Domain;
 using ShoppingBasketAPI.DTOs;
 using ShoppingBasketAPI.Services.IServices;
 using System;
@@ -23,9 +24,17 @@ namespace ShoppingBasketAPI.Services.Services
             throw new NotImplementedException();
         }
 
-        public Task<ShoppingCartResponseDTO> GetShoppingCartByUserId()
+        public async Task<ShoppingCartResponseDTO> GetShoppingCartsByUserId(string userId)
         {
-            throw new NotImplementedException();
+            var carts = await _unitOfWork.GenericRepository<ShoppingCart>().GetAllAsync(includeProperties: "Product", c => c.ApplicationUserId == userId);
+            ShoppingCartResponseDTO shoppingCartResponse = new ShoppingCartResponseDTO { ShoppingCarts = carts };
+            if (carts != null)
+            {
+                shoppingCartResponse.TotalCost = carts
+                    .Where(cart => cart.Product != null)
+                    .Sum(cart => (double)cart.Product!.Price);
+            }
+            return shoppingCartResponse;
         }
 
         public Task RemoveProductsFromShoppingCart(List<string> productId)
