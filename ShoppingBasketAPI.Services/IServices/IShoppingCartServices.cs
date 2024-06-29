@@ -43,6 +43,6 @@ namespace ShoppingBasketAPI.Services.IServices
         /// <returns>
         /// A task representing the asynchronous operation.
         /// </returns>
-        public Task RemoveProductsFromShoppingCart(List<string> productId);
+        public Task RemoveProductsFromShoppingCart(List<string> productIDs, string userId);
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShoppingBasketAPI.DTOs;
 using ShoppingBasketAPI.Services.IServices;
+using ShoppingBasketAPI.Utilities;
 using ShoppingBasketAPI.Utilities.Exceptions.Handler;
 using ShoppingBasketAPI.Utilities.Filters;
 using System.Security.Claims;
@@ -122,7 +123,29 @@ namespace ShoppingBasketAPI.Api.Controllers
         /// <response code="500">Internal Server Error - an error occurred while processing the request.</response>
         [HttpDelete]
         [ApiKeyRequired, Authorize(Roles = "Web_User")]
-        public Task<IActionResult> DeleteProductsFromCart([FromBody] List<string> products)
-        { throw new NotImplementedException(); }
+        public async Task<IActionResult> DeleteProductsFromCart([FromBody] List<string> products)
+        {
+            if (!products.Any())
+            {
+                return BadRequest(new { Error = "No product IDs provided." });
+            }
+            try
+            {
+                var userId = (User.Identity as ClaimsIdentity)?.FindFirst(ClaimTypes.Actor)?.Value
+                    ?? throw new Exception(message: "User id is not found.");
+
+                await _shoppingCartServices.RemoveProductsFromShoppingCart(products, userId);
+                return StatusCode(StatusCodes.Status204NoContent, new { Message = ResponseMessages.StatusCode_200_DeleteMessage });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { Error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return _exceptionHandler.HandleException(ex, "Something went wrong when deleting cart");
+            }
+
+        }
     }
 }
