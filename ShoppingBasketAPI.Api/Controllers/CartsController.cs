@@ -80,8 +80,33 @@ namespace ShoppingBasketAPI.Api.Controllers
         /// <response code="500">Internal Server Error - an error occurred while processing the request.</response>
         [HttpPost]
         [ApiKeyRequired, Authorize(Roles = "Web_User")]
-        public Task<IActionResult> AddProductIntoCart([FromBody] ShoppingCartCreateRequestDTO shoppingCartCreateRequestDTO)
-        { throw new NotImplementedException(); }
+        public async Task<IActionResult> AddProductIntoCart([FromBody] ShoppingCartCreateRequestDTO shoppingCartCreateRequestDTO)
+        {
+            var userid = (User.Identity as ClaimsIdentity)?.FindFirst(ClaimTypes.Actor)?.Value;
+            try
+            {
+                shoppingCartCreateRequestDTO.UserId = userid ?? throw new Exception(message: "User id is not found.");
+
+                // If count is greater than zeros, cart will be added or updated.
+                if (shoppingCartCreateRequestDTO.Count > 0)
+                {
+                    await _shoppingCartServices.AddProductToShoppingCart(shoppingCartCreateRequestDTO);
+                    return StatusCode(StatusCodes.Status201Created, new { Message = "Added" });
+                }
+
+                // If count is zero or less than zeros, cart will be deleted.
+                // Redirect to DeleteProductsFromCart Action method.
+                else
+                {
+                    var productIds = new List<string> { shoppingCartCreateRequestDTO.ProductId };
+                    return await DeleteProductsFromCart(productIds);  // Invoked the another action method here.
+                }
+            }
+            catch (Exception ex)
+            {
+                return _exceptionHandler.HandleException(ex, "Something went wrong when creating cart.");
+            }
+        }
 
 
         /// <summary>

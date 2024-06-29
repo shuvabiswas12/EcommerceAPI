@@ -19,9 +19,46 @@ namespace ShoppingBasketAPI.Services.Services
             _unitOfWork = unitOfWork;
         }
 
-        public Task AddProductToShoppingCart(ShoppingCartCreateRequestDTO shoppingCartCreateRequestDTO)
+        public async Task AddProductToShoppingCart(ShoppingCartCreateRequestDTO shoppingCartCreateRequestDTO)
         {
-            throw new NotImplementedException();
+            // Check if the same product is found for same user
+            var existingShoppingCart = await _unitOfWork.GenericRepository<ShoppingCart>().GetTAsync(predicate: c =>
+            c.ApplicationUserId == shoppingCartCreateRequestDTO.UserId && c.ProductId == shoppingCartCreateRequestDTO.ProductId);
+
+            // If cart is not found, create one new cart.
+            if (existingShoppingCart == null)
+            {
+                var newlyCreatedShoppingCart = await _unitOfWork.GenericRepository<ShoppingCart>().AddAsync(new ShoppingCart
+                {
+                    ApplicationUserId = shoppingCartCreateRequestDTO.UserId,
+                    Count = shoppingCartCreateRequestDTO.Count,
+                    ProductId = shoppingCartCreateRequestDTO.ProductId,
+                });
+                await _unitOfWork.SaveAsync();
+                await Task.CompletedTask;
+                return;
+            }
+
+            // If count is greater than zeros. Update the existing one,
+            if (shoppingCartCreateRequestDTO.Count > 0)
+            {
+                existingShoppingCart.Count = shoppingCartCreateRequestDTO.Count;
+                await _unitOfWork.SaveAsync();
+                await Task.CompletedTask;
+                return;
+            }
+
+            await Task.CompletedTask;
+            return;
+
+            //// Else, remove the cart or remove the product from the cart.
+            //else
+            //{
+            //    await _unitOfWork.GenericRepository<ShoppingCart>().DeleteAsync(existingShoppingCart);
+            //    await _unitOfWork.SaveAsync();
+            //    await Task.CompletedTask;
+            //    return;
+            //}
         }
 
         public async Task<ShoppingCartResponseDTO> GetShoppingCartsByUserId(string userId)
