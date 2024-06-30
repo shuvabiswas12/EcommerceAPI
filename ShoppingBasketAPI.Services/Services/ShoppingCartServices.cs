@@ -101,6 +101,7 @@ namespace ShoppingBasketAPI.Services.Services
                 }
                 await _unitOfWork.GenericRepository<ShoppingCart>().DeleteRangeAsync(productsToDeleteFromCart);
                 await Task.CompletedTask;
+                return;
             }
         }
     }
