@@ -4,6 +4,7 @@ using ShoppingBasketAPI.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -53,6 +54,24 @@ namespace ShoppingBasketAPI.Data
             // Primary key
             builder.Entity<FeaturedProduct>()
                 .HasKey(x => new { x.ProductId });
+
+            // One to one relationship between Product and Discount
+            builder.Entity<Product>()
+                .HasOne(p => p.Discount)
+                .WithOne(d => d.Product)
+                .HasForeignKey<Discount>(d => d.ProductId);
+
+            // One-to-one relationship between Product and FeaturedProduct
+            builder.Entity<Product>()
+                .HasOne(p => p.FeaturedProduct)
+                .WithOne(f => f.Product)
+                .HasForeignKey<FeaturedProduct>(f => f.ProductId);
+
+            // One-to-one relationship between Product and ProductCategory
+            builder.Entity<Product>()
+                .HasOne(p => p.ProductCategory)
+                .WithOne(pc => pc.Product)
+                .HasForeignKey<ProductCategory>(pc => pc.ProductId);
         }
     }
 }

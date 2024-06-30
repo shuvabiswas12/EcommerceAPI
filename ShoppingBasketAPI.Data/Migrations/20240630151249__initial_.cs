@@ -3,12 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace ShoppingBasketAPI.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class __initial__ : Migration
+    public partial class _initial_ : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -75,7 +73,8 @@ namespace ShoppingBasketAPI.Data.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false)
+                    Price = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -189,6 +188,43 @@ namespace ShoppingBasketAPI.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Discounts",
+                columns: table => new
+                {
+                    ProductId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    DiscountRate = table.Column<double>(type: "float", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Discounts", x => x.ProductId);
+                    table.ForeignKey(
+                        name: "FK_Discounts_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FeaturedProducts",
+                columns: table => new
+                {
+                    ProductId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FeaturedProducts", x => x.ProductId);
+                    table.ForeignKey(
+                        name: "FK_FeaturedProducts_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Images",
                 columns: table => new
                 {
@@ -206,16 +242,54 @@ namespace ShoppingBasketAPI.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "Categories",
-                columns: new[] { "Id", "CreatedDate", "Name" },
-                values: new object[,]
+            migrationBuilder.CreateTable(
+                name: "ProductCategory",
+                columns: table => new
                 {
-                    { "61008b79-00fe-4a26-a1c0-3a55c08031c0", new DateTime(2024, 6, 15, 11, 54, 3, 611, DateTimeKind.Local).AddTicks(4678), "Electronics" },
-                    { "6b3fb680-f554-480f-a5a9-332760e12218", new DateTime(2024, 6, 15, 11, 54, 3, 611, DateTimeKind.Local).AddTicks(4694), "Fruits" },
-                    { "a813c3ac-1823-4839-998e-26fc08c092b9", new DateTime(2024, 6, 15, 11, 54, 3, 611, DateTimeKind.Local).AddTicks(4686), "Cloths" },
-                    { "d3d5dcf7-0c32-44c7-80e6-c01f892c4d28", new DateTime(2024, 6, 15, 11, 54, 3, 611, DateTimeKind.Local).AddTicks(4719), "Vegetables" },
-                    { "d93752c5-093e-479c-b1d3-2301943ed19e", new DateTime(2024, 6, 15, 11, 54, 3, 611, DateTimeKind.Local).AddTicks(4726), "Households" }
+                    ProductId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CategoryId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductCategory", x => new { x.ProductId, x.CategoryId });
+                    table.ForeignKey(
+                        name: "FK_ProductCategory_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProductCategory_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ShoppingCarts",
+                columns: table => new
+                {
+                    ProductId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Count = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShoppingCarts", x => new { x.ProductId, x.ApplicationUserId, x.CreatedAt });
+                    table.ForeignKey(
+                        name: "FK_ShoppingCarts_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ShoppingCarts_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -256,6 +330,22 @@ namespace ShoppingBasketAPI.Data.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductCategory_CategoryId",
+                table: "ProductCategory",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductCategory_ProductId",
+                table: "ProductCategory",
+                column: "ProductId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShoppingCarts_ApplicationUserId",
+                table: "ShoppingCarts",
+                column: "ApplicationUserId");
         }
 
         /// <inheritdoc />
@@ -277,13 +367,25 @@ namespace ShoppingBasketAPI.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Categories");
+                name: "Discounts");
+
+            migrationBuilder.DropTable(
+                name: "FeaturedProducts");
 
             migrationBuilder.DropTable(
                 name: "Images");
 
             migrationBuilder.DropTable(
+                name: "ProductCategory");
+
+            migrationBuilder.DropTable(
+                name: "ShoppingCarts");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

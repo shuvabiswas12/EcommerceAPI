@@ -12,8 +12,8 @@ using ShoppingBasketAPI.Data;
 namespace ShoppingBasketAPI.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240619065133_added_Discount_and_FeaturedProduct_table")]
-    partial class added_Discount_and_FeaturedProduct_table
+    [Migration("20240630151249__initial_")]
+    partial class _initial_
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -288,19 +288,15 @@ namespace ShoppingBasketAPI.Data.Migrations
                     b.HasKey("ProductId", "ImageUrl");
 
                     b.ToTable("Images");
-
-                    b.HasData(
-                        new
-                        {
-                            ProductId = "00e078bd-165b-4a89-aa4f-034acdd0530e",
-                            ImageUrl = "https://technave.com/data/files/mall/article/202103171440419975.jpg"
-                        });
                 });
 
             modelBuilder.Entity("ShoppingBasketAPI.Domain.Product", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -317,15 +313,45 @@ namespace ShoppingBasketAPI.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Products");
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            Id = "00e078bd-165b-4a89-aa4f-034acdd0530e",
-                            Description = "***Galaxy A52 is rated as IP67. Based on test conditions for submersion in up to 1 meter of freshwater for up to 30 minutes. Not advised for beach, pool use and soapy water. In case you spill liquids containing sugar on the phone, please rinse the device in clean, stagnant water while clicking keys. Safe against low water pressure only. High water pressure such as running tap water or shower may damage the device.",
-                            Name = "Samsung Galaxy A52 4g",
-                            Price = 25000m
-                        });
+            modelBuilder.Entity("ShoppingBasketAPI.Domain.ProductCategory", b =>
+                {
+                    b.Property<string>("ProductId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CategoryId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ProductId", "CategoryId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ProductId")
+                        .IsUnique();
+
+                    b.ToTable("ProductCategory");
+                });
+
+            modelBuilder.Entity("ShoppingBasketAPI.Domain.ShoppingCart", b =>
+                {
+                    b.Property<string>("ProductId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProductId", "ApplicationUserId", "CreatedAt");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("ShoppingCarts");
                 });
 
             modelBuilder.Entity("ShoppingBasketAPI.Domain.ApplicationUser", b =>
@@ -427,6 +453,44 @@ namespace ShoppingBasketAPI.Data.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("ShoppingBasketAPI.Domain.ProductCategory", b =>
+                {
+                    b.HasOne("ShoppingBasketAPI.Domain.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ShoppingBasketAPI.Domain.Product", "Product")
+                        .WithOne("ProductCategory")
+                        .HasForeignKey("ShoppingBasketAPI.Domain.ProductCategory", "ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("ShoppingBasketAPI.Domain.ShoppingCart", b =>
+                {
+                    b.HasOne("ShoppingBasketAPI.Domain.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ShoppingBasketAPI.Domain.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("ShoppingBasketAPI.Domain.Product", b =>
                 {
                     b.Navigation("Discount")
@@ -436,6 +500,9 @@ namespace ShoppingBasketAPI.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Images");
+
+                    b.Navigation("ProductCategory")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
