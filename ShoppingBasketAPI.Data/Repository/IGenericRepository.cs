@@ -12,6 +12,7 @@ namespace ShoppingBasketAPI.Data.Repository
         public Task<IEnumerable<T>> GetAllAsync(string? includeProperties = null, Expression<Func<T, bool>>? predicate = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null);
         public Task<T> GetTAsync(Expression<Func<T, bool>> predicate, string? includeProperties = null);
         public Task<T> AddAsync(T entity);
+        public Task<IEnumerable<T>> AddRangeAsync(params T[] entities);
         public Task DeleteAsync(T entity);
         public Task DeleteRangeAsync(IEnumerable<T> entities);
         public Task UpdateAsync(T entity);

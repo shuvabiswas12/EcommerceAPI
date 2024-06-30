@@ -25,6 +25,12 @@ namespace ShoppingBasketAPI.Data.Repository
             return entity;
         }
 
+        public async Task<IEnumerable<T>> AddRangeAsync(params T[] entities)
+        {
+            await _dbSet.AddRangeAsync(entities);
+            return entities.ToList();
+        }
+
         public Task DeleteAsync(T entity)
         {
             if (_context.Entry(entity).State == EntityState.Detached)
