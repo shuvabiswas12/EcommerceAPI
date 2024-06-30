@@ -117,8 +117,11 @@ var app = builder.Build();
 // Seed data
 using (var scope = app.Services.CreateScope())
 {
-    var seeder = new RolesAndAdminSeeder(scope.ServiceProvider);
-    await seeder.SeedRolesAndAdminAsync();
+    var rolesAndAdminSeeder = new RolesAndAdminSeeder(scope.ServiceProvider);
+    await rolesAndAdminSeeder.SeedRolesAndAdminAsync();
+
+    var modelSeeder = new ModelsSeeder(scope.ServiceProvider);
+    await modelSeeder.SeedModelsAsync();
 }
 
 // Configure the HTTP request pipeline.
