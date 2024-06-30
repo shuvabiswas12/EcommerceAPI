@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using ShoppingBasketAPI.Data;
 using ShoppingBasketAPI.Domain;
 using ShoppingBasketAPI.Utilities.ApplicationRoles;
 using System;
@@ -8,11 +9,31 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShoppingBasketAPI.Services.DataSeederServices
+namespace ShoppingBasketAPI.Services.DataSeeder
 {
-    public static class DataSeeder
+    /// <summary>
+    /// Responsible for seeding roles and an admin user into the database.
+    /// </summary>
+    public class RolesAndAdminSeeder
     {
-        public static async Task SeedRolesAsync(IServiceProvider serviceProvider)
+        private readonly IServiceProvider serviceProvider;
+
+        public RolesAndAdminSeeder(IServiceProvider serviceProvider)
+        {
+            this.serviceProvider = serviceProvider;
+        }
+
+        /// <summary>
+        /// This method will create Roles first and create one admin account later.
+        /// </summary>
+        /// <returns></returns>
+        public async Task SeedRolesAndAdminAsync()
+        {
+            await this.SeedRolesAsync();
+            await this.SeedAdminAsync();
+        }
+
+        private async Task SeedRolesAsync()
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
@@ -27,49 +48,22 @@ namespace ShoppingBasketAPI.Services.DataSeederServices
                     roleResult = await roleManager.CreateAsync(new IdentityRole(roleName));
                 }
             }
+            await Task.CompletedTask;
+            return;
         }
 
-        public static async Task SeedAdminAsync(IServiceProvider serviceProvider)
+        private async Task SeedAdminAsync()
         {
             // Admin
             const string AdminEmail = "admin@gmail.com";
             const string AdminPassword = "Admin@1234";
 
-            await SeedUsersAsync(serviceProvider, email: AdminEmail, password: AdminPassword);
-            await Task.CompletedTask;
-            return;
-        }
-
-        public static async Task SeedEmployeeAsync(IServiceProvider serviceProvider)
-        {
-            // Employee
-            const string EmployeeEmail = "demoemployee@gmail.com";
-            const string EmployeePassword = "DemoEmployee@1234";
-
-            await SeedUsersAsync(serviceProvider, email: EmployeeEmail, password: EmployeePassword);
-            await Task.CompletedTask;
-            return;
-        }
-
-        public static async Task SeedWebUserAsync(IServiceProvider serviceProvider)
-        {
-            // Web User
-            const string WebUserEmail = "demouser@gmail.com";
-            const string WebUserPassword = "DemoUser@1234";
-
-            await SeedUsersAsync(serviceProvider, email: WebUserEmail, password: WebUserPassword);
-            await Task.CompletedTask;
-            return;
-        }
-
-        private static async Task SeedUsersAsync(IServiceProvider serviceProvider, string email, string password)
-        {
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
             var adminUser = new ApplicationUser
             {
-                UserName = email,
-                Email = email,
+                UserName = AdminEmail,
+                Email = AdminEmail,
                 SecurityStamp = Guid.NewGuid().ToString()
             };
 
@@ -77,12 +71,14 @@ namespace ShoppingBasketAPI.Services.DataSeederServices
 
             if (user == null)
             {
-                var createUser = await userManager.CreateAsync(adminUser, password);
+                var createUser = await userManager.CreateAsync(adminUser, AdminPassword);
                 if (createUser.Succeeded)
                 {
                     await userManager.AddToRoleAsync(adminUser, IApplicationRoles.ADMIN);
                 }
             }
+            await Task.CompletedTask;
+            return;
         }
     }
 }

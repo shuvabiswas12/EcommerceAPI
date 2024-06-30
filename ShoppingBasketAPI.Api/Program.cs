@@ -8,7 +8,7 @@ using Microsoft.OpenApi.Models;
 using ShoppingBasketAPI.Data;
 using ShoppingBasketAPI.Data.UnitOfWork;
 using ShoppingBasketAPI.Domain;
-using ShoppingBasketAPI.Services.DataSeederServices;
+using ShoppingBasketAPI.Services.DataSeeder;
 using ShoppingBasketAPI.Services.IServices;
 using ShoppingBasketAPI.Services.Services;
 using ShoppingBasketAPI.Utilities.Exceptions.Handler;
@@ -117,11 +117,8 @@ var app = builder.Build();
 // Seed data
 using (var scope = app.Services.CreateScope())
 {
-    var services = scope.ServiceProvider;
-    await DataSeeder.SeedRolesAsync(services);
-    await DataSeeder.SeedAdminAsync(services);
-    await DataSeeder.SeedEmployeeAsync(services);
-    await DataSeeder.SeedWebUserAsync(services);
+    var seeder = new RolesAndAdminSeeder(scope.ServiceProvider);
+    await seeder.SeedRolesAndAdminAsync();
 }
 
 // Configure the HTTP request pipeline.
