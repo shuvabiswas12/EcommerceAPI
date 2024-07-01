@@ -19,6 +19,7 @@ namespace ShoppingBasketAPI.DTOs
         public DateTime CreatedAt { get; set; }
         public bool IsFeatured { get; set; }
         public double DiscountRate { get; set; }
+        public double DiscountPrice { get; set; } = 0.0;
         public ICollection<ImageResponseDTO> Images { get; set; } = new List<ImageResponseDTO>();
     }
 }
