@@ -20,21 +20,13 @@ namespace ShoppingBasketAPI.Domain
         [Required, Precision(10, 2)] public decimal Price { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // Computed property.
-        [NotMapped]
-        public bool IsFeatured => FeaturedProduct != null;
-
-        // Computed property.
-        [NotMapped]
-        public double DiscountRate => Discount != null ? Discount.DiscountRate : 0.0;
-
         // One to many relationship
         // Navigation property
         public ICollection<Image> Images { get; set; } = new List<Image>();
 
         // Navigation properties
-        [JsonIgnore] public Discount Discount { get; set; } = null!;
-        [JsonIgnore] public FeaturedProduct FeaturedProduct { get; set; } = null!;
-        [JsonIgnore] public ProductCategory ProductCategory { get; set; } = null!;
+        public Discount Discount { get; set; } = null!;
+        public FeaturedProduct FeaturedProduct { get; set; } = null!;
+        public ProductCategory ProductCategory { get; set; } = null!;
     }
 }
