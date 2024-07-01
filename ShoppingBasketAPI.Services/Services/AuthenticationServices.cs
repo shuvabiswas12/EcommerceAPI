@@ -126,9 +126,6 @@ namespace ShoppingBasketAPI.Services.Services
                 throw new Exception(message: msg);
             }
 
-            // Creating roles if not exists.
-            await CreateRoles();
-
             // Add new user to a role.
             await _userManager.AddToRoleAsync(newUser, IApplicationRoles.WEB_USER);
             return new RegistrationResponseDTO
@@ -140,23 +137,6 @@ namespace ShoppingBasketAPI.Services.Services
                     Id = newUser.Id
                 }
             };
-        }
-
-        private async Task CreateRoles()
-        {
-            if (!await _roleManager.RoleExistsAsync(IApplicationRoles.ADMIN))
-            {
-                await _roleManager.CreateAsync(new IdentityRole(IApplicationRoles.ADMIN));
-            }
-            if (!await _roleManager.RoleExistsAsync(IApplicationRoles.EMPLOYEE))
-            {
-                await _roleManager.CreateAsync(new IdentityRole(IApplicationRoles.EMPLOYEE));
-            }
-            if (!await _roleManager.RoleExistsAsync(IApplicationRoles.WEB_USER))
-            {
-                await _roleManager.CreateAsync(new IdentityRole(IApplicationRoles.WEB_USER));
-            }
-            await Task.CompletedTask;
         }
     }
 }
