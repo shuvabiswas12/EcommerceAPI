@@ -20,6 +20,6 @@ namespace ShoppingBasketAPI.DTOs
         public bool IsFeatured { get; set; }
         public double DiscountRate { get; set; }
         public double DiscountPrice { get; set; } = 0.0;
-        public ICollection<ImageResponseDTO> Images { get; set; } = new List<ImageResponseDTO>();
+        public ICollection<string> Images { get; set; } = new List<string>();
     }
 }
