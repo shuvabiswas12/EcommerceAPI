@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace ShoppingBasketAPI.DTOs
 {
-    public class ProductResponseDTO
+    public class ImageResponseDTO
     {
-        public int ProductsCount { get; set; } = 0;
-        public IEnumerable<ProductDTO> Products { get; set; } = null!;
+        public required string ImageUrl { get; set; } = string.Empty!;
     }
 }

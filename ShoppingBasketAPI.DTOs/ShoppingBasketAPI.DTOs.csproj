@@ -7,6 +7,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="AutoMapper" Version="13.0.1" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\ShippingBasketAPI.Data\ShoppingBasketAPI.Data.csproj" />
 		<ProjectReference Include="..\ShoppingBasketAPI.Utilities\ShoppingBasketAPI.Utilities.csproj" />
 	</ItemGroup>

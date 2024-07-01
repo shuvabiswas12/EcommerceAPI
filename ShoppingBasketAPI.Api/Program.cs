@@ -8,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using ShoppingBasketAPI.Data;
 using ShoppingBasketAPI.Data.UnitOfWork;
 using ShoppingBasketAPI.Domain;
+using ShoppingBasketAPI.DTOs.AutoMapping;
 using ShoppingBasketAPI.Services.DataSeeder;
 using ShoppingBasketAPI.Services.IServices;
 using ShoppingBasketAPI.Services.Services;
@@ -111,6 +112,7 @@ builder.Services.AddScoped<IDiscountServices, DiscountServices>();
 builder.Services.AddScoped<IShoppingCartServices, ShoppingCartServices>();
 builder.Services.AddScoped(typeof(ExceptionHandler<>));
 builder.Services.AddTransient<ExceptionHandleMiddleware>();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
 
