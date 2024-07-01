@@ -48,7 +48,7 @@ namespace ShoppingBasketAPI.Services.Services
 
         public async Task<ProductResponseDTO> GetAllProduct()
         {
-            var productsResult = await _unitOfWork.GenericRepository<Product>().GetAllAsync(includeProperties: "Images");
+            var productsResult = await _unitOfWork.GenericRepository<Product>().GetAllAsync(includeProperties: "Images, Discount, ProductCategory, FeaturedProduct");
             var productsResponseDto = new ProductResponseDTO
             {
                 products = productsResult,
