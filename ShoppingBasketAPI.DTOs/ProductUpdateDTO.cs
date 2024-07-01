@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ShoppingBasketAPI.DTOs
 {
-    public class ProductUpdateRequestDTO
+    public class ProductUpdateDTO
     {
         public string? Name { get; set; } = null;
         public string? Description { get; set; } = null;

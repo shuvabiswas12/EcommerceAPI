@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ShoppingBasketAPI.DTOs
 {
-    public class ProductCreateRequestDTO
+    public class ProductCreateDTO
     {
         [NotEmpty(errorMessage: "Name field is required.")] public string Name { get; set; } = null!;
         [NotEmpty(errorMessage: "Description field is required.")] public string Description { get; set; } = null!;

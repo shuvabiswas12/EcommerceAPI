@@ -23,7 +23,7 @@ namespace ShoppingBasketAPI.Services.Services
             _mapper = mapper;
         }
 
-        public async Task<Product> CreateProduct(ProductCreateRequestDTO productDto)
+        public async Task<Product> CreateProduct(ProductCreateDTO productDto)
         {
             var product = new Product
             {
@@ -68,7 +68,7 @@ namespace ShoppingBasketAPI.Services.Services
             return productResult;
         }
 
-        public async Task<Product> UpdateProduct(Object id, ProductUpdateRequestDTO productDto)
+        public async Task<Product> UpdateProduct(Object id, ProductUpdateDTO productDto)
         {
             var productToUpdate = await _unitOfWork.GenericRepository<Product>().GetTAsync(x => x.Id == id.ToString(), includeProperties: "Images");
             if (productToUpdate == null)

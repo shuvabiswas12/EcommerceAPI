@@ -89,7 +89,7 @@ namespace ShoppingBasketAPI.Api.Controllers
         /// <param name="productDto">The data for the new product.</param>
         /// <returns>Returns the newly created product.</returns>
         [HttpPost(""), Authorize(Roles = "Admin"), ApiKeyRequired]
-        public async Task<IActionResult> CreateProduct([FromBody] ProductCreateRequestDTO productDto)
+        public async Task<IActionResult> CreateProduct([FromBody] ProductCreateDTO productDto)
         {
             var modelState = ModelValidator.ValidateModel(productDto);
             if (!modelState.IsValid)
@@ -145,7 +145,7 @@ namespace ShoppingBasketAPI.Api.Controllers
         /// <param name="productDto">The updated data for the product.</param>
         /// <returns>Returns the updated product.</returns>
         [HttpPut("{id}"), Authorize(Roles = "Admin"), ApiKeyRequired]
-        public async Task<IActionResult> UpdateProduct(string id, [FromBody] ProductUpdateRequestDTO productDto)
+        public async Task<IActionResult> UpdateProduct(string id, [FromBody] ProductUpdateDTO productDto)
         {
             try
             {
