@@ -1,4 +1,5 @@
-﻿using ShoppingBasketAPI.Data.UnitOfWork;
+﻿using AutoMapper;
+using ShoppingBasketAPI.Data.UnitOfWork;
 using ShoppingBasketAPI.Domain;
 using ShoppingBasketAPI.DTOs;
 using ShoppingBasketAPI.Services.IServices;
@@ -13,11 +14,13 @@ namespace ShoppingBasketAPI.Services.Services
 {
     public class ProductServices : IProductServices
     {
-        private IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public ProductServices(IUnitOfWork unitOfWork)
+        public ProductServices(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public async Task<Product> CreateProduct(ProductCreateRequestDTO productDto)
@@ -51,8 +54,8 @@ namespace ShoppingBasketAPI.Services.Services
             var productsResult = await _unitOfWork.GenericRepository<Product>().GetAllAsync(includeProperties: "Images, Discount, ProductCategory, FeaturedProduct");
             var productsResponseDto = new ProductResponseDTO
             {
-                products = productsResult,
-                totalProducts = productsResult.Count()
+                Products = _mapper.Map<IEnumerable<ProductDTO>>(productsResult),
+                ProductsCount = productsResult.Count()
             };
             return productsResponseDto;
         }
