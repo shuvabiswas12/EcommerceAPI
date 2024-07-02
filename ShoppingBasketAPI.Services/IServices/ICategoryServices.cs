@@ -1,5 +1,6 @@
 ﻿using ShoppingBasketAPI.Domain;
 using ShoppingBasketAPI.DTOs;
+using ShoppingBasketAPI.DTOs.GenericResponse;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace ShoppingBasketAPI.Services.IServices
 {
     public interface ICategoryServices
     {
-        public Task<CategoryResponseDTO> GetAllCategories();
+        public Task<GenericResponseDTO<Category>> GetAllCategories();
         public Task<Category> GetCategoryById(object id);
         public Task DeleteCategory(object id);
         public Task<Category> UpdateCategory(object id, string categoryName);

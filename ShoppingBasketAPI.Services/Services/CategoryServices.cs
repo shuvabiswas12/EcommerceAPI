@@ -1,6 +1,7 @@
 ﻿using ShoppingBasketAPI.Data.UnitOfWork;
 using ShoppingBasketAPI.Domain;
 using ShoppingBasketAPI.DTOs;
+using ShoppingBasketAPI.DTOs.GenericResponse;
 using ShoppingBasketAPI.Services.IServices;
 using ShoppingBasketAPI.Utilities.Exceptions;
 using System;
@@ -31,15 +32,15 @@ namespace ShoppingBasketAPI.Services.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task<CategoryResponseDTO> GetAllCategories()
+        public async Task<GenericResponseDTO<Category>> GetAllCategories()
         {
             var result = await _unitOfWork.GenericRepository<Category>().GetAllAsync();
-            var categories = new CategoryResponseDTO
+            var categoriesResponse = new GenericResponseDTO<Category>
             {
-                Categories = result,
-                TotalCategories = result.Count()
+                Data = result,
+                Count = result.Count()
             };
-            return categories;
+            return categoriesResponse;
         }
 
         public async Task<Category> GetCategoryById(object id)

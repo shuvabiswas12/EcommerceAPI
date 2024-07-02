@@ -2,6 +2,7 @@
 using ShoppingBasketAPI.Data.UnitOfWork;
 using ShoppingBasketAPI.Domain;
 using ShoppingBasketAPI.DTOs;
+using ShoppingBasketAPI.DTOs.GenericResponse;
 using ShoppingBasketAPI.Services.IServices;
 using ShoppingBasketAPI.Utilities.Exceptions;
 using System;
@@ -49,15 +50,15 @@ namespace ShoppingBasketAPI.Services.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task<ProductResponseDTO> GetAllProduct()
+        public async Task<GenericResponseDTO<ProductDTO>> GetAllProduct()
         {
             var productsResult = await _unitOfWork.GenericRepository<Product>().GetAllAsync(includeProperties: "Images, Discount, ProductCategory, FeaturedProduct");
-            var productsResponseDto = new ProductResponseDTO
+            var productsResponse = new GenericResponseDTO<ProductDTO>
             {
-                Products = _mapper.Map<IEnumerable<ProductDTO>>(productsResult),
-                ProductsCount = productsResult.Count()
+                Data = _mapper.Map<IEnumerable<ProductDTO>>(productsResult),
+                Count = productsResult.Count()
             };
-            return productsResponseDto;
+            return productsResponse;
         }
 
         public async Task<Product> GetProductById(object id)
