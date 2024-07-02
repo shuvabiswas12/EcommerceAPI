@@ -10,13 +10,10 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace ShoppingBasketAPI.Domain
 {
-    public class OrderDetails
+    public class OrderDetail
     {
-        [Key]
-        public string Id { get; set; } = Guid.NewGuid().ToString();
-
         [Required]
-        public int OrderHeaderId { get; set; }
+        public string OrderHeaderId { get; set; } = null!;
 
         [ForeignKey("OrderHeaderId"), ValidateNever]
         public OrderHeader OrderHeader { get; set; } = null!;

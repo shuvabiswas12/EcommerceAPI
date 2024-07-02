@@ -23,6 +23,8 @@ namespace ShoppingBasketAPI.Data
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<FeaturedProduct> FeaturedProducts { get; set; }
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
+        public DbSet<OrderDetail> OrderDetails { get; set; }
+        public DbSet<OrderHeader> OrderHeaders { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -72,6 +74,17 @@ namespace ShoppingBasketAPI.Data
                 .HasOne(p => p.ProductCategory)
                 .WithOne(pc => pc.Product)
                 .HasForeignKey<ProductCategory>(pc => pc.ProductId);
+
+            // Composite primary key for OrderDetail table
+            builder.Entity<OrderDetail>()
+                .HasKey(x => new { x.ProductId, x.OrderHeaderId });
+
+            // One to many relationship
+            // One orderHeader will be used in many orderDeatils row
+            builder.Entity<OrderHeader>()
+                .HasMany(oh => oh.OrderDetails)
+                .WithOne(od => od.OrderHeader)
+                .HasForeignKey(od => od.OrderHeaderId);
         }
     }
 }

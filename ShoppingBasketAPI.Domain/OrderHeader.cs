@@ -26,7 +26,7 @@ namespace ShoppingBasketAPI.Domain
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
 
         [Required]
-        public decimal OrderTotal { get; set; }
+        public double OrderTotal { get; set; }
 
         [Required]
         public string Status { get; set; } = OrderStatus.StatusPending;
@@ -50,11 +50,10 @@ namespace ShoppingBasketAPI.Domain
 
         [Required] public string PostCode { get; set; } = null!;
 
-
         public string? TrackingNumber { get; set; }
 
         // Navigation property
-        public ICollection<OrderDetails> OrderDetails { get; set; } = new List<OrderDetails>();
+        public ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
     }
 
 }
