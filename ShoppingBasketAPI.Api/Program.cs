@@ -110,6 +110,8 @@ builder.Services.AddScoped<IAuthenticationServices, AuthenticationServices>();
 builder.Services.AddScoped<IFeaturedProductServices, FeaturedProductServices>();
 builder.Services.AddScoped<IDiscountServices, DiscountServices>();
 builder.Services.AddScoped<IShoppingCartServices, ShoppingCartServices>();
+builder.Services.AddScoped<IOrderHeaderServices, OrderHeaderServices>();
+builder.Services.AddScoped<IOrderDetailsServices, OrderDetailsServices>();
 builder.Services.AddScoped(typeof(ExceptionHandler<>));
 builder.Services.AddTransient<ExceptionHandleMiddleware>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));

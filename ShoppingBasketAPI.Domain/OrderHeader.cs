@@ -29,12 +29,13 @@ namespace ShoppingBasketAPI.Domain
         public double OrderTotal { get; set; }
 
         [Required]
-        public string Status { get; set; } = OrderStatus.StatusPending;
+        public string OrderStatus { get; set; } = Status.OrderStatus_Pending;
 
         public string? PaymentStatus { get; set; }
 
-        [Required]
-        public string ShippingAddress { get; set; } = null!;
+        public string? PaymentType { get; set; }
+
+        [Required] public string ShippingAddress { get; set; } = null!;
 
         [Required] public string FullName { get; set; } = null!;
 
