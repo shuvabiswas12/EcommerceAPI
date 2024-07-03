@@ -3,6 +3,8 @@ using ShoppingBasketAPI.Data.UnitOfWork;
 using ShoppingBasketAPI.Domain;
 using ShoppingBasketAPI.DTOs.GenericResponse;
 using ShoppingBasketAPI.Services.IServices;
+using ShoppingBasketAPI.Utilities;
+using ShoppingBasketAPI.Utilities.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,14 +28,14 @@ namespace ShoppingBasketAPI.Services.Services
             throw new NotImplementedException();
         }
 
-        public async Task DeleteOrder(string orderId, string userId)
+        public async Task CancelOrder(string orderId, string userId)
         {
-            var orderToDelete = await _unitOfWork.GenericRepository<OrderHeader>().GetTAsync(o => o.ApplicationUserId == userId && o.Id == orderId);
-            if (orderToDelete == null)
+            var orderToCancel = await this.GetOrder(orderId, userId);
+            if (orderToCancel == null)
             {
                 return;
             }
-            await _unitOfWork.GenericRepository<OrderHeader>().DeleteAsync(orderToDelete);
+            orderToCancel.OrderStatus = Status.OrderStatus_Canceled;
             await _unitOfWork.SaveAsync();
         }
 
@@ -52,9 +54,19 @@ namespace ShoppingBasketAPI.Services.Services
             return await _unitOfWork.GenericRepository<OrderHeader>().GetTAsync(predicate: o => o.ApplicationUserId == userId && o.Id == orderId, includeProperties: "OrderDetails");
         }
 
-        public Task UpdateOrder(string orderId)
+        public async Task UpdateOrder(OrderHeader order, string userId)
         {
-            throw new NotImplementedException();
+            var orderToUpdate = await this.GetOrder(order.Id, userId);
+            if (orderToUpdate == null)
+            {
+                throw new NotFoundException(message: "Order is not available."); ;
+            }
+            if (order.OrderStatus != null) orderToUpdate.OrderStatus = order.OrderStatus;
+            if (order.PaymentStatus != null) orderToUpdate.PaymentStatus = order.PaymentStatus;
+            if (order.PaymentType != null) orderToUpdate.PaymentType = order.PaymentType;
+            if (orderToUpdate.OrderStatus == Status.OrderStatus_Accepted) orderToUpdate.TrackingNumber = TrackingNumberGenerator.GenerateTrackingNumber();
+
+            await _unitOfWork.SaveAsync();
         }
     }
 }
