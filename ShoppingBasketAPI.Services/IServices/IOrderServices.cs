@@ -15,6 +15,6 @@ namespace ShoppingBasketAPI.Services.IServices
         public Task<OrderHeader> GetOrder(string orderId, string userId);
         public Task<OrderHeader> CreateOrder();
         public Task UpdateOrder(string orderId);
-        public Task DeleteOrder(string orderId);
+        public Task DeleteOrder(string orderId, string userId);
     }
 }

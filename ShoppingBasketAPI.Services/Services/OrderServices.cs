@@ -26,9 +26,15 @@ namespace ShoppingBasketAPI.Services.Services
             throw new NotImplementedException();
         }
 
-        public Task DeleteOrder(string orderId)
+        public async Task DeleteOrder(string orderId, string userId)
         {
-            throw new NotImplementedException();
+            var orderToDelete = await _unitOfWork.GenericRepository<OrderHeader>().GetTAsync(o => o.ApplicationUserId == userId && o.Id == orderId);
+            if (orderToDelete == null)
+            {
+                return;
+            }
+            await _unitOfWork.GenericRepository<OrderHeader>().DeleteAsync(orderToDelete);
+            await _unitOfWork.SaveAsync();
         }
 
         public async Task<GenericResponseDTO<OrderHeader>> GetAllOrders(string userId)
