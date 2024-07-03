@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ShoppingBasketAPI.Data.UnitOfWork;
 using ShoppingBasketAPI.Domain;
+using ShoppingBasketAPI.DTOs.GenericResponse;
 using ShoppingBasketAPI.Services.IServices;
 using System;
 using System.Collections.Generic;
@@ -30,14 +31,19 @@ namespace ShoppingBasketAPI.Services.Services
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<OrderHeader>> GetAllOrders()
+        public async Task<GenericResponseDTO<OrderHeader>> GetAllOrders(string userId)
         {
-            throw new NotImplementedException();
+            var orders = await _unitOfWork.GenericRepository<OrderHeader>().GetAllAsync(predicate: o => o.ApplicationUserId == userId, includeProperties: "OrderDetails");
+            return new GenericResponseDTO<OrderHeader>
+            {
+                Count = orders.Count(),
+                Data = orders
+            };
         }
 
-        public Task<OrderHeader> GetOrder(string orderId)
+        public async Task<OrderHeader> GetOrder(string orderId, string userId)
         {
-            throw new NotImplementedException();
+            return await _unitOfWork.GenericRepository<OrderHeader>().GetTAsync(predicate: o => o.ApplicationUserId == userId && o.Id == orderId, includeProperties: "OrderDetails");
         }
 
         public Task UpdateOrder(string orderId)
