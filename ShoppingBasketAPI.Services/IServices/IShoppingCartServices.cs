@@ -17,22 +17,22 @@ namespace ShoppingBasketAPI.Services.IServices
         /// </summary>
         /// <returns>
         /// A task representing the asynchronous operation, containing a 
-        /// <see cref="ShoppingCartResponseDTO"/> with the details of the shopping cart.
+        /// <see cref="CartResponseDTO"/> with the details of the shopping cart.
         /// </returns>
-        public Task<ShoppingCartResponseDTO> GetShoppingCartsByUserId(string userId);
+        public Task<CartResponseDTO> GetShoppingCartsByUserId(string userId);
 
         /// <summary>
         /// Adds a new product to the shopping cart or updates the existing shopping cart.
         /// Each shopping cart contains a list of products with their quantities.
         /// </summary>
         /// <param name="shoppingCartCreateRequestDTO">
-        /// A <see cref="ShoppingCartCreateDTO"/> containing the details of the products 
+        /// A <see cref="CartCreateDTO"/> containing the details of the products 
         /// to be added or updated in the shopping cart.
         /// </param>
         /// <returns>
         /// A task representing the asynchronous operation.
         /// </returns>
-        public Task AddProductToShoppingCart(ShoppingCartCreateDTO shoppingCartCreateRequestDTO);
+        public Task AddProductToShoppingCart(CartCreateDTO shoppingCartCreateRequestDTO);
 
         /// <summary>
         /// Removes all products or specific products from the shopping cart.

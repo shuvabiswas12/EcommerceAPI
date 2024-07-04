@@ -81,7 +81,7 @@ namespace ShoppingBasketAPI.Api.Controllers
         /// <response code="500">Internal Server Error - an error occurred while processing the request.</response>
         [HttpPost]
         [ApiKeyRequired, Authorize(Roles = "Web_User")]
-        public async Task<IActionResult> AddProductIntoCart([FromBody] ShoppingCartCreateDTO shoppingCartCreateRequestDTO)
+        public async Task<IActionResult> AddProductIntoCart([FromBody] CartCreateDTO shoppingCartCreateRequestDTO)
         {
             var userid = (User.Identity as ClaimsIdentity)?.FindFirst(ClaimTypes.Actor)?.Value;
             try

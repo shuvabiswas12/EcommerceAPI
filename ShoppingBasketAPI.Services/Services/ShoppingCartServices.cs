@@ -20,7 +20,7 @@ namespace ShoppingBasketAPI.Services.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task AddProductToShoppingCart(ShoppingCartCreateDTO shoppingCartCreateRequestDTO)
+        public async Task AddProductToShoppingCart(CartCreateDTO shoppingCartCreateRequestDTO)
         {
             // Check if the same product is found for same user
             var existingShoppingCart = await _unitOfWork.GenericRepository<ShoppingCart>().GetTAsync(predicate: c =>
@@ -53,10 +53,10 @@ namespace ShoppingBasketAPI.Services.Services
             return;
         }
 
-        public async Task<ShoppingCartResponseDTO> GetShoppingCartsByUserId(string userId)
+        public async Task<CartResponseDTO> GetShoppingCartsByUserId(string userId)
         {
             var carts = await _unitOfWork.GenericRepository<ShoppingCart>().GetAllAsync(includeProperties: "Product", c => c.ApplicationUserId == userId);
-            ShoppingCartResponseDTO shoppingCartResponse = new ShoppingCartResponseDTO { ShoppingCarts = carts };
+            CartResponseDTO shoppingCartResponse = new CartResponseDTO { ShoppingCarts = carts };
             if (carts != null)
             {
                 shoppingCartResponse.TotalCost = carts
