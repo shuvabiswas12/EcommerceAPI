@@ -15,6 +15,6 @@ namespace ShoppingBasketAPI.Services.IServices
         public Task<Category> GetCategoryById(object id);
         public Task DeleteCategory(object id);
         public Task<Category> UpdateCategory(object id, string categoryName);
-        public Task<Category> CreateCategory(CategoryCreateRequestDTO createCategory);
+        public Task<Category> CreateCategory(CategoryCreateDTO createCategory);
     }
 }

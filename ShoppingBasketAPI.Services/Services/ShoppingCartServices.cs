@@ -20,7 +20,7 @@ namespace ShoppingBasketAPI.Services.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task AddProductToShoppingCart(ShoppingCartCreateRequestDTO shoppingCartCreateRequestDTO)
+        public async Task AddProductToShoppingCart(ShoppingCartCreateDTO shoppingCartCreateRequestDTO)
         {
             // Check if the same product is found for same user
             var existingShoppingCart = await _unitOfWork.GenericRepository<ShoppingCart>().GetTAsync(predicate: c =>

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ShoppingBasketAPI.DTOs
 {
-    public class CategoryUpdateRequestDTO
+    public class CategoryUpdateDTO
     {
         public string Name { get; set; } = null!;
         public string Id { get; set; } = null!;

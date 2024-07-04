@@ -66,7 +66,7 @@ namespace ShoppingBasketAPI.Api.Controllers
         /// <response code="400">If the category name is missing or empty.</response>
         /// <response code="500">If an error occurs while creating the category.</response>
         [HttpPost(""), Authorize(Roles = "Admin"), ApiKeyRequired]
-        public async Task<IActionResult> CreateCategory(CategoryCreateRequestDTO createCategory)
+        public async Task<IActionResult> CreateCategory(CategoryCreateDTO createCategory)
         {
             if (createCategory.Name.Trim().Length == 0)
             {
@@ -96,7 +96,7 @@ namespace ShoppingBasketAPI.Api.Controllers
         /// <response code="404">If the category is not found.</response>
         /// <response code="500">If an error occurs while updating the category.</response>
         [HttpPut(""), Authorize(Roles = "Admin"), ApiKeyRequired]
-        public async Task<IActionResult> UpdateCategory(CategoryUpdateRequestDTO categoryToUpdate)
+        public async Task<IActionResult> UpdateCategory(CategoryUpdateDTO categoryToUpdate)
         {
             if (categoryToUpdate.Name.Trim().Length == 0 || categoryToUpdate.Id.Trim().Length == 0)
             {

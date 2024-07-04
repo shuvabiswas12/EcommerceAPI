@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ShoppingBasketAPI.DTOs
 {
-    public class ShoppingCartCreateRequestDTO
+    public class ShoppingCartCreateDTO
     {
         [ValidateNever, JsonIgnore]
         public string UserId { get; set; } = String.Empty;
