@@ -37,7 +37,7 @@ namespace ShoppingBasketAPI.Services.DataSeeder
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            string[] roleNames = { IApplicationRoles.ADMIN, IApplicationRoles.EMPLOYEE, IApplicationRoles.WEB_USER };
+            string[] roleNames = { ApplicationRoles.ADMIN, ApplicationRoles.EMPLOYEE, ApplicationRoles.WEB_USER };
             IdentityResult roleResult;
 
             foreach (var roleName in roleNames)
@@ -74,7 +74,7 @@ namespace ShoppingBasketAPI.Services.DataSeeder
                 var createUser = await userManager.CreateAsync(adminUser, AdminPassword);
                 if (createUser.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(adminUser, IApplicationRoles.ADMIN);
+                    await userManager.AddToRoleAsync(adminUser, ApplicationRoles.ADMIN);
                 }
             }
             await Task.CompletedTask;

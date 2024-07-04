@@ -127,7 +127,7 @@ namespace ShoppingBasketAPI.Services.Services
             }
 
             // Add new user to a role.
-            await _userManager.AddToRoleAsync(newUser, IApplicationRoles.WEB_USER);
+            await _userManager.AddToRoleAsync(newUser, ApplicationRoles.WEB_USER);
             return new RegistrationResponseDTO
             {
                 IsSuccess = true,
