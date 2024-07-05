@@ -1,4 +1,5 @@
-﻿using ShoppingBasketAPI.DTOs;
+﻿using ShoppingBasketAPI.Domain;
+using ShoppingBasketAPI.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +12,6 @@ namespace ShoppingBasketAPI.Services.IServices
     {
         public Task<LoginResponseDTO> Login(LoginRequestDTO loginRequestDTO);
         public Task<RegistrationResponseDTO> Register(RegistrationRequestDTO registrationRequestDTO);
+        public Task<ApplicationUser?> GetUserByIdAsync(string applicationUserId);
     }
 }

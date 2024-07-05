@@ -138,5 +138,7 @@ namespace ShoppingBasketAPI.Services.Services
                 }
             };
         }
+
+        public async Task<ApplicationUser?> GetUserByIdAsync(string applicationUserId) => await _userManager.FindByIdAsync(applicationUserId ?? throw new ArgumentNullException("User id should not be null."));
     }
 }
