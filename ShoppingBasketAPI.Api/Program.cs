@@ -15,6 +15,7 @@ using ShoppingBasketAPI.Services.Services;
 using ShoppingBasketAPI.Utilities.Exceptions.Handler;
 using ShoppingBasketAPI.Utilities.Filters;
 using ShoppingBasketAPI.Utilities.Middlewares;
+using Stripe;
 using System.Reflection;
 using System.Text;
 
@@ -111,6 +112,7 @@ builder.Services.AddScoped<IFeaturedProductServices, FeaturedProductServices>();
 builder.Services.AddScoped<IDiscountServices, DiscountServices>();
 builder.Services.AddScoped<IShoppingCartServices, ShoppingCartServices>();
 builder.Services.AddScoped<IOrderServices, OrderServices>();
+builder.Services.AddScoped<IPaymentServices, PaymentServices>();
 builder.Services.AddScoped(typeof(ExceptionHandler<>));
 builder.Services.AddTransient<ExceptionHandleMiddleware>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
@@ -135,6 +137,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
 
 // Added by developer
 app.UseAuthentication();

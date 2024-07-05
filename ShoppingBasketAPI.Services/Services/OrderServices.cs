@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ShoppingBasketAPI.Data.UnitOfWork;
 using ShoppingBasketAPI.Domain;
+using ShoppingBasketAPI.DTOs;
 using ShoppingBasketAPI.DTOs.GenericResponse;
 using ShoppingBasketAPI.Services.IServices;
 using ShoppingBasketAPI.Utilities;
 using ShoppingBasketAPI.Utilities.Exceptions;
+using Stripe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,16 +18,62 @@ namespace ShoppingBasketAPI.Services.Services
 {
     public class OrderServices : IOrderServices
     {
-        private IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAuthenticationServices _authenticationServices;
 
-        public OrderServices(IUnitOfWork unitOfWork)
+        public OrderServices(IUnitOfWork unitOfWork, IAuthenticationServices authenticationServices)
         {
             _unitOfWork = unitOfWork;
+            _authenticationServices = authenticationServices;
         }
 
-        public Task<OrderHeader> CreateOrder()
+        public async Task<OrderHeader> CreateOrder(ShippingAddressDTO shippingAddressDTO, string userId, string paymentIntentId)
         {
-            throw new NotImplementedException();
+            if (shippingAddressDTO == null) throw new ArgumentNullException(nameof(shippingAddressDTO));
+
+            if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
+
+            // Validate user existence
+            var user = await _authenticationServices.GetUserByIdAsync(userId);
+            if (user == null) throw new Exception("User not found.");
+
+            var paymentIntentService = new PaymentIntentService();
+            var paymentIntent = await paymentIntentService.GetAsync(paymentIntentId);
+
+            if (paymentIntent.Status != "succeeded")
+            {
+                throw new Exception("Payment was not successful.");
+            }
+
+            // Create a new OrderHeader object
+            var orderHeader = new OrderHeader
+            {
+                FullName = shippingAddressDTO.FullName,
+                Phone = shippingAddressDTO.Phone,
+                Email = shippingAddressDTO.Email,
+                HouseName = shippingAddressDTO.HouseName,
+                RoadNumber = shippingAddressDTO.RoadNumber,
+                City = shippingAddressDTO.City,
+                Country = shippingAddressDTO.Country,
+                State = shippingAddressDTO.State,
+                PostCode = shippingAddressDTO.PostCode,
+                OrderStatus = Status.OrderStatus_Pending,
+                ApplicationUserId = user.Id,
+                OrderAmount = paymentIntent.Amount,
+                Currency = paymentIntent.Currency,
+                Province = shippingAddressDTO.Province,
+                AddressLine1 = shippingAddressDTO.AddressLine1,
+                AddressLine2 = shippingAddressDTO.AddressLine2,
+                AlternatePhone = shippingAddressDTO.AlternatePhone,
+                LandMark = shippingAddressDTO.LandMark,
+                PaymentStatus = Status.PaymentStatus_Paid,
+                PaymentType = Status.PaymentType_OnlinePayment,
+                PaymentIntentId = paymentIntent.Id,
+            };
+
+            await _unitOfWork.GenericRepository<OrderHeader>().AddAsync(orderHeader);
+            await _unitOfWork.SaveAsync();
+            return orderHeader;
         }
 
         public async Task CancelOrder(string orderId, string userId)
