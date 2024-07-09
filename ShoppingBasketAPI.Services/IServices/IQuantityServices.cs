@@ -8,6 +8,8 @@ namespace ShoppingBasketAPI.Services.IServices
 {
     public interface IQuantityServices
     {
+        public Task AddQuantityAsync(int quantity, string productId);
 
+        public Task ReduceQuantityAsync(string productId, int quantity = 0);
     }
 }
