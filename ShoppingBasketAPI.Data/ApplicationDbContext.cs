@@ -25,6 +25,7 @@ namespace ShoppingBasketAPI.Data
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<OrderHeader> OrderHeaders { get; set; }
+        public DbSet<ProductAvailability> ProductAvailabilities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -85,6 +86,16 @@ namespace ShoppingBasketAPI.Data
                 .HasMany(oh => oh.OrderDetails)
                 .WithOne(od => od.OrderHeader)
                 .HasForeignKey(od => od.OrderHeaderId);
+
+            // Defining primary key in ProductAvailability Table
+            builder.Entity<ProductAvailability>()
+                .HasKey(x => new { x.ProductId });
+
+            // One to one relationship with Product and ProductAvailability tables.
+            builder.Entity<Product>()
+                .HasOne(p => p.ProductAvailability)
+                .WithOne(pa => pa.Product)
+                .HasForeignKey<ProductAvailability>(pa => pa.ProductId);
         }
     }
 }
