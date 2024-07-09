@@ -113,6 +113,7 @@ builder.Services.AddScoped<IDiscountServices, DiscountServices>();
 builder.Services.AddScoped<IShoppingCartServices, ShoppingCartServices>();
 builder.Services.AddScoped<IOrderServices, OrderServices>();
 builder.Services.AddScoped<IPaymentServices, PaymentServices>();
+builder.Services.AddScoped<IQuantityServices, QuantityServices>();
 builder.Services.AddScoped(typeof(ExceptionHandler<>));
 builder.Services.AddTransient<ExceptionHandleMiddleware>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
