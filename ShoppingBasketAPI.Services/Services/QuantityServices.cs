@@ -26,7 +26,7 @@ namespace ShoppingBasketAPI.Services.Services
         {
             if (quantity <= 0) throw new ArgumentException(message: "Quantity must be positive value and that of greater then zero.");
 
-            if (string.IsNullOrEmpty(productId)) throw new ArgumentNullException("ProductId", "Product id must be mentioned.");
+            if (string.IsNullOrEmpty(productId)) throw new ArgumentException("ProductId", "Product id must be mentioned.");
 
             var newAvailability = new ProductAvailability { Availability = quantity, ProductId = productId };
             await _unitOfWork.GenericRepository<ProductAvailability>().AddAsync(newAvailability);
@@ -36,7 +36,7 @@ namespace ShoppingBasketAPI.Services.Services
 
         public async Task ReduceQuantityAsync(string productId, int quantity = 0)
         {
-            if (string.IsNullOrEmpty(productId)) throw new ArgumentNullException("ProductId", "Product id must be mentioned.");
+            if (string.IsNullOrEmpty(productId)) throw new ArgumentException("ProductId", "Product id must be mentioned.");
 
             if (quantity < 0) throw new ArgumentException(message: "Quantity must be positive value.");
 
