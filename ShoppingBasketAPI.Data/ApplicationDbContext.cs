@@ -26,6 +26,7 @@ namespace ShoppingBasketAPI.Data
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<OrderHeader> OrderHeaders { get; set; }
         public DbSet<ProductAvailability> ProductAvailabilities { get; set; }
+        public DbSet<Wishlist> Wishlists { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -96,6 +97,11 @@ namespace ShoppingBasketAPI.Data
                 .HasOne(p => p.ProductAvailability)
                 .WithOne(pa => pa.Product)
                 .HasForeignKey<ProductAvailability>(pa => pa.ProductId);
+
+            // Composite primary key for wishlist table
+            builder.Entity<Wishlist>()
+                .HasKey(x => new { x.ProductId, x.ApplicationUserId });
+
         }
     }
 }

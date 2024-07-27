@@ -29,5 +29,6 @@ namespace ShoppingBasketAPI.Domain
         public FeaturedProduct FeaturedProduct { get; set; } = null!;
         public ProductCategory ProductCategory { get; set; } = null!;
         public ProductAvailability ProductAvailability { get; set; } = null!;
+        public Wishlist Wishlist { get; set; } = null!;
     }
 }
