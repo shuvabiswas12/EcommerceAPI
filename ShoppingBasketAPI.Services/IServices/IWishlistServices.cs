@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ShoppingBasketAPI.Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,5 +27,13 @@ namespace ShoppingBasketAPI.Services.IServices
         /// <param name="userId">The ID of the user whose wishlist is being modified.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
         public Task RemoveProductFromWishlist(string productId, string userId);
+
+        /// <summary>
+        /// Retrieves all products from the wishlists of a specified user.
+        /// </summary>
+        /// <param name="userId">The ID of the user whose wishlists are being retrieved.</param>
+        /// <param name="productId">The ID of the product to filter wishlists by.</param>
+        /// <returns>A task representing the asynchronous operation, containing a collection of wishlists.</returns>
+        public Task<IEnumerable<Wishlist>> GetAllProductsFromWishlists(string userId, string productId);
     }
 }
