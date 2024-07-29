@@ -36,10 +36,8 @@ namespace ShoppingBasketAPI.Services.Services
             await Task.CompletedTask;
         }
 
-        public async Task<IEnumerable<Wishlist>> GetAllProductsFromWishlists(string userId, string productId)
+        public async Task<IEnumerable<Wishlist>> GetAllProductsFromWishlists(string userId)
         {
-            if (string.IsNullOrEmpty(productId)) throw new ArgumentNullException("Product id should not be nulled.");
-
             if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException("userId should not be nulled.");
 
             return await _unitOfWork.GenericRepository<Wishlist>().GetAllAsync(includeProperties: "Product");

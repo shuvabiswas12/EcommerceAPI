@@ -32,8 +32,7 @@ namespace ShoppingBasketAPI.Services.IServices
         /// Retrieves all products from the wishlists of a specified user.
         /// </summary>
         /// <param name="userId">The ID of the user whose wishlists are being retrieved.</param>
-        /// <param name="productId">The ID of the product to filter wishlists by.</param>
         /// <returns>A task representing the asynchronous operation, containing a collection of wishlists.</returns>
-        public Task<IEnumerable<Wishlist>> GetAllProductsFromWishlists(string userId, string productId);
+        public Task<IEnumerable<Wishlist>> GetAllProductsFromWishlists(string userId);
     }
 }
