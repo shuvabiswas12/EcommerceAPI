@@ -43,6 +43,11 @@ namespace ShoppingBasketAPI.Services.Services
             return await _unitOfWork.GenericRepository<Wishlist>().GetAllAsync(includeProperties: "Product");
         }
 
+        public async Task<Wishlist> GetWishList(string productId, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task RemoveProductFromWishlist(string productId, string userId)
         {
             if (string.IsNullOrEmpty(productId)) throw new ArgumentNullException("Product id should not be nulled.");

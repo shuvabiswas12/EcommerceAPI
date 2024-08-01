@@ -34,5 +34,7 @@ namespace ShoppingBasketAPI.Services.IServices
         /// <param name="userId">The ID of the user whose wishlists are being retrieved.</param>
         /// <returns>A task representing the asynchronous operation, containing a collection of wishlists.</returns>
         public Task<IEnumerable<Wishlist>> GetAllProductsFromWishlists(string userId);
+
+        public Task<Wishlist> GetWishList(string productId, string userId);
     }
 }
