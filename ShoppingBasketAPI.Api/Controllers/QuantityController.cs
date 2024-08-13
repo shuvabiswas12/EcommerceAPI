@@ -14,7 +14,7 @@ namespace ShoppingBasketAPI.Api.Controllers
     /// Controller for managing product quantities.
     /// </summary>
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/admin/[controller]")]
     public class QuantityController : ControllerBase
     {
         private readonly IQuantityServices _quantityServices;

@@ -13,7 +13,7 @@ namespace ShoppingBasketAPI.Api.Controllers
     /// <summary>
     /// Controller for managing discounts related to products in the Shopping Basket API.
     /// </summary>
-    [Route("api/[controller]")]
+    [Route("api/admin/[controller]")]
     [ApiController]
     public class DiscountsController : ControllerBase
     {

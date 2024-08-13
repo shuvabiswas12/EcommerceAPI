@@ -14,7 +14,7 @@ namespace ShoppingBasketAPI.Api.Controllers
     /// <summary>
     /// Controller for managing featured products in the Shopping Basket API.
     /// </summary>
-    [Route("api/[controller]")]
+    [Route("api/admin/[controller]")]
     [ApiController]
     public class FeaturedProductsController : ControllerBase
     {

@@ -15,7 +15,6 @@ namespace ShoppingBasketAPI.Api.Controllers
     /// <summary>
     /// Controller for managing products in the Shopping Basket API.
     /// </summary>
-    [Route("api/[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
     {
@@ -40,7 +39,7 @@ namespace ShoppingBasketAPI.Api.Controllers
         /// Retrieves all products.
         /// </summary>
         /// <returns>Returns a list of all product.</returns>
-        [HttpGet("")]
+        [HttpGet("api/[controller]")]
         public async Task<IActionResult> GetAllProducts()
         {
             try
@@ -62,7 +61,7 @@ namespace ShoppingBasketAPI.Api.Controllers
         /// </summary>
         /// <param name="id">The ID of the product to retrieve.</param>
         /// <returns>Returns the product with the specified ID.</returns>
-        [HttpGet("{id}")]
+        [HttpGet("api/[controller]/{id}")]
         public async Task<IActionResult> GetProductsById([FromRoute] string id)
         {
             try
@@ -88,7 +87,7 @@ namespace ShoppingBasketAPI.Api.Controllers
         /// </summary>
         /// <param name="productDto">The data for the new product.</param>
         /// <returns>Returns the newly created product.</returns>
-        [HttpPost(""), Authorize(Roles = "Admin"), ApiKeyRequired]
+        [HttpPost("api/admin/[controller]"), Authorize(Roles = "Admin"), ApiKeyRequired]
         public async Task<IActionResult> CreateProduct([FromBody] ProductCreateDTO productDto)
         {
             var modelState = ModelValidator.ValidateModel(productDto);
@@ -117,7 +116,7 @@ namespace ShoppingBasketAPI.Api.Controllers
         /// </summary>
         /// <param name="id">The ID of the product to delete.</param>
         /// <returns>Returns a success message if deletion is successful.</returns>
-        [HttpDelete("{id}"), Authorize(Roles = "Admin"), ApiKeyRequired]
+        [HttpDelete("api/admin/[controller]/{id}"), Authorize(Roles = "Admin"), ApiKeyRequired]
         public async Task<IActionResult> DeleteProduct([FromRoute] string id)
         {
             try
@@ -144,7 +143,7 @@ namespace ShoppingBasketAPI.Api.Controllers
         /// <param name="id">The ID of the product to update.</param>
         /// <param name="productDto">The updated data for the product.</param>
         /// <returns>Returns the updated product.</returns>
-        [HttpPut("{id}"), Authorize(Roles = "Admin"), ApiKeyRequired]
+        [HttpPut("api/admin/[controller]/{id}"), Authorize(Roles = "Admin"), ApiKeyRequired]
         public async Task<IActionResult> UpdateProduct(string id, [FromBody] ProductUpdateDTO productDto)
         {
             try
