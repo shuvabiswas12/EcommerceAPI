@@ -102,6 +102,18 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
+// Configuring CORS Policy
+builder.Services.AddCors(option =>
+{
+    option.AddPolicy("DefaultCORS", policy =>
+    {
+        policy.AllowAnyOrigin()
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
+});
+
+
 
 // Services
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -137,6 +149,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Cors policy here.
+app.UseCors("DefaultCORS");
 
 app.UseHttpsRedirection();
 
