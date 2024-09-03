@@ -153,7 +153,8 @@ if (app.Environment.IsDevelopment())
 // Cors policy here.
 app.UseCors("DefaultCORS");
 
-app.UseHttpsRedirection();
+// I do comment this line for api uses using non https api url.
+//app.UseHttpsRedirection();
 
 StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
 
