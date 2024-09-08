@@ -107,9 +107,10 @@ builder.Services.AddCors(option =>
 {
     option.AddPolicy("DefaultCORS", policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins(origins: builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? throw new("CORS origins did not find."))
         .AllowAnyHeader()
-        .AllowAnyMethod();
+        .WithMethods(HttpMethod.Delete.Method, HttpMethod.Post.Method, HttpMethod.Put.Method, HttpMethod.Get.Method)
+        .WithExposedHeaders("*");
     });
 });
 
