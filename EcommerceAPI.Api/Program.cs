@@ -18,6 +18,8 @@ using EcommerceAPI.Utilities.Middlewares;
 using Stripe;
 using System.Reflection;
 using System.Text;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -114,6 +116,20 @@ builder.Services.AddCors(option =>
     });
 });
 
+const string RateLimitingPolicyName = "Fixed";
+
+// Rate limiting
+builder.Services.AddRateLimiter(rateLimitingOptions =>
+{
+    rateLimitingOptions.AddFixedWindowLimiter(RateLimitingPolicyName, options =>
+    {
+        options.PermitLimit = 3;
+        options.Window = TimeSpan.FromSeconds(9);
+        options.QueueLimit = 1;
+        options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+    });
+    rateLimitingOptions.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});
 
 
 // Services
@@ -154,6 +170,9 @@ if (app.Environment.IsDevelopment())
 // Cors policy here.
 app.UseCors("DefaultCORS");
 
+// Rate limiting
+app.UseRateLimiter();
+
 // I do comment this line for api uses using non https api url.
 //app.UseHttpsRedirection();
 
@@ -167,6 +186,10 @@ app.UseAuthorization();
 // Custom middleware for exception handling globaly.
 app.UseMiddleware<ExceptionHandleMiddleware>();
 
-app.MapControllers();
+/***
+    I use "RequireRateLimiting()" after the MapController so that all controllers can achive this rate limiting feature. Meaning, I use a global rate limiting.
+    Without this rate limiting could not enable for all controllers.
+***/
+app.MapControllers().RequireRateLimiting(RateLimitingPolicyName);
 
 app.Run();
