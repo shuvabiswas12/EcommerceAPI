@@ -9,7 +9,6 @@ using EcommerceAPI.Utilities.Exceptions;
 using EcommerceAPI.Utilities.Exceptions.Handler;
 using EcommerceAPI.Utilities.Filters;
 using EcommerceAPI.Utilities.Validation;
-using Microsoft.AspNetCore.RateLimiting;
 
 namespace EcommerceAPI.Api.Controllers
 {
