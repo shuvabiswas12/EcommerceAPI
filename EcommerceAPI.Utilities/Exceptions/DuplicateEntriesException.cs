@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace EcommerceAPI.Utilities.Exceptions
 {
-    public class DuplicateEntriesFoundException : Exception
+    public class DuplicateEntriesException : Exception
     {
-        public DuplicateEntriesFoundException(string? message) : base(message)
+        public DuplicateEntriesException(string? message) : base(message)
         {
         }
     }

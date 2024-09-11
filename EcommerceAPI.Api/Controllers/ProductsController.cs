@@ -1,14 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using EcommerceAPI.DTOs;
+﻿using EcommerceAPI.DTOs;
 using EcommerceAPI.Services.IServices;
 using EcommerceAPI.Utilities;
-using EcommerceAPI.Utilities.ApplicationRoles;
-using EcommerceAPI.Utilities.Exceptions;
-using EcommerceAPI.Utilities.Exceptions.Handler;
 using EcommerceAPI.Utilities.Filters;
 using EcommerceAPI.Utilities.Validation;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EcommerceAPI.Api.Controllers
 {
@@ -19,22 +15,15 @@ namespace EcommerceAPI.Api.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IProductServices _productService;
-        private readonly ExceptionHandler<ProductsController> _exceptionHandler;
 
         /// <summary>
         /// Constructor for ProductsController.
         /// </summary>
-        /// <param name="productService">The service handling product operations.</param>
-        /// <param name="exceptionHandler">Logger instance for logging.</param>
-        public ProductsController(IProductServices productService, ExceptionHandler<ProductsController> exceptionHandler)
+        public ProductsController(IProductServices productService)
         {
             this._productService = productService;
-            this._exceptionHandler = exceptionHandler;
         }
 
-        /***
-         * Get all products.
-         */
         /// <summary>
         /// Retrieves all products.
         /// </summary>
@@ -42,20 +31,10 @@ namespace EcommerceAPI.Api.Controllers
         [HttpGet("api/[controller]")]
         public async Task<IActionResult> GetAllProducts()
         {
-            try
-            {
-                var productsResult = await _productService.GetAllProduct();
-                return Ok(productsResult);
-            }
-            catch (Exception ex)
-            {
-                return _exceptionHandler.HandleException(ex, "An error occured while getting all product.");
-            }
+            var productsResult = await _productService.GetAllProduct();
+            return Ok(productsResult);
         }
 
-        /***
-         * Get single product by product id.
-         */
         /// <summary>
         /// Retrieves a single product by its ID.
         /// </summary>
@@ -64,24 +43,10 @@ namespace EcommerceAPI.Api.Controllers
         [HttpGet("api/[controller]/{id}")]
         public async Task<IActionResult> GetProductsById([FromRoute] string id)
         {
-            try
-            {
-                var productResult = await _productService.GetProductById(id);
-                return Ok(productResult);
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(new { Error = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return _exceptionHandler.HandleException(ex, "An error occured while getting product by id.");
-            }
+            var productResult = await _productService.GetProductById(id);
+            return Ok(productResult);
         }
 
-        /***
-         * Create product.
-         */
         /// <summary>
         /// Creates a new product.
         /// </summary>
@@ -97,20 +62,10 @@ namespace EcommerceAPI.Api.Controllers
                 return BadRequest(new { Errors = errors });
             }
 
-            try
-            {
-                var newProduct = await _productService.CreateProduct(productDto);
-                return Ok(newProduct);
-            }
-            catch (Exception ex)
-            {
-                return _exceptionHandler.HandleException(ex, "An error occured while creating new product.");
-            }
+            var newProduct = await _productService.CreateProduct(productDto);
+            return Ok(newProduct);
         }
 
-        /***
-         * Deleting product.
-         */
         /// <summary>
         /// Deletes a product by its ID.
         /// </summary>
@@ -119,24 +74,10 @@ namespace EcommerceAPI.Api.Controllers
         [HttpDelete("api/admin/[controller]/{id}"), Authorize(Roles = "Admin"), ApiKeyRequired]
         public async Task<IActionResult> DeleteProduct([FromRoute] string id)
         {
-            try
-            {
-                await _productService.DeleteProduct(id);
-                return Ok(new { Message = ResponseMessages.StatusCode_200_DeleteMessage });
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(new { Error = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return _exceptionHandler.HandleException(ex, "An error occured while deleting product.");
-            }
+            await _productService.DeleteProduct(id);
+            return Ok(new { Message = ResponseMessages.StatusCode_200_DeleteMessage });
         }
 
-        /***
-         * Updating product.
-         */
         /// <summary>
         /// Updates an existing product.
         /// </summary>
@@ -146,19 +87,8 @@ namespace EcommerceAPI.Api.Controllers
         [HttpPut("api/admin/[controller]/{id}"), Authorize(Roles = "Admin"), ApiKeyRequired]
         public async Task<IActionResult> UpdateProduct(string id, [FromBody] ProductUpdateDTO productDto)
         {
-            try
-            {
-                var product = await _productService.UpdateProduct(id, productDto);
-                return Ok(product);
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(new { Error = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return _exceptionHandler.HandleException(ex, "An error occured while updating the product.");
-            }
+            var product = await _productService.UpdateProduct(id, productDto);
+            return Ok(product);
         }
     }
 }

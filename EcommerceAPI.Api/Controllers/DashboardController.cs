@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using EcommerceAPI.Utilities.ApplicationRoles;
-using EcommerceAPI.Utilities.Exceptions.Handler;
 using EcommerceAPI.Utilities.Filters;
 
 namespace EcommerceAPI.Api.Controllers.Admin
@@ -15,15 +14,13 @@ namespace EcommerceAPI.Api.Controllers.Admin
     [ApiController, ApiKeyRequired, Authorize(Roles = ApplicationRoles.ADMIN)]
     public class DashboardController : ControllerBase
     {
-        private readonly ExceptionHandler<DashboardController> _exceptionHandler;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DashboardController"/> class.
         /// </summary>
-        /// <param name="exceptionHandler">The exception handler specific to the <see cref="DashboardController"/>.</param>
-        public DashboardController(ExceptionHandler<DashboardController> exceptionHandler)
+        public DashboardController()
         {
-            _exceptionHandler = exceptionHandler;
+
         }
 
         /// <summary>

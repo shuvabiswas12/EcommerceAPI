@@ -8,7 +8,7 @@ namespace EcommerceAPI.DTOs
 {
     public class RegistrationResponseDTO
     {
-        public required bool IsSuccess { get; set; }
+        public required string Status { get; set; }
         public required string Message { get; set; }
         public required UserInfo User { get; set; }
 

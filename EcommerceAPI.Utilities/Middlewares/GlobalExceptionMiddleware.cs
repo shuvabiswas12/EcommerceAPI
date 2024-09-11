@@ -62,6 +62,10 @@ namespace EcommerceAPI.Utilities.Middlewares
                     statusCode = HttpStatusCode.Unauthorized;
                     result = JsonSerializer.Serialize(new { error = ex.Message });
                     break;
+                case DuplicateEntriesException ex:
+                    statusCode = HttpStatusCode.Conflict;
+                    result = JsonSerializer.Serialize(new { error = ex.Message });
+                    break;
                 default:
                     result = JsonSerializer.Serialize(new { error = "An unexpected error occurred." });
                     break;

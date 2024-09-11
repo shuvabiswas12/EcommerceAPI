@@ -4,7 +4,6 @@ using EcommerceAPI.DTOs;
 using EcommerceAPI.Services.IServices;
 using EcommerceAPI.Utilities;
 using EcommerceAPI.Utilities.Exceptions;
-using EcommerceAPI.Utilities.Exceptions.Handler;
 using EcommerceAPI.Utilities.Filters;
 using EcommerceAPI.Utilities.Validation;
 
@@ -18,24 +17,19 @@ namespace EcommerceAPI.Api.Controllers.Auth
     public class AuthController : ControllerBase
     {
         private readonly IAuthenticationServices _authenticationServices;
-        private readonly ExceptionHandler<AuthController> _exceptionHandler;
 
         /// <summary>
         /// Constructor for AuthController.
         /// </summary>
-        /// <param name="authenticationServices">The service handling authentication operations.</param>
-        /// <param name="exceptionHandler">Exception handler for handling controller-level exceptions.</param>
-        public AuthController(IAuthenticationServices authenticationServices, ExceptionHandler<AuthController> exceptionHandler)
+        public AuthController(IAuthenticationServices authenticationServices)
         {
             _authenticationServices = authenticationServices;
-            _exceptionHandler = exceptionHandler;
         }
 
         /// <summary>
         /// Endpoint for user login.
         /// </summary>
         /// <param name="loginRequestDTO">DTO containing login credentials.</param>
-        /// <returns>Returns an IActionResult representing the login operation result.</returns>
         [HttpPost("Login"), ApiKeyRequired]
         public async Task<IActionResult> Login(LoginRequestDTO loginRequestDTO)
         {
@@ -45,26 +39,14 @@ namespace EcommerceAPI.Api.Controllers.Auth
                 var errors = ModelValidator.GetErrors(modelState);
                 return BadRequest(new { Error = errors });
             }
-            try
-            {
-                var response = await _authenticationServices.Login(loginRequestDTO);
-                return Ok(response);
-            }
-            catch (InvalidLoginException ex)
-            {
-                return BadRequest(new { Error = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return _exceptionHandler.HandleException(ex, "An error occured while creating new product.");
-            }
+            var response = await _authenticationServices.Login(loginRequestDTO);
+            return Ok(response);
         }
 
         /// <summary>
         /// Endpoint for user registration.
         /// </summary>
         /// <param name="registrationRequestDTO">DTO containing registration details.</param>
-        /// <returns>Returns an IActionResult representing the registration operation result.</returns>
         [HttpPost("Signup"), ApiKeyRequired]
         public async Task<IActionResult> Register(RegistrationRequestDTO registrationRequestDTO)
         {
@@ -75,19 +57,8 @@ namespace EcommerceAPI.Api.Controllers.Auth
                 var errors = ModelValidator.GetErrors(modelState);
                 return BadRequest(new { Error = errors });
             }
-            try
-            {
-                var createdUser = await _authenticationServices.Register(registrationRequestDTO);
-                return Ok(createdUser);
-            }
-            catch (DuplicateEntriesFoundException ex)
-            {
-                return BadRequest(new { Error = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return _exceptionHandler.HandleException(ex, "An error occured while creating new product.");
-            }
+            var createdUser = await _authenticationServices.Register(registrationRequestDTO);
+            return Ok(createdUser);
         }
     }
 }

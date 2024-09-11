@@ -41,12 +41,12 @@ namespace EcommerceAPI.Services.Services
             var user = await _userManager.FindByEmailAsync(loginRequestDTO.Email);
             if (user == null)
             {
-                throw new InvalidLoginException(message: "Invalid email or password.");
+                throw new UnauthorizedAccessException(message: "Invalid email or password.");
             }
             var isPasswordMatched = await _userManager.CheckPasswordAsync(user, loginRequestDTO.Password);
             if (!isPasswordMatched)
             {
-                throw new InvalidLoginException(message: "Invalid email or password");
+                throw new UnauthorizedAccessException(message: "Invalid email or password");
             }
             var token = await GenerateJwtToken(user);
             var loginResponse = new LoginResponseDTO
@@ -105,7 +105,7 @@ namespace EcommerceAPI.Services.Services
             var user = await _userManager.FindByEmailAsync(registrationRequestDTO.Email);
             if (user is not null)
             {
-                throw new DuplicateEntriesFoundException("This email has taken already.");
+                throw new DuplicateEntriesException("This email has taken already.");
             }
             ApplicationUser newUser = new ApplicationUser
             {
@@ -130,7 +130,7 @@ namespace EcommerceAPI.Services.Services
             await _userManager.AddToRoleAsync(newUser, ApplicationRoles.WEB_USER);
             return new RegistrationResponseDTO
             {
-                IsSuccess = true,
+                Status = "Success",
                 Message = "Your account has been created successfully.",
                 User = new RegistrationResponseDTO.UserInfo
                 {

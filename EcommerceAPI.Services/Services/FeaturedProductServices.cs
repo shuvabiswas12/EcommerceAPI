@@ -26,7 +26,7 @@ namespace EcommerceAPI.Services.Services
             var isFeaturedAlready = await _unitOfWork.GenericRepository<FeaturedProduct>().GetTAsync(p => p.ProductId == featuredProductRequestDTO.Id);
             if (isFeaturedAlready != null)
             {
-                throw new DuplicateEntriesFoundException(message: "The product already added as a featured product.");
+                throw new DuplicateEntriesException(message: "The product already added as a featured product.");
             }
 
             var result = await _unitOfWork.GenericRepository<FeaturedProduct>().AddAsync(new FeaturedProduct { ProductId = featuredProductRequestDTO.Id });

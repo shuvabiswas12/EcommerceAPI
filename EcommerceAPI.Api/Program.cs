@@ -12,7 +12,6 @@ using EcommerceAPI.DTOs.AutoMapping;
 using EcommerceAPI.Services.DataSeeder;
 using EcommerceAPI.Services.IServices;
 using EcommerceAPI.Services.Services;
-using EcommerceAPI.Utilities.Exceptions.Handler;
 using EcommerceAPI.Utilities.Filters;
 using EcommerceAPI.Utilities.Middlewares;
 using Stripe;
@@ -144,7 +143,6 @@ builder.Services.AddScoped<IOrderServices, OrderServices>();
 builder.Services.AddScoped<IPaymentServices, PaymentServices>();
 builder.Services.AddScoped<IQuantityServices, QuantityServices>();
 builder.Services.AddScoped<IWishlistServices, WishlistServices>();
-builder.Services.AddScoped(typeof(ExceptionHandler<>));
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();

@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using EcommerceAPI.DTOs;
 using EcommerceAPI.Services.IServices;
 using EcommerceAPI.Utilities.ApplicationRoles;
-using EcommerceAPI.Utilities.Exceptions;
-using EcommerceAPI.Utilities.Exceptions.Handler;
 using EcommerceAPI.Utilities.Filters;
 
 namespace EcommerceAPI.Api.Controllers
@@ -18,75 +16,37 @@ namespace EcommerceAPI.Api.Controllers
     public class QuantityController : ControllerBase
     {
         private readonly IQuantityServices _quantityServices;
-        private readonly ExceptionHandler<QuantityController> _exceptionHandler;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QuantityController"/> class.
+        /// Constructor and DI services initialization
         /// </summary>
-        /// <param name="quantityServices">The quantity services to handle product quantities.</param>
-        /// <param name="exceptionHandler">The exception handler for logging and managing exceptions.</param>
-        public QuantityController(IQuantityServices quantityServices, ExceptionHandler<QuantityController> exceptionHandler)
+        public QuantityController(IQuantityServices quantityServices)
         {
             _quantityServices = quantityServices;
-            _exceptionHandler = exceptionHandler;
         }
 
         /// <summary>
         /// Adds the specified quantity to the product's availability.
         /// </summary>
-        /// <param name="productId">The ID of the product.</param>
-        /// <param name="productQuantity">The product quantity data transfer object containing the quantity to add.</param>
-        /// <returns>A task that represents the asynchronous operation, containing the result of the operation.</returns>
         [HttpPost("{productId}")]
         [Authorize(Roles = ApplicationRoles.ADMIN)]
         [ApiKeyRequired]
         public async Task<IActionResult> AddProductQuantity([FromRoute] string productId, [FromBody] ProductQuantityDTO productQuantity)
         {
-            try
-            {
-                await _quantityServices.AddQuantityAsync(productQuantity.Quantity, productId);
-                return Ok(new { Message = "Product quantity added successfully." });
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { Error = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _exceptionHandler.HandleException(ex, ex.Message);
-                return StatusCode(500, new { Message = "An error occurred while adding product quantity.", Error = ex.Message });
-            }
+            await _quantityServices.AddQuantityAsync(productQuantity.Quantity, productId);
+            return Ok(new { Message = "Product quantity added successfully." });
         }
 
         /// <summary>
         /// Reduces the specified quantity from the product's availability.
         /// </summary>
-        /// <param name="productId">The ID of the product.</param>
-        /// <param name="productQuantity">The product quantity data transfer object containing the quantity to reduce.</param>
-        /// <returns>A task that represents the asynchronous operation, containing the result of the operation.</returns>
         [HttpPut("{productId}")]
         [ApiKeyRequired]
         [Authorize(Roles = ApplicationRoles.ADMIN)]
         public async Task<IActionResult> RemoveProductQuantity([FromRoute] string productId, [FromBody] ProductQuantityDTO productQuantity)
         {
-            try
-            {
-                await _quantityServices.ReduceQuantityAsync(productId, productQuantity.Quantity);
-                return Ok(new { Message = "Product quantity reduced successfully." });
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { Error = ex.Message });
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(new { Message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _exceptionHandler.HandleException(ex, ex.Message);
-                return StatusCode(500, new { Message = "An error occurred while reducing product quantity.", Error = ex.Message });
-            }
+            await _quantityServices.ReduceQuantityAsync(productId, productQuantity.Quantity);
+            return Ok(new { Message = "Product quantity reduced successfully." });
         }
     }
 }
