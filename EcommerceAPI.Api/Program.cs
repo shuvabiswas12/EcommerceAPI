@@ -145,7 +145,6 @@ builder.Services.AddScoped<IPaymentServices, PaymentServices>();
 builder.Services.AddScoped<IQuantityServices, QuantityServices>();
 builder.Services.AddScoped<IWishlistServices, WishlistServices>();
 builder.Services.AddScoped(typeof(ExceptionHandler<>));
-builder.Services.AddTransient<ExceptionHandleMiddleware>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
@@ -184,7 +183,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // Custom middleware for exception handling globaly.
-app.UseMiddleware<ExceptionHandleMiddleware>();
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 /***
     I use "RequireRateLimiting()" after the MapController so that all controllers can achive this rate limiting feature. Meaning, I use a global rate limiting.
