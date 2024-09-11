@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+﻿using EcommerceAPI.Utilities.Validation.CustomAttributes;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +11,10 @@ namespace EcommerceAPI.DTOs
 {
     public class CartCreateDTO
     {
-        [ValidateNever, JsonIgnore]
-        public string UserId { get; set; } = String.Empty;
+        [JsonIgnore]
+        public required string UserId { get; set; }
 
-        [ValidateNever, JsonIgnore]
+        [NotEmpty(errorMessage: "Product id is required")]
         public string ProductId { get; set; } = String.Empty;
 
         public int Count { get; set; } = 1;

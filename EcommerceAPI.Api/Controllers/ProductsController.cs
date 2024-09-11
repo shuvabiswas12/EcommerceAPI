@@ -41,7 +41,7 @@ namespace EcommerceAPI.Api.Controllers
         /// <param name="id">The ID of the product to retrieve.</param>
         /// <returns>Returns the product with the specified ID.</returns>
         [HttpGet("api/[controller]/{id}")]
-        public async Task<IActionResult> GetProductsById([FromRoute] string id)
+        public async Task<IActionResult> GetProductById([FromRoute] string id)
         {
             var productResult = await _productService.GetProductById(id);
             return Ok(productResult);
@@ -63,7 +63,7 @@ namespace EcommerceAPI.Api.Controllers
             }
 
             var newProduct = await _productService.CreateProduct(productDto);
-            return Ok(newProduct);
+            return CreatedAtAction(nameof(GetProductById), new { id = newProduct.Id });
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace EcommerceAPI.Api.Controllers
         public async Task<IActionResult> DeleteProduct([FromRoute] string id)
         {
             await _productService.DeleteProduct(id);
-            return Ok(new { Message = ResponseMessages.StatusCode_200_DeleteMessage });
+            return NoContent();
         }
 
         /// <summary>

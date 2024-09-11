@@ -41,6 +41,10 @@ namespace EcommerceAPI.Services.Services
 
         public async Task DeleteProduct(object id)
         {
+            if (id == null)
+            {
+                throw new ArgumentNullException(nameof(id), "Product ID must be provided.");
+            }
             var productToDelete = await _unitOfWork.GenericRepository<Product>().GetTAsync(x => x.Id == id.ToString(), includeProperties: "Images");
             if (productToDelete == null)
             {
@@ -63,14 +67,25 @@ namespace EcommerceAPI.Services.Services
 
         public async Task<Product> GetProductById(object id)
         {
+            if (id == null)
+            {
+                throw new ArgumentNullException(nameof(id), "Product ID must be provided.");
+            }
             var productResult = await _unitOfWork.GenericRepository<Product>().GetTAsync(x => x.Id == id.ToString(), includeProperties: "Images");
             if (productResult == null)
+            {
                 throw new NotFoundException(message: "Product not found.");
+            }
             return productResult;
         }
 
         public async Task<Product> UpdateProduct(Object id, ProductUpdateDTO productDto)
         {
+            if (id == null)
+            {
+                throw new ArgumentNullException(nameof(id), "Product ID must be provided.");
+            }
+
             var productToUpdate = await _unitOfWork.GenericRepository<Product>().GetTAsync(x => x.Id == id.ToString(), includeProperties: "Images");
             if (productToUpdate == null)
             {

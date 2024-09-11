@@ -33,10 +33,10 @@ namespace EcommerceAPI.Api.Controllers
         /// Retrieves a shopping cart by its ID.
         /// </summary>
         [HttpGet(""), ApiKeyRequired, Authorize(Roles = "Web_User")]
-        public async Task<IActionResult> GetCartsById()
+        public async Task<IActionResult> GetCartByUserId()
         {
-            var userId = (User.Identity as ClaimsIdentity)?.FindFirst(ClaimTypes.Actor)?.Value;
-            var response = await _shoppingCartServices.GetShoppingCartsByUserId(userId ?? throw new Exception("User id is empty."));
+            var userId = User.GetUserId();
+            var response = await _shoppingCartServices.GetShoppingCartsByUserId(userId);
             return Ok(response);
         }
 
@@ -46,23 +46,30 @@ namespace EcommerceAPI.Api.Controllers
         [HttpPost, ApiKeyRequired, Authorize(Roles = "Web_User")]
         public async Task<IActionResult> AddProductIntoCart([FromBody] CartCreateDTO shoppingCartCreateRequestDTO)
         {
-            var userid = (User.Identity as ClaimsIdentity)?.FindFirst(ClaimTypes.Actor)?.Value;
-            shoppingCartCreateRequestDTO.UserId = userid ?? throw new Exception(message: "User id is not found.");
+            var userId = User.GetUserId();
 
-            // If count is greater than zeros, cart will be added or updated.
-            if (shoppingCartCreateRequestDTO.Count > 0)
+            if (string.IsNullOrEmpty(shoppingCartCreateRequestDTO.ProductId))
             {
-                await _shoppingCartServices.AddProductToShoppingCart(shoppingCartCreateRequestDTO);
-                return StatusCode(StatusCodes.Status201Created, new { Message = "Added" });
+                throw new ArgumentNullException(nameof(shoppingCartCreateRequestDTO.ProductId), "Product ID is required.");
             }
 
-            // If count is zero or less than zeros, cart will be deleted.
-            // Redirect to DeleteProductsFromCart Action method.
-            else
+            if (shoppingCartCreateRequestDTO.Count < 0)
             {
+                throw new ArgumentOutOfRangeException(nameof(shoppingCartCreateRequestDTO.Count), "Count cannot be negative.");
+            }
+
+            shoppingCartCreateRequestDTO.UserId = userId;
+
+            if (shoppingCartCreateRequestDTO.Count <= 0)
+            {
+                // If the count is zero or less, delete the product from the cart
                 var productIds = new List<string> { shoppingCartCreateRequestDTO.ProductId };
-                return await DeleteProductsFromCart(productIds);  // Invoked the another action method here.
+                return await DeleteProductsFromCart(productIds);
             }
+
+            // If the count is greater than zero, add or update the product in the cart
+            await _shoppingCartServices.AddProductToShoppingCart(shoppingCartCreateRequestDTO);
+            return StatusCode(StatusCodes.Status201Created, new { Message = "Product added or updated in the cart." });
         }
 
         /// <summary>
@@ -75,11 +82,10 @@ namespace EcommerceAPI.Api.Controllers
             {
                 return BadRequest(new { Error = "No product IDs provided." });
             }
-            var userId = (User.Identity as ClaimsIdentity)?.FindFirst(ClaimTypes.Actor)?.Value
-                    ?? throw new Exception(message: "User id is not found.");
+            var userId = User.GetUserId();
 
             await _shoppingCartServices.RemoveProductsFromShoppingCart(products, userId);
-            return StatusCode(StatusCodes.Status204NoContent, new { Message = ResponseMessages.StatusCode_200_DeleteMessage });
+            return NoContent();
         }
     }
 }

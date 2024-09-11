@@ -44,12 +44,8 @@ namespace EcommerceAPI.Api.Controllers
         [HttpPost("api/admin/[controller]"), Authorize(Roles = ApplicationRoles.ADMIN), ApiKeyRequired]
         public async Task<IActionResult> CreateCategory(CategoryCreateDTO createCategory)
         {
-            if (createCategory.Name.Trim().Length == 0)
-            {
-                return BadRequest(new { error = "Must be filled with a category name." });
-            }
             var category = await _categoryServices.CreateCategory(createCategory);
-            return Ok(new { category });
+            return CreatedAtAction(nameof(GetCategoryById), new { id = category.Id }, category);
         }
 
         /// <summary>
@@ -60,10 +56,6 @@ namespace EcommerceAPI.Api.Controllers
         [HttpPut("api/admin/[controller]"), Authorize(Roles = ApplicationRoles.ADMIN), ApiKeyRequired]
         public async Task<IActionResult> UpdateCategory(CategoryUpdateDTO categoryToUpdate)
         {
-            if (categoryToUpdate.Name.Trim().Length == 0 || categoryToUpdate.Id.Trim().Length == 0)
-            {
-                return BadRequest(new { error = "Data is missing!" });
-            }
             var updatedCategory = await _categoryServices.UpdateCategory(categoryToUpdate.Id.Trim(), categoryToUpdate.Name.Trim());
             return Ok(updatedCategory);
         }
@@ -88,12 +80,8 @@ namespace EcommerceAPI.Api.Controllers
         [HttpDelete("api/admin/[controller]/{id}"), Authorize(Roles = ApplicationRoles.ADMIN), ApiKeyRequired]
         public async Task<IActionResult> DeleteCategory(string id)
         {
-            if (id.Trim().Length == 0)
-            {
-                return BadRequest(new { Error = "Missing category id." });
-            }
             await _categoryServices.DeleteCategory(id);
-            return Ok(new { Message = ResponseMessages.StatusCode_200_DeleteMessage });
+            return NoContent();
         }
     }
 }

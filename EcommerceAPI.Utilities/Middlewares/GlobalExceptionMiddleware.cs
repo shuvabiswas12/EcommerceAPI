@@ -54,23 +54,46 @@ namespace EcommerceAPI.Utilities.Middlewares
                     statusCode = HttpStatusCode.NotFound;
                     result = JsonSerializer.Serialize(new { error = ex.Message });
                     break;
+
                 case ValidationException ex:
                     statusCode = HttpStatusCode.BadRequest;
                     result = JsonSerializer.Serialize(new { error = ex.Message });
                     break;
+
                 case UnauthorizedAccessException ex:
                     statusCode = HttpStatusCode.Unauthorized;
                     result = JsonSerializer.Serialize(new { error = ex.Message });
                     break;
+
+                case InvalidOperationException ex:
+                    statusCode = HttpStatusCode.BadRequest;
+                    result = JsonSerializer.Serialize(new { error = ex.Message });
+                    break;
+
                 case DuplicateEntriesException ex:
                     statusCode = HttpStatusCode.Conflict;
                     result = JsonSerializer.Serialize(new { error = ex.Message });
                     break;
+
+                case ArgumentNullException ex:
+                    statusCode = HttpStatusCode.BadRequest;
+                    result = JsonSerializer.Serialize(new { error = ex.Message });
+                    break;
+
+                case ArgumentOutOfRangeException ex:
+                    statusCode = HttpStatusCode.BadRequest;
+                    result = JsonSerializer.Serialize(new { error = ex.Message });
+                    break;
+
+                case ArgumentException ex:
+                    statusCode = HttpStatusCode.BadRequest;
+                    result = JsonSerializer.Serialize(new { error = ex.Message });
+                    break;
+
                 default:
                     result = JsonSerializer.Serialize(new { error = "An unexpected error occurred." });
                     break;
             }
-
             context.Response.StatusCode = (int)statusCode;
             return context.Response.WriteAsync(result);
         }

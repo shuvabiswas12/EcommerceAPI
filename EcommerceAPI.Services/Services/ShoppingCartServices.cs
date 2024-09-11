@@ -2,6 +2,7 @@
 using EcommerceAPI.Domain;
 using EcommerceAPI.DTOs;
 using EcommerceAPI.Services.IServices;
+using EcommerceAPI.Utilities.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,22 +36,13 @@ namespace EcommerceAPI.Services.Services
                     Count = shoppingCartCreateRequestDTO.Count,
                     ProductId = shoppingCartCreateRequestDTO.ProductId,
                 });
-                await _unitOfWork.SaveAsync();
-                await Task.CompletedTask;
-                return;
             }
-
             // If count is greater than zeros. Update the existing one,
-            if (shoppingCartCreateRequestDTO.Count > 0)
+            else if (shoppingCartCreateRequestDTO.Count > 0)
             {
                 existingShoppingCart.Count = shoppingCartCreateRequestDTO.Count;
-                await _unitOfWork.SaveAsync();
-                await Task.CompletedTask;
-                return;
             }
-
-            await Task.CompletedTask;
-            return;
+            await _unitOfWork.SaveAsync();
         }
 
         public async Task<CartResponseDTO> GetShoppingCartsByUserId(string userId)
@@ -61,7 +53,7 @@ namespace EcommerceAPI.Services.Services
             {
                 shoppingCartResponse.TotalCost = carts
                     .Where(cart => cart.Product != null)
-                    .Sum(cart => (double)cart.Product!.Price);
+                    .Sum(cart => (double)cart.Product!.Price * cart.Count);
             }
             return shoppingCartResponse;
         }
@@ -73,36 +65,16 @@ namespace EcommerceAPI.Services.Services
                 throw new ArgumentException("No product IDs provided.", nameof(productIDs));
             }
 
-            if (string.IsNullOrEmpty(userId))
+            var cartsToRemove = await _unitOfWork.GenericRepository<ShoppingCart>()
+            .GetAllAsync(predicate: x => productIDs.Contains(x.ProductId) && x.ApplicationUserId == userId);
+
+            if (!cartsToRemove.Any())
             {
-                throw new Exception("No user IDs provided.");
+                throw new NotFoundException("No matching products found in the shopping cart.");
             }
 
-            if (productIDs.Count == 1)
-            {
-                string productId = productIDs[0];
-                var productToDeleteFromCart = await _unitOfWork.GenericRepository<ShoppingCart>()
-                    .GetTAsync(x => x.ProductId == productId && x.ApplicationUserId == userId)
-                    ?? throw new Exception(message: "The product you select to remove is already removed from Cart.");
-
-                await _unitOfWork.GenericRepository<ShoppingCart>().DeleteAsync(productToDeleteFromCart);
-                await _unitOfWork.SaveAsync();
-                await Task.CompletedTask;
-                return;
-            }
-            else
-            {
-                var productsToDeleteFromCart = await _unitOfWork.GenericRepository<ShoppingCart>()
-                                                        .GetAllAsync(predicate: x => productIDs.Contains(x.ProductId) && x.ApplicationUserId == userId);
-
-                if (productsToDeleteFromCart == null || !productsToDeleteFromCart.Any())
-                {
-                    throw new Exception("None of the selected products were found in the cart.");
-                }
-                await _unitOfWork.GenericRepository<ShoppingCart>().DeleteRangeAsync(productsToDeleteFromCart);
-                await Task.CompletedTask;
-                return;
-            }
+            await _unitOfWork.GenericRepository<ShoppingCart>().DeleteRangeAsync(cartsToRemove);
+            await _unitOfWork.SaveAsync();
         }
     }
 }

@@ -16,11 +16,19 @@ namespace EcommerceAPI.Utilities
         /// <returns>It Returns authenticated User's Id. It not authenticated it returns empty string.</returns>
         public static string GetUserId(this ClaimsPrincipal user)
         {
-            if (user.Identity?.IsAuthenticated == true)
+            if (user?.Identity?.IsAuthenticated != true)
             {
-                return (user.Identity as ClaimsIdentity)?.FindFirst(ClaimTypes.Actor)?.Value!;
+                throw new UnauthorizedAccessException("User is not authenticated.");
             }
-            return string.Empty;
+
+            var userId = (user.Identity as ClaimsIdentity)?.FindFirst(ClaimTypes.Actor)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                throw new InvalidOperationException("User ID is missing or invalid.");
+            }
+
+            return userId;
         }
     }
 }
