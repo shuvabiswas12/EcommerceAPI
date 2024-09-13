@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using EcommerceAPI.DTOs;
+﻿using EcommerceAPI.DTOs;
 using EcommerceAPI.Services.IServices;
+using EcommerceAPI.Utilities;
 using EcommerceAPI.Utilities.ApplicationRoles;
+using EcommerceAPI.Utilities.Exceptions;
 using EcommerceAPI.Utilities.Filters;
 using EcommerceAPI.Utilities.Validation;
-using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EcommerceAPI.Api.Controllers
 {
@@ -15,6 +15,7 @@ namespace EcommerceAPI.Api.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = $"{ApplicationRoles.WEB_USER}"), ApiKeyRequired]
     public class OrdersController : ControllerBase
     {
         private readonly IOrderServices _orderServices;
@@ -30,43 +31,37 @@ namespace EcommerceAPI.Api.Controllers
         /// <summary>
         /// Creates a new order.
         /// </summary>
-        [HttpPost(""), Authorize(Roles = $"{ApplicationRoles.WEB_USER}"), ApiKeyRequired]
+        [HttpPost("")]
         public async Task<IActionResult> CreateOrder([FromBody] ShippingAddressDTO shippingAddress, [FromQuery] string paymentIntentId)
         {
             var modelState = ModelValidator.ValidateModel(shippingAddress);
-
-            if (!modelState.IsValid)
-            {
-                var errors = ModelValidator.GetErrors(modelState);
-                return BadRequest(new { Errors = errors });
-            }
-            var userId = (User.Identity as ClaimsIdentity)?.FindFirst(ClaimTypes.Actor)?.Value ?? throw new ArgumentNullException("UserId not found.");
+            if (!modelState.IsValid) throw new ModelValidationException(modelState);
+            var userId = User.GetUserId() ?? throw new UnauthorizedAccessException("User not authenticated.");
             var createdOrder = await _orderServices.CreateOrder(shippingAddress, userId, paymentIntentId);
-            return Ok(createdOrder);
+            return CreatedAtAction(nameof(GetOrderByOrderId), new { orderId = createdOrder.Id });
         }
 
         /// <summary>
         /// Cancels an order.
         /// </summary>
         /// <param name="orderId">The ID of the order to cancel.</param>
-        [HttpDelete("{orderId}"), Authorize(Roles = ApplicationRoles.WEB_USER), ApiKeyRequired]
+        [HttpDelete("{orderId}")]
         public async Task<IActionResult> CancelOrder(string orderId)
         {
-            if (string.IsNullOrEmpty(orderId)) return BadRequest(new { Error = "Route Parameter \"orderId\" must be given." });
-
-            var userId = (User.Identity as ClaimsIdentity)?.FindFirst(ClaimTypes.Actor)?.Value ?? throw new ArgumentNullException("User not found.");
+            if (string.IsNullOrEmpty(orderId)) return BadRequest(new { Error = "Route value 'order-id' must be given." });
+            var userId = User.GetUserId() ?? throw new ArgumentNullException("User not authenticated.");
             await _orderServices.CancelOrder(orderId, userId);
-            return StatusCode(StatusCodes.Status202Accepted, new { Message = "Order successfully cancelled." });
+            return NoContent();
         }
 
         /// <summary>
         /// Retrieves all orders for the current user.
         /// </summary>
         /// <returns>A response containing the list of orders.</returns>
-        [HttpGet(""), Authorize(Roles = ApplicationRoles.WEB_USER), ApiKeyRequired]
+        [HttpGet("")]
         public async Task<IActionResult> GetAllOrders()
         {
-            var userId = (User.Identity as ClaimsIdentity)?.FindFirst(ClaimTypes.Actor)?.Value ?? throw new ArgumentNullException("User not found.");
+            var userId = User.GetUserId() ?? throw new ArgumentNullException("User not authenticated.");
             var orders = await _orderServices.GetAllOrders(userId);
             return Ok(orders);
         }
@@ -76,14 +71,13 @@ namespace EcommerceAPI.Api.Controllers
         /// </summary>
         /// <param name="orderId">The ID of the order to retrieve.</param>
         /// <returns>A response containing the order details.</returns>
-        [HttpGet("{orderId}"), Authorize(Roles = ApplicationRoles.WEB_USER), ApiKeyRequired]
+        [HttpGet("{orderId}")]
         public async Task<IActionResult> GetOrderByOrderId(string orderId)
         {
-            if (string.IsNullOrEmpty(orderId)) return BadRequest(new { Error = "Route Parameter \"orderId\" must be given." });
-
-            var userId = (User.Identity as ClaimsIdentity)?.FindFirst(ClaimTypes.Actor)?.Value ?? throw new ArgumentNullException("User not found.");
+            if (string.IsNullOrEmpty(orderId)) return BadRequest(new { Error = "Route value 'order-id' must be given." });
+            var userId = User.GetUserId() ?? throw new UnauthorizedAccessException("User not authenticated.");
             var order = await _orderServices.GetOrder(orderId, userId);
-            return Ok();
+            return Ok(order);
         }
     }
 }
