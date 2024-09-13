@@ -29,17 +29,12 @@ namespace EcommerceAPI.Services.Services
                 // Create a new discount.
                 await _unitOfWork.GenericRepository<Discount>().AddAsync(new Discount { ProductId = id, DiscountRate = discountRequestDTO.DiscountRate });
                 await _unitOfWork.SaveAsync();
-                await Task.CompletedTask;
                 return;
             }
-            else
-            {
-                // Update the old discount.
-                discount.DiscountRate = discountRequestDTO.DiscountRate;
-                await _unitOfWork.SaveAsync();
-                await Task.CompletedTask;
-                return;
-            }
+
+            // Update the old discount.
+            discount.DiscountRate = discountRequestDTO.DiscountRate;
+            await _unitOfWork.SaveAsync();
         }
 
         public async Task RemoveDiscount(string id)
@@ -53,8 +48,6 @@ namespace EcommerceAPI.Services.Services
             // Remove the discount.
             await _unitOfWork.GenericRepository<Discount>().DeleteAsync(discountToRemove);
             await _unitOfWork.SaveAsync();
-            await Task.CompletedTask;
-            return;
         }
     }
 }

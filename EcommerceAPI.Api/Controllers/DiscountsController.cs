@@ -6,6 +6,8 @@ using EcommerceAPI.Services.IServices;
 using EcommerceAPI.Utilities;
 using EcommerceAPI.Utilities.Filters;
 using EcommerceAPI.Utilities.Validation;
+using EcommerceAPI.Utilities.Exceptions;
+using System.ComponentModel.DataAnnotations;
 
 namespace EcommerceAPI.Api.Controllers
 {
@@ -34,13 +36,15 @@ namespace EcommerceAPI.Api.Controllers
         [HttpPost("{id}"), ApiKeyRequired, Authorize(Roles = "Admin")]
         public async Task<IActionResult> SetProductDiscount([FromRoute] string id, [FromBody] DiscountRequestDTO discountRequestDTO)
         {
-            if (id == null) return BadRequest(new { Error = "Route value id must be given." });
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException("Product ID must be provided.");
+            }
 
             var modelState = ModelValidator.ValidateModel(discountRequestDTO);
             if (!modelState.IsValid)
             {
-                var errors = ModelValidator.GetErrors(modelState);
-                return BadRequest(new { Errors = errors });
+                throw new ModelValidationException(modelState);
             }
             await _discountServices.AddDiscount(id, discountRequestDTO);
             return StatusCode(StatusCodes.Status201Created, new { Message = "Successfully added the product discount." });
@@ -53,9 +57,12 @@ namespace EcommerceAPI.Api.Controllers
         [HttpDelete("{id}"), ApiKeyRequired, Authorize(Roles = "Admin")]
         public async Task<IActionResult> RemoveProductDiscount([FromRoute] string id)
         {
-            if (id == null) return BadRequest(new { Error = "Route value id must be given." });
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException("Product ID must be provided.");
+            }
             await _discountServices.RemoveDiscount(id);
-            return StatusCode(StatusCodes.Status202Accepted, new { Message = "Successfully removed the product discount." });
+            return Accepted(new { Message = "Successfully removed the product discount." });
         }
     }
 }

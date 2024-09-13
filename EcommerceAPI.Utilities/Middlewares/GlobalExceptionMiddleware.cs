@@ -60,6 +60,11 @@ namespace EcommerceAPI.Utilities.Middlewares
                     result = JsonSerializer.Serialize(new { error = ex.Message });
                     break;
 
+                case ModelValidationException ex:
+                    statusCode = HttpStatusCode.BadRequest;
+                    result = JsonSerializer.Serialize(new { error = ex.ValidationErrors });
+                    break;
+
                 case UnauthorizedAccessException ex:
                     statusCode = HttpStatusCode.Unauthorized;
                     result = JsonSerializer.Serialize(new { error = ex.Message });
