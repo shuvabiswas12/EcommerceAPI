@@ -12,7 +12,7 @@ namespace EcommerceAPI.Services.Services
     {
         public async Task<string> CreatePaymentIntentAsync(long amount)
         {
-            if (amount == 0) throw new ArgumentNullException("Amount argument should not be empty.");
+            if (amount == 0) throw new ArgumentNullException("Payment amount should not be empty.");
 
             var options = new PaymentIntentCreateOptions
             {

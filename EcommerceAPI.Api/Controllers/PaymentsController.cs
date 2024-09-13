@@ -8,6 +8,7 @@ using EcommerceAPI.Utilities.Filters;
 using EcommerceAPI.Utilities.Validation.CustomAttributes;
 using Stripe;
 using System.Security.Claims;
+using EcommerceAPI.Utilities;
 
 namespace EcommerceAPI.Api.Controllers
 {
@@ -37,9 +38,9 @@ namespace EcommerceAPI.Api.Controllers
         [HttpPost("payment-intent"), ApiKeyRequired, Authorize(Roles = $"{ApplicationRoles.WEB_USER}")]
         public async Task<IActionResult> CreatePaymentIntent()
         {
-            var userId = (User.Identity as ClaimsIdentity)?.FindFirst(ClaimTypes.Actor)?.Value;
+            var userId = User.GetUserId();
 
-            if (userId == null) return BadRequest("User not found.");
+            if (userId == null) throw new UnauthorizedAccessException("User not authenticated.");
 
             var carts = await _shoppingCartServices.GetShoppingCartsByUserId(userId);
 
@@ -48,7 +49,7 @@ namespace EcommerceAPI.Api.Controllers
             long amount = (long)carts.TotalCost;
 
             var clientSecret = await _paymentServices.CreatePaymentIntentAsync(amount);
-            return Ok(new { clientSecret = clientSecret });
+            return StatusCode(StatusCodes.Status201Created, new { clientSecret = clientSecret });
         }
     }
 }
