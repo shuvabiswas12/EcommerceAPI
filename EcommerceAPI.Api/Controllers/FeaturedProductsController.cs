@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using EcommerceAPI.DTOs;
+﻿using EcommerceAPI.DTOs;
 using EcommerceAPI.Services.IServices;
-using EcommerceAPI.Utilities;
+using EcommerceAPI.Utilities.ApplicationRoles;
 using EcommerceAPI.Utilities.Filters;
-using EcommerceAPI.Utilities.Validation;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EcommerceAPI.Api.Controllers
 {
@@ -14,6 +12,7 @@ namespace EcommerceAPI.Api.Controllers
     /// </summary>
     [Route("api/admin/[controller]")]
     [ApiController]
+    [ApiKeyRequired, Authorize(Roles = ApplicationRoles.ADMIN)]
     public class FeaturedProductsController : ControllerBase
     {
         private IFeaturedProductServices _featuredProductServices;
@@ -30,7 +29,7 @@ namespace EcommerceAPI.Api.Controllers
         /// Sets a product as featured based on its ID.
         /// </summary>
         /// <param name="id">The ID of the product to set as featured.</param>
-        [HttpPost("{id}"), ApiKeyRequired, Authorize(Roles = "Admin")]
+        [HttpPost("{id}")]
         public async Task<IActionResult> SetProductAsFeatured([FromRoute] string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -39,14 +38,14 @@ namespace EcommerceAPI.Api.Controllers
             }
 
             await _featuredProductServices.AddProductAsFeatured(new FeaturedProductRequestDTO { Id = id });
-            return StatusCode(StatusCodes.Status201Created, new { Message = "Product added as featured." });
+            return StatusCode(StatusCodes.Status201Created);
         }
 
         /// <summary>
         /// Removes a product from the list of featured products based on its ID.
         /// </summary>
         /// <param name="id">The ID of the product to remove from featured.</param>
-        [HttpDelete("{id}"), ApiKeyRequired, Authorize(Roles = "Admin")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> RemoveProductFromFeatured([FromRoute] string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -55,7 +54,7 @@ namespace EcommerceAPI.Api.Controllers
             }
 
             await _featuredProductServices.RemoveProductFromFeatured(new FeaturedProductRequestDTO { Id = id });
-            return StatusCode(StatusCodes.Status200OK, new { Message = "Product successfully removed from featured." });
+            return NoContent();
         }
     }
 }

@@ -23,20 +23,20 @@ namespace EcommerceAPI.Services.Services
 
         public async Task AddProductAsFeatured(FeaturedProductRequestDTO featuredProductRequestDTO)
         {
-            var isFeaturedAlready = await _unitOfWork.GenericRepository<FeaturedProduct>().GetTAsync(p => p.ProductId == featuredProductRequestDTO.Id);
+            var isFeaturedAlready = await _unitOfWork.GenericRepository<FeaturedProduct>()
+                .GetTAsync(p => p.ProductId == featuredProductRequestDTO.Id);
+
             if (isFeaturedAlready != null)
             {
                 throw new DuplicateEntriesException(message: "The product already added as a featured product.");
             }
 
             var result = await _unitOfWork.GenericRepository<FeaturedProduct>().AddAsync(new FeaturedProduct { ProductId = featuredProductRequestDTO.Id });
-            if (result != null)
+            if (result == null)
             {
-                await _unitOfWork.SaveAsync();
-                await Task.CompletedTask;
-                return;
+                throw new InvalidOperationException(message: "There was a problem while creating product as a featured product.");
             }
-            throw new Exception(message: "Could not create the product as a featured product.");
+            await _unitOfWork.SaveAsync();
         }
 
         public async Task RemoveProductFromFeatured(FeaturedProductRequestDTO featuredProductRequestDTO)
@@ -48,7 +48,6 @@ namespace EcommerceAPI.Services.Services
             }
             await _unitOfWork.GenericRepository<FeaturedProduct>().DeleteAsync(new FeaturedProduct { ProductId = featuredProductRequestDTO.Id });
             await _unitOfWork.SaveAsync();
-            await Task.CompletedTask;
         }
     }
 }
