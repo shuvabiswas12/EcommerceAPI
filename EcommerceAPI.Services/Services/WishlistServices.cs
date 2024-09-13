@@ -21,46 +21,66 @@ namespace EcommerceAPI.Services.Services
 
         public async Task AddProductToWishlist(string productId, string userId)
         {
-            if (string.IsNullOrEmpty(productId)) throw new ArgumentNullException("Product id should not be nulled.");
+            if (string.IsNullOrEmpty(productId))
+            {
+                throw new ArgumentNullException("Product id must be provided.");
+            }
 
-            if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException("userId should not be nulled.");
+            if (string.IsNullOrEmpty(userId))
+            {
+                throw new UnauthorizedAccessException("User not authenticated.");
+            }
 
             var existingProduct = await _unitOfWork.GenericRepository<Product>().GetTAsync(p => p.Id == productId);
 
-            if (existingProduct == null) throw new NotFoundException("Product not found.");
+            if (existingProduct == null)
+            {
+                throw new NotFoundException("Product not found.");
+            }
 
             var newWishlist = new Wishlist { ApplicationUserId = userId, ProductId = productId };
 
             await _unitOfWork.GenericRepository<Wishlist>().AddAsync(newWishlist);
             await _unitOfWork.SaveAsync();
-            await Task.CompletedTask;
         }
 
         public async Task<IEnumerable<Wishlist>> GetAllProductsFromWishlists(string userId)
         {
-            if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException("userId should not be nulled.");
+            if (string.IsNullOrEmpty(userId))
+            {
+                throw new ArgumentNullException("User id must be provided.");
+            }
 
             return await _unitOfWork.GenericRepository<Wishlist>().GetAllAsync(includeProperties: "Product");
         }
 
         public Task<Wishlist> GetWishList(string productId, string userId)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("Method has not been implemented yet.");
         }
 
         public async Task RemoveProductFromWishlist(string productId, string userId)
         {
-            if (string.IsNullOrEmpty(productId)) throw new ArgumentNullException("Product id should not be nulled.");
+            if (string.IsNullOrEmpty(productId))
+            {
+                throw new ArgumentNullException("Product id must be provided.");
+            }
 
-            if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException("userId should not be nulled.");
+            if (string.IsNullOrEmpty(userId))
+            {
+                throw new ArgumentNullException("User id must be provided");
+            }
 
-            var existingProduct = await _unitOfWork.GenericRepository<Wishlist>().GetTAsync(p => p.ProductId == productId && p.ApplicationUserId == userId);
+            var existingProduct = await _unitOfWork.GenericRepository<Wishlist>()
+                .GetTAsync(p => p.ProductId == productId && p.ApplicationUserId == userId);
 
-            if (existingProduct == null) throw new NotFoundException("The product is not added yet in Wishlist");
+            if (existingProduct == null)
+            {
+                throw new NotFoundException("The product has not been added in Wishlist.");
+            }
 
             await _unitOfWork.GenericRepository<Wishlist>().DeleteAsync(existingProduct);
             await _unitOfWork.SaveAsync();
-            await Task.CompletedTask;
         }
     }
 }

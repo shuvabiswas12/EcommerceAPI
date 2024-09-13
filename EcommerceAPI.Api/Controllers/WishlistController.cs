@@ -1,9 +1,9 @@
 ﻿using EcommerceAPI.Services.IServices;
+using EcommerceAPI.Utilities;
 using EcommerceAPI.Utilities.ApplicationRoles;
 using EcommerceAPI.Utilities.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace EcommerceAPI.Api.Controllers
 {
@@ -32,53 +32,45 @@ namespace EcommerceAPI.Api.Controllers
         [HttpGet("")]
         public async Task<IActionResult> GetWishlist()
         {
-            var userId = (User.Identity as ClaimsIdentity)?.FindFirst(ClaimTypes.Actor)?.Value;
+            var userId = User.GetUserId();
             var wishlists = await _wishlistServices.GetAllProductsFromWishlists(userId);
             return Ok(wishlists);
         }
 
         /// <summary>
-        /// Creates or deletes a product in the user's wishlist based on the HTTP method.
+        /// 'POST' request for inserting product into wishlist.
+        /// 'DELETE' request for deleting product from wishlist.
         /// </summary>
-        [HttpPost("{productId}")]
+        [HttpPost("{productId}"), HttpDelete("{productId}")]
         public async Task<IActionResult> CreateOrDeleteWishlist(string productId)
         {
-            var userId = (User.Identity as ClaimsIdentity)?.FindFirst(ClaimTypes.Actor)?.Value;
-            if (string.IsNullOrEmpty(userId))
-            {
-                return Unauthorized("User not authenticated.");
-            }
+            var userId = User.GetUserId();
 
             var existedWishlist = await _wishlistServices.GetWishList(userId, productId);
 
+            // Delete operation
             if (HttpContext.Request.Method == HttpMethods.Delete)
-            {
-                if (existedWishlist != null)
-                {
-                    // Delete operation will be executed
-                    await _wishlistServices.RemoveProductFromWishlist(productId, userId);
-                    return Ok("Wishlist item deleted successfully.");
-                }
-                else
-                {
-                    return StatusCode(StatusCodes.Status404NotFound, $"Wishlist item with ID {productId} not found.");
-                }
-            }
-
-            if (HttpContext.Request.Method == HttpMethods.Post)
             {
                 if (existedWishlist == null)
                 {
-                    // Create operation will be executed.
-                    await _wishlistServices.AddProductToWishlist(productId, userId);
-                    return Ok("Wishlist item created successfully.");
+                    return NotFound();
                 }
-                else
-                {
-                    return StatusCode(StatusCodes.Status302Found, $"Wishlist item with ID {productId} already exists.");
-                }
+
+                await _wishlistServices.RemoveProductFromWishlist(productId, userId!);
+                return NoContent();
             }
 
+            // Create operation
+            if (HttpContext.Request.Method == HttpMethods.Post)
+            {
+                if (existedWishlist != null)
+                {
+                    return StatusCode(StatusCodes.Status302Found);
+                }
+
+                await _wishlistServices.AddProductToWishlist(productId, userId);
+                return StatusCode(StatusCodes.Status201Created);
+            }
             return BadRequest("Invalid HTTP method");
         }
     }
