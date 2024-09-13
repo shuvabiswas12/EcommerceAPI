@@ -5,6 +5,7 @@ using EcommerceAPI.DTOs;
 using EcommerceAPI.Services.IServices;
 using EcommerceAPI.Utilities.ApplicationRoles;
 using EcommerceAPI.Utilities.Filters;
+using EcommerceAPI.Utilities.Exceptions;
 
 namespace EcommerceAPI.Api.Controllers
 {
@@ -13,6 +14,7 @@ namespace EcommerceAPI.Api.Controllers
     /// </summary>
     [ApiController]
     [Route("api/admin/[controller]")]
+    [Authorize(Roles = ApplicationRoles.ADMIN), ApiKeyRequired]
     public class QuantityController : ControllerBase
     {
         private readonly IQuantityServices _quantityServices;
@@ -26,27 +28,23 @@ namespace EcommerceAPI.Api.Controllers
         }
 
         /// <summary>
-        /// Adds the specified quantity to the product's availability.
+        /// Add or Update the specified quantity to the product's availability.
         /// </summary>
         [HttpPost("{productId}")]
-        [Authorize(Roles = ApplicationRoles.ADMIN)]
-        [ApiKeyRequired]
-        public async Task<IActionResult> AddProductQuantity([FromRoute] string productId, [FromBody] ProductQuantityDTO productQuantity)
+        public async Task<IActionResult> ManageProductQuantity([FromRoute] string productId, [FromBody] ProductQuantityDTO payload)
         {
-            await _quantityServices.AddQuantityAsync(productQuantity.Quantity, productId);
-            return Ok(new { Message = "Product quantity added successfully." });
-        }
+            if (string.IsNullOrEmpty(productId))
+            {
+                throw new ArgumentNullException(nameof(productId), "Route value 'Product-Id' must be given.");
+            }
 
-        /// <summary>
-        /// Reduces the specified quantity from the product's availability.
-        /// </summary>
-        [HttpPut("{productId}")]
-        [ApiKeyRequired]
-        [Authorize(Roles = ApplicationRoles.ADMIN)]
-        public async Task<IActionResult> RemoveProductQuantity([FromRoute] string productId, [FromBody] ProductQuantityDTO productQuantity)
-        {
-            await _quantityServices.ReduceQuantityAsync(productId, productQuantity.Quantity);
-            return Ok(new { Message = "Product quantity reduced successfully." });
+            if (payload.Quantity < 0)
+            {
+                throw new ModelValidationException(nameof(payload.Quantity), new string[] { "Quantity should be zero or any positive values." });
+            }
+
+            await _quantityServices.ModifyQuantityAsync(payload.Quantity, productId);
+            return StatusCode(StatusCodes.Status201Created);
         }
     }
 }

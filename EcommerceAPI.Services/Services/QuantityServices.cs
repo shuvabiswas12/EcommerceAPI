@@ -22,34 +22,20 @@ namespace EcommerceAPI.Services.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task AddQuantityAsync(int quantity, string productId)
+        public async Task ModifyQuantityAsync(int quantity, string productId)
         {
-            if (quantity <= 0) throw new ArgumentException(message: "Quantity must be positive value and that of greater then zero.");
+            var currentQuantity = await _unitOfWork.GenericRepository<ProductAvailability>()
+                .GetTAsync(pa => pa.ProductId == productId);
 
-            if (string.IsNullOrEmpty(productId)) throw new ArgumentException("ProductId", "Product id must be mentioned.");
-
-            var newAvailability = new ProductAvailability { Availability = quantity, ProductId = productId };
-            await _unitOfWork.GenericRepository<ProductAvailability>().AddAsync(newAvailability);
-            await _unitOfWork.SaveAsync();
-            return;
-        }
-
-        public async Task ReduceQuantityAsync(string productId, int quantity = 0)
-        {
-            if (string.IsNullOrEmpty(productId)) throw new ArgumentException("ProductId", "Product id must be mentioned.");
-
-            if (quantity < 0) throw new ArgumentException(message: "Quantity must be positive value.");
-
-            var currentQuantity = await _unitOfWork.GenericRepository<ProductAvailability>().GetTAsync(pa => pa.ProductId == productId);
             if (currentQuantity == null)
             {
-                throw new NotFoundException(message: "No qunatity is listed.");
+                var newAvailability = new ProductAvailability { Availability = quantity, ProductId = productId };
+                await _unitOfWork.GenericRepository<ProductAvailability>().AddAsync(newAvailability);
             }
-
-            if (currentQuantity.Availability < quantity)
-                throw new ArgumentException(message: "Invalid product quantity.");
-
-            currentQuantity.Availability = (int)(currentQuantity.Availability - (quantity == 0 ? 1 : quantity));
+            else
+            {
+                currentQuantity.Availability = (int)(currentQuantity.Availability - (quantity == 0 ? 1 : quantity));
+            }
             await _unitOfWork.SaveAsync();
         }
     }
