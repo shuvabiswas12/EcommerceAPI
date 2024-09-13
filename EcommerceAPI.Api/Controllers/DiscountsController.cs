@@ -62,7 +62,7 @@ namespace EcommerceAPI.Api.Controllers
                 throw new ArgumentNullException("Product ID must be provided.");
             }
             await _discountServices.RemoveDiscount(id);
-            return Accepted(new { Message = "Successfully removed the product discount." });
+            return NoContent();
         }
     }
 }

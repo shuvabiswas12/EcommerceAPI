@@ -6,6 +6,7 @@ using EcommerceAPI.Services.IServices;
 using EcommerceAPI.Utilities;
 using EcommerceAPI.Utilities.Filters;
 using System.Security.Claims;
+using EcommerceAPI.Utilities.Exceptions;
 
 namespace EcommerceAPI.Api.Controllers
 {
@@ -44,31 +45,31 @@ namespace EcommerceAPI.Api.Controllers
         /// Adds a product to the shopping cart or updates the product quantity in the cart.
         /// </summary>
         [HttpPost, ApiKeyRequired, Authorize(Roles = "Web_User")]
-        public async Task<IActionResult> AddProductIntoCart([FromBody] CartCreateDTO shoppingCartCreateRequestDTO)
+        public async Task<IActionResult> AddProductIntoCart([FromBody] CartCreateDTO payload)
         {
             var userId = User.GetUserId();
 
-            if (string.IsNullOrEmpty(shoppingCartCreateRequestDTO.ProductId))
+            if (string.IsNullOrEmpty(payload.ProductId))
             {
-                throw new ArgumentNullException(nameof(shoppingCartCreateRequestDTO.ProductId), "Product ID is required.");
+                throw new ModelValidationException(nameof(payload.ProductId), new string[] { "Product ID is required." });
             }
 
-            if (shoppingCartCreateRequestDTO.Count < 0)
+            if (payload.Count < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(shoppingCartCreateRequestDTO.Count), "Count cannot be negative.");
+                throw new ModelValidationException(nameof(payload.Count), new string[] { "Count cannot be negative." });
             }
 
-            shoppingCartCreateRequestDTO.UserId = userId;
+            payload.UserId = userId;
 
-            if (shoppingCartCreateRequestDTO.Count <= 0)
+            if (payload.Count <= 0)
             {
                 // If the count is zero or less, delete the product from the cart
-                var productIds = new List<string> { shoppingCartCreateRequestDTO.ProductId };
+                var productIds = new List<string> { payload.ProductId };
                 return await DeleteProductsFromCart(productIds);
             }
 
             // If the count is greater than zero, add or update the product in the cart
-            await _shoppingCartServices.AddProductToShoppingCart(shoppingCartCreateRequestDTO);
+            await _shoppingCartServices.AddProductToShoppingCart(payload);
             return StatusCode(StatusCodes.Status201Created, new { Message = "Product added or updated in the cart." });
         }
 
