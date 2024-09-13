@@ -1,6 +1,7 @@
 ﻿using EcommerceAPI.DTOs;
 using EcommerceAPI.Services.IServices;
 using EcommerceAPI.Utilities;
+using EcommerceAPI.Utilities.Exceptions;
 using EcommerceAPI.Utilities.Filters;
 using EcommerceAPI.Utilities.Validation;
 using Microsoft.AspNetCore.Authorization;
@@ -58,8 +59,7 @@ namespace EcommerceAPI.Api.Controllers
             var modelState = ModelValidator.ValidateModel(productDto);
             if (!modelState.IsValid)
             {
-                var errors = ModelValidator.GetErrors(modelState);
-                return BadRequest(new { Errors = errors });
+                throw new ModelValidationException(modelState);
             }
 
             var newProduct = await _productService.CreateProduct(productDto);
