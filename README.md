@@ -1,2 +1,2 @@
 **App screenshots:**
-- ![](https://drive.google.com/file/d/1FLwJBcLoLM97ABX0CilFbLj5fhXOjiyV/view?usp=drive_link)
+- ![](https://github.com/shuvabiswas12/EcommerceAPI/blob/master/EcommerceAPI.Utilities/ecomm_api.png)
