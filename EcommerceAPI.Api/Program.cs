@@ -19,6 +19,9 @@ using System.Reflection;
 using System.Text;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
+using Asp.Versioning;
+using Microsoft.Extensions.Options;
+using Asp.Versioning.ApiExplorer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,11 +32,30 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
+// Api Versioning
+builder.Services.AddApiVersioning(options =>
+{
+    options.ReportApiVersions = true;
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.ApiVersionReader = ApiVersionReader.Combine(
+        new HeaderApiVersionReader("x-api-version"),
+        new MediaTypeApiVersionReader("x-api-version"),
+        new UrlSegmentApiVersionReader());
+}).AddMvc()
+.AddApiExplorer(setup =>
+{
+    setup.GroupNameFormat = "'v'VVV";
+    setup.SubstituteApiVersionInUrl = true;
+    setup.AddApiVersionParametersWhenVersionNeutral = true;
+});
+
 // Configuring swagger api
 builder.Services.AddSwaggerGen(options =>
 {
 
-    //options.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1",  });
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Ecommerce api | V1 - Public", Version = "v1", });
+    options.SwaggerDoc("v2", new OpenApiInfo { Title = "Ecommerce api | V2 - Admin", Version = "v2", });
 
     /***
      * Define authorization field security scheme (Bearer AccessToken).
@@ -161,7 +183,14 @@ using (var scope = app.Services.CreateScope())
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+        foreach (var description in provider.ApiVersionDescriptions)
+        {
+            options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+        }
+    });
 }
 
 // Cors policy here.

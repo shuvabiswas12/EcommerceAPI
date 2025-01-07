@@ -1,6 +1,6 @@
-﻿using EcommerceAPI.DTOs;
+﻿using Asp.Versioning;
+using EcommerceAPI.DTOs;
 using EcommerceAPI.Services.IServices;
-using EcommerceAPI.Utilities;
 using EcommerceAPI.Utilities.Exceptions;
 using EcommerceAPI.Utilities.Filters;
 using EcommerceAPI.Utilities.Validation;
@@ -12,7 +12,7 @@ namespace EcommerceAPI.Api.Controllers
     /// <summary>
     /// Controller for managing products in the Shopping Basket API.
     /// </summary>
-    [ApiController]
+    [ApiController, ApiVersion(1.0), ApiVersion(2.0)]
     public class ProductsController : ControllerBase
     {
         private readonly IProductServices _productService;
@@ -29,7 +29,8 @@ namespace EcommerceAPI.Api.Controllers
         /// Retrieves all products.
         /// </summary>
         /// <returns>Returns a list of all product.</returns>
-        [HttpGet("api/[controller]")]
+        [MapToApiVersion(1.0)]
+        [HttpGet("api/v{version:apiVersion}/[controller]")]
         public async Task<IActionResult> GetAllProducts()
         {
             var productsResult = await _productService.GetAllProduct();
@@ -41,7 +42,8 @@ namespace EcommerceAPI.Api.Controllers
         /// </summary>
         /// <param name="id">The ID of the product to retrieve.</param>
         /// <returns>Returns the product with the specified ID.</returns>
-        [HttpGet("api/[controller]/{id}")]
+        [MapToApiVersion(1.0)]
+        [HttpGet("api/v{version:apiVersion}/[controller]/{id}")]
         public async Task<IActionResult> GetProductById([FromRoute] string id)
         {
             var productResult = await _productService.GetProductById(id);
@@ -53,7 +55,8 @@ namespace EcommerceAPI.Api.Controllers
         /// </summary>
         /// <param name="productDto">The data for the new product.</param>
         /// <returns>Returns the newly created product.</returns>
-        [HttpPost("api/admin/[controller]"), Authorize(Roles = "Admin"), ApiKeyRequired]
+        [MapToApiVersion(2.0)]
+        [HttpPost("api/admin/v{version:apiVersion}/[controller]"), Authorize(Roles = "Admin"), ApiKeyRequired]
         public async Task<IActionResult> CreateProduct([FromBody] ProductCreateDTO productDto)
         {
             var modelState = ModelValidator.ValidateModel(productDto);
@@ -71,7 +74,8 @@ namespace EcommerceAPI.Api.Controllers
         /// </summary>
         /// <param name="id">The ID of the product to delete.</param>
         /// <returns>Returns a success message if deletion is successful.</returns>
-        [HttpDelete("api/admin/[controller]/{id}"), Authorize(Roles = "Admin"), ApiKeyRequired]
+        [MapToApiVersion(2.0)]
+        [HttpDelete("api/admin/v{version:apiVersion}/[controller]/{id}"), Authorize(Roles = "Admin"), ApiKeyRequired]
         public async Task<IActionResult> DeleteProduct([FromRoute] string id)
         {
             await _productService.DeleteProduct(id);
@@ -84,7 +88,8 @@ namespace EcommerceAPI.Api.Controllers
         /// <param name="id">The ID of the product to update.</param>
         /// <param name="productDto">The updated data for the product.</param>
         /// <returns>Returns the updated product.</returns>
-        [HttpPut("api/admin/[controller]/{id}"), Authorize(Roles = "Admin"), ApiKeyRequired]
+        [MapToApiVersion(2.0)]
+        [HttpPut("api/admin/v{version:apiVersion}/[controller]/{id}"), Authorize(Roles = "Admin"), ApiKeyRequired]
         public async Task<IActionResult> UpdateProduct(string id, [FromBody] ProductUpdateDTO productDto)
         {
             var product = await _productService.UpdateProduct(id, productDto);

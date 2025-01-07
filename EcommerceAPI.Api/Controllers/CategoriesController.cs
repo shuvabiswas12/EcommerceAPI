@@ -6,13 +6,14 @@ using EcommerceAPI.Services.IServices;
 using EcommerceAPI.Utilities;
 using EcommerceAPI.Utilities.ApplicationRoles;
 using EcommerceAPI.Utilities.Filters;
+using Asp.Versioning;
 
 namespace EcommerceAPI.Api.Controllers
 {
     /// <summary>
     /// Controller for managing categories in the Shopping Basket API.
     /// </summary>
-    [ApiController]
+    [ApiController, ApiVersion(1.0), ApiVersion(2.0)]
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryServices _categoryServices;
@@ -29,7 +30,8 @@ namespace EcommerceAPI.Api.Controllers
         /// Gets all categories.
         /// </summary>
         /// <returns>A list of all categories.</returns>
-        [HttpGet("api/[controller]")]
+        [MapToApiVersion(1.0)]
+        [HttpGet("api/v{version:apiVersion}/[controller]")]
         public async Task<IActionResult> GetAll()
         {
             var result = await _categoryServices.GetAllCategories();
@@ -41,7 +43,8 @@ namespace EcommerceAPI.Api.Controllers
         /// </summary>
         /// <param name="createCategory">The category to create.</param>
         /// <returns>The created category.</returns>
-        [HttpPost("api/admin/[controller]"), Authorize(Roles = ApplicationRoles.ADMIN), ApiKeyRequired]
+        [MapToApiVersion(2.0)]
+        [HttpPost("api/admin/v{version:apiVersion}/[controller]"), Authorize(Roles = ApplicationRoles.ADMIN), ApiKeyRequired]
         public async Task<IActionResult> CreateCategory(CategoryCreateDTO createCategory)
         {
             var category = await _categoryServices.CreateCategory(createCategory);
@@ -53,7 +56,8 @@ namespace EcommerceAPI.Api.Controllers
         /// </summary>
         /// <param name="categoryToUpdate">The category to update.</param>
         /// <returns>The updated category.</returns>
-        [HttpPut("api/admin/[controller]"), Authorize(Roles = ApplicationRoles.ADMIN), ApiKeyRequired]
+        [MapToApiVersion(2.0)]
+        [HttpPut("api/admin/v{version:apiVersion}/[controller]"), Authorize(Roles = ApplicationRoles.ADMIN), ApiKeyRequired]
         public async Task<IActionResult> UpdateCategory(CategoryUpdateDTO categoryToUpdate)
         {
             var updatedCategory = await _categoryServices.UpdateCategory(categoryToUpdate.Id.Trim(), categoryToUpdate.Name.Trim());
@@ -65,7 +69,8 @@ namespace EcommerceAPI.Api.Controllers
         /// </summary>
         /// <param name="id">The category ID.</param>
         /// <returns>The category with the specified ID.</returns>
-        [HttpGet("api/[controller]/{id}")]
+        [MapToApiVersion(1.0)]
+        [HttpGet("api/v{version:apiVersion}/[controller]/{id}")]
         public async Task<IActionResult> GetCategoryById(string id)
         {
             var result = await _categoryServices.GetCategoryById(id);
@@ -77,7 +82,8 @@ namespace EcommerceAPI.Api.Controllers
         /// </summary>
         /// <param name="id">The category ID.</param>
         /// <returns>A message indicating the result of the deletion.</returns>
-        [HttpDelete("api/admin/[controller]/{id}"), Authorize(Roles = ApplicationRoles.ADMIN), ApiKeyRequired]
+        [MapToApiVersion(2.0)]
+        [HttpDelete("api/admin/v{version:apiVersion}/[controller]/{id}"), Authorize(Roles = ApplicationRoles.ADMIN), ApiKeyRequired]
         public async Task<IActionResult> DeleteCategory(string id)
         {
             await _categoryServices.DeleteCategory(id);
