@@ -12,7 +12,7 @@ namespace EcommerceAPI.Services.IServices
 {
     public interface IOrderServices
     {
-        public Task<GenericResponseDTO<OrderHeader>> GetAllOrders(string userId);
+        public Task<GenericResponseDTO<OrderHeader>> GetAllOrders(string? userId = null);
         public Task<OrderHeader> GetOrder(string orderId, string userId);
         public Task<OrderHeader> CreateOrder(ShippingAddressDTO shippingAddressDTO, string userId, string paymentIntentId);
         public Task UpdateOrder(OrderHeader order, string userId);

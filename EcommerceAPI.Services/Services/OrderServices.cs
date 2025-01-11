@@ -13,6 +13,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections;
 
 namespace EcommerceAPI.Services.Services
 {
@@ -81,9 +82,20 @@ namespace EcommerceAPI.Services.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task<GenericResponseDTO<OrderHeader>> GetAllOrders(string userId)
+        public async Task<GenericResponseDTO<OrderHeader>> GetAllOrders(string? userId = null)
         {
-            var orders = await _unitOfWork.GenericRepository<OrderHeader>().GetAllAsync(predicate: o => o.ApplicationUserId == userId, includeProperties: "OrderDetails");
+            IEnumerable<OrderHeader> orders = new List<OrderHeader>();
+
+            if (userId is not null)
+            {
+                // For specific user panel uses
+                orders = await _unitOfWork.GenericRepository<OrderHeader>().GetAllAsync(predicate: o => o.ApplicationUserId == userId, includeProperties: "OrderDetails");
+            }
+            else
+            {
+                // For admin panel uses
+                orders = await _unitOfWork.GenericRepository<OrderHeader>().GetAllAsync(includeProperties: "OrderDetails");
+            }
             return new GenericResponseDTO<OrderHeader>
             {
                 Count = orders.Count(),

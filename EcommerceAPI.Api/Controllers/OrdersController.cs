@@ -16,7 +16,7 @@ namespace EcommerceAPI.Api.Controllers
     /// </summary>
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController, ApiVersion(1.0), ApiVersion(2.0)]
-    [Authorize(Roles = $"{ApplicationRoles.WEB_USER}"), ApiKeyRequired]
+    [ApiKeyRequired]
     public class OrdersController : ControllerBase
     {
         private readonly IOrderServices _orderServices;
@@ -32,7 +32,7 @@ namespace EcommerceAPI.Api.Controllers
         /// <summary>
         /// Creates a new order.
         /// </summary>
-        [HttpPost(""), MapToApiVersion(1.0)]
+        [HttpPost(""), MapToApiVersion(1.0), Authorize(Roles = $"{ApplicationRoles.WEB_USER}")]
         public async Task<IActionResult> CreateOrder([FromBody] ShippingAddressDTO shippingAddress, [FromQuery] string paymentIntentId)
         {
             var modelState = ModelValidator.ValidateModel(shippingAddress);
@@ -46,7 +46,7 @@ namespace EcommerceAPI.Api.Controllers
         /// Cancels an order.
         /// </summary>
         /// <param name="orderId">The ID of the order to cancel.</param>
-        [HttpDelete("{orderId}"), MapToApiVersion(1.0)]
+        [HttpDelete("{orderId}"), MapToApiVersion(1.0), Authorize(Roles = $"{ApplicationRoles.WEB_USER}")]
         public async Task<IActionResult> CancelOrder(string orderId)
         {
             if (string.IsNullOrEmpty(orderId)) return BadRequest(new { Error = "Route value 'order-id' must be given." });
@@ -56,10 +56,26 @@ namespace EcommerceAPI.Api.Controllers
         }
 
         /// <summary>
+        /// Cancelled order by admin.
+        /// </summary>
+        /// <param name="orderId">Which order is to be cancelled.</param>
+        /// <param name="userId">The user whose order is to be cancelled.</param>
+        /// <returns></returns>
+        [Route("/api/admin/v{version:apiVersion}/[controller]"), HttpDelete]
+        [MapToApiVersion(2.0), Authorize(Roles = $"{ApplicationRoles.ADMIN}")]
+        public async Task<IActionResult> CancelOrderByAdmin([FromQuery] string orderId, [FromQuery] string userId)
+        {
+            if (string.IsNullOrEmpty(orderId)) return BadRequest(new { Error = "Route value 'orderid' must be given." });
+            if (string.IsNullOrEmpty(userId)) return BadRequest(new { Error = "Route value 'userid' must be given." });
+            await _orderServices.CancelOrder(orderId, userId);
+            return NoContent();
+        }
+
+        /// <summary>
         /// Retrieves all orders for the current user.
         /// </summary>
         /// <returns>A response containing the list of orders.</returns>
-        [HttpGet(""), MapToApiVersion(1.0), ApiKeyRequired, Authorize(Roles = "Admin, Web_User")]
+        [HttpGet(""), MapToApiVersion(1.0), Authorize(Roles = $"{ApplicationRoles.WEB_USER}")]
         public async Task<IActionResult> GetAllOrdersByUser()
         {
             var userId = User.GetUserId() ?? throw new ArgumentNullException("User not authenticated.");
@@ -73,9 +89,10 @@ namespace EcommerceAPI.Api.Controllers
         /// <returns>A list of orders</returns>
         [Route("/api/admin/v{version:apiVersion}/[controller]")]
         [HttpGet]
-        [MapToApiVersion(2.0), ApiKeyRequired, Authorize(Roles = "Admin")]
+        [MapToApiVersion(2.0), Authorize(Roles = $"{ApplicationRoles.ADMIN}")]
         public async Task<IActionResult> GetAllOrdersByAdmin()
         {
+            var orders = await _orderServices.GetAllOrders();
             return Ok();
         }
 
@@ -84,7 +101,7 @@ namespace EcommerceAPI.Api.Controllers
         /// </summary>
         /// <param name="orderId">The ID of the order to retrieve.</param>
         /// <returns>A response containing the order details.</returns>
-        [HttpGet("{orderId}"), MapToApiVersion(1.0)]
+        [HttpGet("{orderId}"), MapToApiVersion(1.0), Authorize(Roles = $"{ApplicationRoles.ADMIN}, {ApplicationRoles.WEB_USER}")]
         public async Task<IActionResult> GetOrderByOrderId(string orderId)
         {
             if (string.IsNullOrEmpty(orderId)) return BadRequest(new { Error = "Route value 'order-id' must be given." });

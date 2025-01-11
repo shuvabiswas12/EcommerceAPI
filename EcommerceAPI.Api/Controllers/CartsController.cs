@@ -7,6 +7,8 @@ using EcommerceAPI.Utilities;
 using EcommerceAPI.Utilities.Filters;
 using System.Security.Claims;
 using EcommerceAPI.Utilities.Exceptions;
+using Asp.Versioning;
+using EcommerceAPI.Utilities.ApplicationRoles;
 
 namespace EcommerceAPI.Api.Controllers
 {
@@ -16,7 +18,7 @@ namespace EcommerceAPI.Api.Controllers
     /// <remarks>
     /// This controller provides actions to manage shopping carts, allowing users to add, remove, and view items in their cart.
     /// </remarks>
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]"), ApiVersion(1.0)]
     [ApiController]
     public class CartsController : ControllerBase
     {
@@ -33,7 +35,7 @@ namespace EcommerceAPI.Api.Controllers
         /// <summary>
         /// Retrieves a shopping cart by its ID.
         /// </summary>
-        [HttpGet(""), ApiKeyRequired, Authorize(Roles = "Web_User")]
+        [HttpGet(""), ApiKeyRequired, Authorize(Roles = $"{ApplicationRoles.WEB_USER}")]
         public async Task<IActionResult> GetCartByUserId()
         {
             var userId = User.GetUserId();
@@ -44,7 +46,7 @@ namespace EcommerceAPI.Api.Controllers
         /// <summary>
         /// Adds a product to the shopping cart or updates the product quantity in the cart.
         /// </summary>
-        [HttpPost, ApiKeyRequired, Authorize(Roles = "Web_User")]
+        [HttpPost, ApiKeyRequired, Authorize(Roles = $"{ApplicationRoles.WEB_USER}")]
         public async Task<IActionResult> AddProductIntoCart([FromBody] CartCreateDTO payload)
         {
             var userId = User.GetUserId();
@@ -76,7 +78,7 @@ namespace EcommerceAPI.Api.Controllers
         /// <summary>
         /// Removes products from the shopping cart.
         /// </summary>
-        [HttpDelete, ApiKeyRequired, Authorize(Roles = "Web_User")]
+        [HttpDelete, ApiKeyRequired, Authorize(Roles = $"{ApplicationRoles.WEB_USER}")]
         public async Task<IActionResult> DeleteProductsFromCart([FromBody] List<string> products)
         {
             if (!products.Any())

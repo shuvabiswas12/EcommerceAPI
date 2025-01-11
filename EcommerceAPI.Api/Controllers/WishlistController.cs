@@ -1,4 +1,5 @@
-﻿using EcommerceAPI.Services.IServices;
+﻿using Asp.Versioning;
+using EcommerceAPI.Services.IServices;
 using EcommerceAPI.Utilities;
 using EcommerceAPI.Utilities.ApplicationRoles;
 using EcommerceAPI.Utilities.Filters;
@@ -10,7 +11,7 @@ namespace EcommerceAPI.Api.Controllers
     /// <summary>
     /// Controller for managing wishlist operations.
     /// </summary>
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]"), ApiVersion(1.0)]
     [Authorize(Roles = ApplicationRoles.WEB_USER), ApiKeyRequired]
     [ApiController]
     public class WishlistController : ControllerBase
