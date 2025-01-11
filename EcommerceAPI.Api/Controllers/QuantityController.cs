@@ -6,14 +6,15 @@ using EcommerceAPI.Services.IServices;
 using EcommerceAPI.Utilities.ApplicationRoles;
 using EcommerceAPI.Utilities.Filters;
 using EcommerceAPI.Utilities.Exceptions;
+using Asp.Versioning;
 
 namespace EcommerceAPI.Api.Controllers
 {
     /// <summary>
     /// Controller for managing product quantities.
     /// </summary>
-    [ApiController]
-    [Route("api/admin/[controller]")]
+    [ApiController, ApiVersion(2.0)]
+    [Route("api/admin/v{version:apiVersion}/[controller]")]
     [Authorize(Roles = ApplicationRoles.ADMIN), ApiKeyRequired]
     public class QuantityController : ControllerBase
     {

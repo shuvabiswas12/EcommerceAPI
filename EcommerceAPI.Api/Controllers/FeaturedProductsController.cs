@@ -1,4 +1,5 @@
-﻿using EcommerceAPI.DTOs;
+﻿using Asp.Versioning;
+using EcommerceAPI.DTOs;
 using EcommerceAPI.Services.IServices;
 using EcommerceAPI.Utilities.ApplicationRoles;
 using EcommerceAPI.Utilities.Filters;
@@ -10,7 +11,8 @@ namespace EcommerceAPI.Api.Controllers
     /// <summary>
     /// Controller for managing featured products in the Shopping Basket API.
     /// </summary>
-    [Route("api/admin/[controller]")]
+    [ApiVersion(2.0)]
+    [Route("api/admin/v{version:apiVersion}/[controller]")]
     [ApiController]
     [ApiKeyRequired, Authorize(Roles = ApplicationRoles.ADMIN)]
     public class FeaturedProductsController : ControllerBase

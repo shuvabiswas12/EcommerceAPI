@@ -4,13 +4,14 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using EcommerceAPI.Utilities.ApplicationRoles;
 using EcommerceAPI.Utilities.Filters;
+using Asp.Versioning;
 
 namespace EcommerceAPI.Api.Controllers.Admin
 {
     /// <summary>
     /// Controller for managing dashboard-related operations.
     /// </summary>
-    [Route("api/admin/[controller]")]
+    [ApiVersion(2.0), Route("api/admin/v{version:apiVersion}/[controller]")]
     [ApiController, ApiKeyRequired, Authorize(Roles = ApplicationRoles.ADMIN)]
     public class DashboardController : ControllerBase
     {

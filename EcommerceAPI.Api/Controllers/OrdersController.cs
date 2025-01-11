@@ -1,4 +1,5 @@
-﻿using EcommerceAPI.DTOs;
+﻿using Asp.Versioning;
+using EcommerceAPI.DTOs;
 using EcommerceAPI.Services.IServices;
 using EcommerceAPI.Utilities;
 using EcommerceAPI.Utilities.ApplicationRoles;
@@ -13,8 +14,8 @@ namespace EcommerceAPI.Api.Controllers
     /// <summary>
     /// Controller for managing orders.
     /// </summary>
-    [Route("api/[controller]")]
-    [ApiController]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiController, ApiVersion(1.0), ApiVersion(2.0)]
     [Authorize(Roles = $"{ApplicationRoles.WEB_USER}"), ApiKeyRequired]
     public class OrdersController : ControllerBase
     {
@@ -31,7 +32,7 @@ namespace EcommerceAPI.Api.Controllers
         /// <summary>
         /// Creates a new order.
         /// </summary>
-        [HttpPost("")]
+        [HttpPost(""), MapToApiVersion(1.0)]
         public async Task<IActionResult> CreateOrder([FromBody] ShippingAddressDTO shippingAddress, [FromQuery] string paymentIntentId)
         {
             var modelState = ModelValidator.ValidateModel(shippingAddress);
@@ -45,7 +46,7 @@ namespace EcommerceAPI.Api.Controllers
         /// Cancels an order.
         /// </summary>
         /// <param name="orderId">The ID of the order to cancel.</param>
-        [HttpDelete("{orderId}")]
+        [HttpDelete("{orderId}"), MapToApiVersion(1.0)]
         public async Task<IActionResult> CancelOrder(string orderId)
         {
             if (string.IsNullOrEmpty(orderId)) return BadRequest(new { Error = "Route value 'order-id' must be given." });
@@ -58,8 +59,8 @@ namespace EcommerceAPI.Api.Controllers
         /// Retrieves all orders for the current user.
         /// </summary>
         /// <returns>A response containing the list of orders.</returns>
-        [HttpGet("")]
-        public async Task<IActionResult> GetAllOrders()
+        [HttpGet(""), MapToApiVersion(1.0), ApiKeyRequired, Authorize(Roles = "Admin, Web_User")]
+        public async Task<IActionResult> GetAllOrdersByUser()
         {
             var userId = User.GetUserId() ?? throw new ArgumentNullException("User not authenticated.");
             var orders = await _orderServices.GetAllOrders(userId);
@@ -67,11 +68,23 @@ namespace EcommerceAPI.Api.Controllers
         }
 
         /// <summary>
+        /// Retrieves all orders for the users from admin panel.
+        /// </summary>
+        /// <returns>A list of orders</returns>
+        [Route("/api/admin/v{version:apiVersion}/[controller]")]
+        [HttpGet]
+        [MapToApiVersion(2.0), ApiKeyRequired, Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllOrdersByAdmin()
+        {
+            return Ok();
+        }
+
+        /// <summary>
         /// Retrieves an order by its ID.
         /// </summary>
         /// <param name="orderId">The ID of the order to retrieve.</param>
         /// <returns>A response containing the order details.</returns>
-        [HttpGet("{orderId}")]
+        [HttpGet("{orderId}"), MapToApiVersion(1.0)]
         public async Task<IActionResult> GetOrderByOrderId(string orderId)
         {
             if (string.IsNullOrEmpty(orderId)) return BadRequest(new { Error = "Route value 'order-id' must be given." });

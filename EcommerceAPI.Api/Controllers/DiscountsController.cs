@@ -8,13 +8,14 @@ using EcommerceAPI.Utilities.Filters;
 using EcommerceAPI.Utilities.Validation;
 using EcommerceAPI.Utilities.Exceptions;
 using System.ComponentModel.DataAnnotations;
+using Asp.Versioning;
 
 namespace EcommerceAPI.Api.Controllers
 {
     /// <summary>
     /// Controller for managing discounts related to products in the Shopping Basket API.
     /// </summary>
-    [Route("api/admin/[controller]")]
+    [ApiVersion(2.0), Route("api/admin/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class DiscountsController : ControllerBase
     {
