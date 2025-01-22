@@ -7,7 +7,6 @@ using Microsoft.IdentityModel.Tokens;
 using EcommerceAPI.Domain;
 using EcommerceAPI.DTOs;
 using EcommerceAPI.Services.IServices;
-using EcommerceAPI.Utilities;
 using EcommerceAPI.Utilities.ApplicationRoles;
 using EcommerceAPI.Utilities.Exceptions;
 using System;
@@ -65,7 +64,7 @@ namespace EcommerceAPI.Services.Services
             return loginResponse;
         }
 
-        private async Task<string> GenerateJwtToken(ApplicationUser user)
+        public async Task<string> GenerateJwtToken(ApplicationUser user)
         {
             /***
              * Claims are some information that inserts your token.
@@ -140,5 +139,6 @@ namespace EcommerceAPI.Services.Services
         }
 
         public async Task<ApplicationUser?> GetUserByIdAsync(string applicationUserId) => await _userManager.FindByIdAsync(applicationUserId ?? throw new ArgumentNullException("User id should not be null."));
+
     }
 }

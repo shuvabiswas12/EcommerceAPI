@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -20,8 +18,8 @@ using System.Text;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
 using Asp.Versioning;
-using Microsoft.Extensions.Options;
 using Asp.Versioning.ApiExplorer;
+using EcommerceAPI.DTOs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -125,6 +123,11 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
+// Configure google authentication cred with a model class
+builder.Services.Configure<GoogleAuthConfigDTO>(builder.Configuration.GetSection("GoogleAuthConfig"));
+// builder.Services.AddOptions<GoogleAuthConfigDTO>().Bind(builder.Configuration.GetSection("GoogleAuthConfig"));
+// builder.Services.AddOptions<GoogleAuthConfigDTO>().BindConfiguration("GoogleAuthConfig");
+
 // Configuring CORS Policy
 builder.Services.AddCors(option =>
 {
@@ -165,6 +168,7 @@ builder.Services.AddScoped<IOrderServices, OrderServices>();
 builder.Services.AddScoped<IPaymentServices, PaymentServices>();
 builder.Services.AddScoped<IQuantityServices, QuantityServices>();
 builder.Services.AddScoped<IWishlistServices, WishlistServices>();
+builder.Services.AddScoped<IGoogleAuthService, GoogleAuthService>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
