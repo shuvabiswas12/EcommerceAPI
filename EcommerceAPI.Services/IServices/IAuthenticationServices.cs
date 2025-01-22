@@ -13,5 +13,12 @@ namespace EcommerceAPI.Services.IServices
         public Task<LoginResponseDTO> Login(LoginRequestDTO loginRequestDTO);
         public Task<RegistrationResponseDTO> Register(RegistrationRequestDTO registrationRequestDTO);
         public Task<ApplicationUser?> GetUserByIdAsync(string applicationUserId);
+
+        /// <summary>
+        /// Generate JWT Token
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns>Return a string type token.</returns>
+        public Task<string> GenerateJwtToken(ApplicationUser user);
     }
 }
