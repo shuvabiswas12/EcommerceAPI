@@ -12,11 +12,11 @@ namespace EcommerceAPI.Domain
     public class ShoppingCart
     {
         public int Count { get; set; } = 1;
-        public required string ProductId { get; set; }
+        public string ProductId { get; set; } = null!;
         [ValidateNever, ForeignKey("ProductId")] public Product? Product { get; set; }
-
         [ForeignKey("ApplicationUser")] public required string ApplicationUserId { get; set; }
-        [ValidateNever] public ApplicationUser? ApplicationUser { get; set; }
+        [ValidateNever, JsonIgnore] public ApplicationUser? ApplicationUser { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
     }
 }

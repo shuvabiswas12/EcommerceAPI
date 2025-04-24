@@ -12,15 +12,14 @@ namespace EcommerceAPI.Domain
 {
     public class Discount
     {
+        [Key] public string Id { get; set; } = Guid.NewGuid().ToString();
         public string ProductId { get; set; } = null!;
+        [ValidateNever, JsonIgnore, ForeignKey("ProductId")] public Product Product { get; set; } = null!;
 
-        [ValidateNever, JsonIgnore, ForeignKey("ProductId")]
-        public Product Product { get; set; } = null!;
-
-        // Should be provide 20 if rate percent is 20%
         [Required(ErrorMessage = "Discount rate without percent value. Example:- Write 20 if discount rate is 20%.")]
-        public double DiscountRate { get; set; } = 0.0;
-
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public required double DiscountRate { get; set; } = 0.0;
+        public required Boolean DiscountEnabled { get; set; } = true;
+        public DateTime? DiscountEndAt { get; set; }
+        public DateTime DiscountStartAt { get; set; } = DateTime.UtcNow;
     }
 }

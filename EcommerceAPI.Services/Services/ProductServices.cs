@@ -28,11 +28,12 @@ namespace EcommerceAPI.Services.Services
         {
             var product = new Product
             {
+                CategoryId = productDto.CategoryId,
                 Name = productDto.Name.Trim(),
                 Description = productDto.Description.Trim(),
                 Price = productDto.Price,
-                Images = productDto.ImageUrls.Select(url => new Image { ImageUrl = url }).ToList(),
             };
+            product.Images = productDto.ImageUrls.Select(url => new Image { ImageUrl = url, ProductId = product.Id }).ToList();
 
             var createdProduct = await _unitOfWork.GenericRepository<Product>().AddAsync(product);
             await _unitOfWork.SaveAsync();

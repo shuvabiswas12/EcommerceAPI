@@ -33,7 +33,7 @@ namespace EcommerceAPI.DTOs
 
         [NotEmpty(errorMessage: "Post code must be given.")] public string PostCode { get; set; } = null!;
 
-        public string? AddressLine1 { get; set; }
+        public string AddressLine1 { get; set; } = null!;
 
         public string? AddressLine2 { get; set; }
     }

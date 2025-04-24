@@ -27,13 +27,14 @@ namespace EcommerceAPI.Services.Services
             if (discount == null)
             {
                 // Create a new discount.
-                await _unitOfWork.GenericRepository<Discount>().AddAsync(new Discount { ProductId = id, DiscountRate = discountRequestDTO.DiscountRate });
+                await _unitOfWork.GenericRepository<Discount>().AddAsync(new Discount { ProductId = id, DiscountRate = discountRequestDTO.DiscountRate, DiscountEnabled = true, DiscountEndAt = discountRequestDTO.DiscountEndAt });
                 await _unitOfWork.SaveAsync();
                 return;
             }
 
             // Update the old discount.
             discount.DiscountRate = discountRequestDTO.DiscountRate;
+            discount.DiscountEndAt = discountRequestDTO.DiscountEndAt;
             await _unitOfWork.SaveAsync();
         }
 

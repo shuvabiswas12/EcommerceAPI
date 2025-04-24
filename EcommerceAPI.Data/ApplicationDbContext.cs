@@ -21,7 +21,6 @@ namespace EcommerceAPI.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<Image> Images { get; set; }
         public DbSet<Discount> Discounts { get; set; }
-        public DbSet<FeaturedProduct> FeaturedProducts { get; set; }
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<OrderHeader> OrderHeaders { get; set; }
@@ -44,10 +43,6 @@ namespace EcommerceAPI.Data
                 .HasKey(x => new { x.ProductId, x.ImageUrl });
 
             // Composite primary key
-            builder.Entity<ProductCategory>()
-                .HasKey(x => new { x.ProductId, x.CategoryId });
-
-            // Composite primary key
             builder.Entity<ShoppingCart>()
                 .HasKey(x => new { x.ProductId, x.ApplicationUserId, x.CreatedAt });
 
@@ -55,27 +50,11 @@ namespace EcommerceAPI.Data
             builder.Entity<Discount>()
                 .HasKey(x => new { x.ProductId });
 
-            // Primary key
-            builder.Entity<FeaturedProduct>()
-                .HasKey(x => new { x.ProductId });
-
             // One to one relationship between Product and Discount
             builder.Entity<Product>()
                 .HasOne(p => p.Discount)
                 .WithOne(d => d.Product)
                 .HasForeignKey<Discount>(d => d.ProductId);
-
-            // One-to-one relationship between Product and FeaturedProduct
-            builder.Entity<Product>()
-                .HasOne(p => p.FeaturedProduct)
-                .WithOne(f => f.Product)
-                .HasForeignKey<FeaturedProduct>(f => f.ProductId);
-
-            // One-to-one relationship between Product and ProductCategory
-            builder.Entity<Product>()
-                .HasOne(p => p.ProductCategory)
-                .WithOne(pc => pc.Product)
-                .HasForeignKey<ProductCategory>(pc => pc.ProductId);
 
             // Composite primary key for OrderDetail table
             builder.Entity<OrderDetail>()

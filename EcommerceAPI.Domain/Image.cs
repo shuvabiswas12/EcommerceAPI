@@ -13,10 +13,10 @@ namespace EcommerceAPI.Domain
 {
     public class Image
     {
-        [Required(ErrorMessage = "Url of image should not be empty!")] public string ImageUrl { get; set; } = null!;
-
+        [Key] public string Id { get; set; } = Guid.NewGuid().ToString();
+        [Required(ErrorMessage = "Url of image should not be empty!")] public required string ImageUrl { get; set; }
         public string ProductId { get; set; } = null!;
-
         [ValidateNever, JsonIgnore, ForeignKey("ProductId")] public Product Product { get; set; } = null!;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }

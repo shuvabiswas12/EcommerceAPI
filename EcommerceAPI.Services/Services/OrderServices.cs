@@ -46,6 +46,17 @@ namespace EcommerceAPI.Services.Services
             // Create a new OrderHeader object
             var orderHeader = new OrderHeader
             {
+                OrderStatus = Status.OrderStatus_Pending,
+                ApplicationUserId = user.Id,
+                OrderAmount = paymentIntent.Amount,
+                Currency = paymentIntent.Currency,
+                PaymentStatus = Status.PaymentStatus_Paid,
+                PaymentType = Status.PaymentType_OnlinePayment,
+                PaymentIntentId = paymentIntent.Id,
+            };
+
+            orderHeader.OrderAddress = new OrderAddress
+            {
                 FullName = payload.FullName,
                 Phone = payload.Phone,
                 Email = payload.Email,
@@ -55,18 +66,11 @@ namespace EcommerceAPI.Services.Services
                 Country = payload.Country,
                 State = payload.State,
                 PostCode = payload.PostCode,
-                OrderStatus = Status.OrderStatus_Pending,
-                ApplicationUserId = user.Id,
-                OrderAmount = paymentIntent.Amount,
-                Currency = paymentIntent.Currency,
                 Province = payload.Province,
                 AddressLine1 = payload.AddressLine1,
                 AddressLine2 = payload.AddressLine2,
                 AlternatePhone = payload.AlternatePhone,
-                LandMark = payload.LandMark,
-                PaymentStatus = Status.PaymentStatus_Paid,
-                PaymentType = Status.PaymentType_OnlinePayment,
-                PaymentIntentId = paymentIntent.Id,
+                LandMark = payload.LandMark
             };
 
             await _unitOfWork.GenericRepository<OrderHeader>().AddAsync(orderHeader);

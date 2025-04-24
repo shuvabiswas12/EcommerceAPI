@@ -11,6 +11,7 @@ namespace EcommerceAPI.DTOs
 {
     public class ProductCreateDTO
     {
+        [NotEmpty("Category must be required.")] public string CategoryId { get; set; } = null!;
         [NotEmpty(errorMessage: "Name field is required.")] public string Name { get; set; } = null!;
         [NotEmpty(errorMessage: "Description field is required.")] public string Description { get; set; } = null!;
         [GreaterThan(0, "Price field must be greater than zero.")] public decimal Price { get; set; }

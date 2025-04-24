@@ -12,29 +12,14 @@ namespace EcommerceAPI.Domain
 {
     public class OrderDetail
     {
-        [Required]
-        public string OrderHeaderId { get; set; } = null!;
-
-        [ForeignKey("OrderHeaderId"), ValidateNever]
-        public OrderHeader OrderHeader { get; set; } = null!;
-
-        [Required]
-        public string ProductId { get; set; } = null!;
-
-        [ValidateNever, ForeignKey("ProductId")]
-        public Product Product { get; set; } = null!;
-
-        [Required]
-        public string ProductName { get; set; } = null!;
-
-        [Required]
-        public int Quantity { get; set; }
-
-        [Required, Precision(10, 2)]
-        public decimal Price { get; set; }
-
-        [Required, Precision(10, 2)]
-        public decimal Total => Quantity * Price;
+        [Required] public string OrderHeaderId { get; set; } = null!;
+        [ForeignKey("OrderHeaderId"), ValidateNever] public OrderHeader OrderHeader { get; set; } = null!;
+        [Required] public string ProductId { get; set; } = null!;
+        [ValidateNever, ForeignKey("ProductId")] public Product Product { get; set; } = null!;
+        [Required] public int Quantity { get; set; }
+        [Required, Precision(10, 2)] public decimal Price { get; set; }
+        [Required, Precision(10, 2)] public decimal Total => Quantity * Price;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 
 }
