@@ -5,7 +5,8 @@
 
 
 
-**/appsettings.json
+/EcommerceAPI.Api/appsettings.json
+
 # User-specific files
 *.rsuser
 *.suo
