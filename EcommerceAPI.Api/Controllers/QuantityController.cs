@@ -36,7 +36,7 @@ namespace EcommerceAPI.Api.Controllers
         {
             if (string.IsNullOrEmpty(productId))
             {
-                throw new ArgumentNullException(nameof(productId), "Route value 'Product-Id' must be given.");
+                throw new ApiException(System.Net.HttpStatusCode.BadRequest, "Route value 'productId' must be given.");
             }
 
             if (payload.Quantity < 0)
@@ -45,7 +45,7 @@ namespace EcommerceAPI.Api.Controllers
             }
 
             await _quantityServices.ModifyQuantityAsync(payload.Quantity, productId);
-            return StatusCode(StatusCodes.Status201Created);
+            return NoContent();
         }
     }
 }

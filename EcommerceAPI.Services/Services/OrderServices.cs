@@ -115,7 +115,7 @@ namespace EcommerceAPI.Services.Services
         public async Task UpdateOrder(OrderHeader order, string userId)
         {
             var orderToUpdate = await this.GetOrder(order.Id, userId);
-            if (orderToUpdate == null) throw new NotFoundException(message: "Order is not available.");
+            if (orderToUpdate == null) throw new ApiException(System.Net.HttpStatusCode.NotFound, message: "The requested order could not be found.");
             if (order.OrderStatus != null) orderToUpdate.OrderStatus = order.OrderStatus;
             if (order.PaymentStatus != null) orderToUpdate.PaymentStatus = order.PaymentStatus;
             if (order.PaymentType != null) orderToUpdate.PaymentType = order.PaymentType;

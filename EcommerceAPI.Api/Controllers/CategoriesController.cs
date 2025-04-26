@@ -29,7 +29,6 @@ namespace EcommerceAPI.Api.Controllers
         /// <summary>
         /// Gets all categories.
         /// </summary>
-        /// <returns>A list of all categories.</returns>
         [MapToApiVersion(1.0)]
         [HttpGet("api/v{version:apiVersion}/[controller]")]
         public async Task<IActionResult> GetAll()
@@ -41,34 +40,28 @@ namespace EcommerceAPI.Api.Controllers
         /// <summary>
         /// Creates a new category.
         /// </summary>
-        /// <param name="createCategory">The category to create.</param>
-        /// <returns>The created category.</returns>
         [MapToApiVersion(2.0)]
         [HttpPost("api/admin/v{version:apiVersion}/[controller]"), Authorize(Roles = ApplicationRoles.ADMIN), ApiKeyRequired]
         public async Task<IActionResult> CreateCategory(CategoryCreateDTO createCategory)
         {
             var category = await _categoryServices.CreateCategory(createCategory);
-            return CreatedAtAction(nameof(GetCategoryById), new { id = category.Id }, category);
+            return Ok(category.Id);
         }
 
         /// <summary>
         /// Updates an existing category.
         /// </summary>
-        /// <param name="categoryToUpdate">The category to update.</param>
-        /// <returns>The updated category.</returns>
         [MapToApiVersion(2.0)]
         [HttpPut("api/admin/v{version:apiVersion}/[controller]"), Authorize(Roles = ApplicationRoles.ADMIN), ApiKeyRequired]
         public async Task<IActionResult> UpdateCategory(CategoryUpdateDTO categoryToUpdate)
         {
-            var updatedCategory = await _categoryServices.UpdateCategory(categoryToUpdate.Id.Trim(), categoryToUpdate.Name.Trim());
-            return Ok(updatedCategory);
+            await _categoryServices.UpdateCategory(categoryToUpdate.Id.Trim(), categoryToUpdate.Name.Trim());
+            return NoContent();
         }
 
         /// <summary>
         /// Gets a single category by ID.
         /// </summary>
-        /// <param name="id">The category ID.</param>
-        /// <returns>The category with the specified ID.</returns>
         [MapToApiVersion(1.0)]
         [HttpGet("api/v{version:apiVersion}/[controller]/{id}")]
         public async Task<IActionResult> GetCategoryById(string id)
@@ -80,8 +73,6 @@ namespace EcommerceAPI.Api.Controllers
         /// <summary>
         /// Deletes a category by ID.
         /// </summary>
-        /// <param name="id">The category ID.</param>
-        /// <returns>A message indicating the result of the deletion.</returns>
         [MapToApiVersion(2.0)]
         [HttpDelete("api/admin/v{version:apiVersion}/[controller]/{id}"), Authorize(Roles = ApplicationRoles.ADMIN), ApiKeyRequired]
         public async Task<IActionResult> DeleteCategory(string id)

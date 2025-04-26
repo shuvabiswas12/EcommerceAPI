@@ -66,7 +66,7 @@ namespace EcommerceAPI.Api.Controllers
             {
                 if (existedWishlist != null)
                 {
-                    return StatusCode(StatusCodes.Status302Found);
+                    return NoContent();
                 }
 
                 await _wishlistServices.AddProductToWishlist(productId, userId);

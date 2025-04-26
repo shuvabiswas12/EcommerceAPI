@@ -50,16 +50,8 @@ namespace EcommerceAPI.Services.Services
             var token = await GenerateJwtToken(user);
             var loginResponse = new LoginResponseDTO
             {
-                Status = "Success",
-                Data = new LoginResponseDTO.UserData
-                {
-                    AccessToken = token,
-                    User = new LoginResponseDTO.UserInfo
-                    {
-                        Email = user.Email!,
-                        Id = user.Id
-                    }
-                }
+                Success = true,
+                AccessToken = token,
             };
             return loginResponse;
         }
@@ -104,7 +96,7 @@ namespace EcommerceAPI.Services.Services
             var user = await _userManager.FindByEmailAsync(registrationRequestDTO.Email);
             if (user is not null)
             {
-                throw new DuplicateEntriesException("This email has taken already.");
+                throw new ApiException(System.Net.HttpStatusCode.Conflict, "This email address is already in use.");
             }
             ApplicationUser newUser = new ApplicationUser
             {
@@ -129,8 +121,7 @@ namespace EcommerceAPI.Services.Services
             await _userManager.AddToRoleAsync(newUser, ApplicationRoles.WEB_USER);
             return new RegistrationResponseDTO
             {
-                Status = "Success",
-                Message = "Your account has been created successfully.",
+                Success = true,
                 User = new RegistrationResponseDTO.UserInfo
                 {
                     Id = newUser.Id

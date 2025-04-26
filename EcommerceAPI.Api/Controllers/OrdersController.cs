@@ -39,18 +39,17 @@ namespace EcommerceAPI.Api.Controllers
             if (!modelState.IsValid) throw new ModelValidationException(modelState);
             var userId = User.GetUserId() ?? throw new UnauthorizedAccessException("User not authenticated.");
             var createdOrder = await _orderServices.CreateOrder(shippingAddress, userId, paymentIntentId);
-            return CreatedAtAction(nameof(GetOrderByOrderId), new { orderId = createdOrder.Id });
+            return Ok(createdOrder.Id);
         }
 
         /// <summary>
         /// Cancels an order.
         /// </summary>
-        /// <param name="orderId">The ID of the order to cancel.</param>
         [HttpDelete("{orderId}"), MapToApiVersion(1.0), Authorize(Roles = $"{ApplicationRoles.WEB_USER}")]
         public async Task<IActionResult> CancelOrder(string orderId)
         {
             if (string.IsNullOrEmpty(orderId)) return BadRequest(new { Error = "Route value 'order-id' must be given." });
-            var userId = User.GetUserId() ?? throw new ArgumentNullException("User not authenticated.");
+            var userId = User.GetUserId() ?? throw new UnauthorizedAccessException("User not authenticated.");
             await _orderServices.CancelOrder(orderId, userId);
             return NoContent();
         }
@@ -58,9 +57,6 @@ namespace EcommerceAPI.Api.Controllers
         /// <summary>
         /// Cancelled order by admin.
         /// </summary>
-        /// <param name="orderId">Which order is to be cancelled.</param>
-        /// <param name="userId">The user whose order is to be cancelled.</param>
-        /// <returns></returns>
         [Route("/api/admin/v{version:apiVersion}/[controller]"), HttpDelete]
         [MapToApiVersion(2.0), Authorize(Roles = $"{ApplicationRoles.ADMIN}")]
         public async Task<IActionResult> CancelOrderByAdmin([FromQuery] string orderId, [FromQuery] string userId)
@@ -74,11 +70,10 @@ namespace EcommerceAPI.Api.Controllers
         /// <summary>
         /// Retrieves all orders for the current user.
         /// </summary>
-        /// <returns>A response containing the list of orders.</returns>
         [HttpGet(""), MapToApiVersion(1.0), Authorize(Roles = $"{ApplicationRoles.WEB_USER}")]
         public async Task<IActionResult> GetAllOrdersByUser()
         {
-            var userId = User.GetUserId() ?? throw new ArgumentNullException("User not authenticated.");
+            var userId = User.GetUserId() ?? throw new UnauthorizedAccessException("User not authenticated.");
             var orders = await _orderServices.GetAllOrders(userId);
             return Ok(orders);
         }
@@ -86,21 +81,18 @@ namespace EcommerceAPI.Api.Controllers
         /// <summary>
         /// Retrieves all orders for the users from admin panel.
         /// </summary>
-        /// <returns>A list of orders</returns>
         [Route("/api/admin/v{version:apiVersion}/[controller]")]
         [HttpGet]
         [MapToApiVersion(2.0), Authorize(Roles = $"{ApplicationRoles.ADMIN}")]
         public async Task<IActionResult> GetAllOrdersByAdmin()
         {
             var orders = await _orderServices.GetAllOrders();
-            return Ok();
+            return Ok(orders);
         }
 
         /// <summary>
         /// Retrieves an order by its ID.
         /// </summary>
-        /// <param name="orderId">The ID of the order to retrieve.</param>
-        /// <returns>A response containing the order details.</returns>
         [HttpGet("{orderId}"), MapToApiVersion(1.0), Authorize(Roles = $"{ApplicationRoles.ADMIN}, {ApplicationRoles.WEB_USER}")]
         public async Task<IActionResult> GetOrderByOrderId(string orderId)
         {

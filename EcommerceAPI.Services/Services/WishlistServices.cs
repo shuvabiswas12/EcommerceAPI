@@ -35,7 +35,7 @@ namespace EcommerceAPI.Services.Services
 
             if (existingProduct == null)
             {
-                throw new NotFoundException("Product not found.");
+                throw new ApiException(System.Net.HttpStatusCode.NotFound, "The Product not found.");
             }
 
             var newWishlist = new Wishlist { ApplicationUserId = userId, ProductId = productId };
@@ -76,7 +76,7 @@ namespace EcommerceAPI.Services.Services
 
             if (existingProduct == null)
             {
-                throw new NotFoundException("The product has not been added in Wishlist.");
+                throw new ApiException(System.Net.HttpStatusCode.NotFound, "This product is not in your wishlist");
             }
 
             await _unitOfWork.GenericRepository<Wishlist>().DeleteAsync(existingProduct);

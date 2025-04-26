@@ -32,14 +32,12 @@ namespace EcommerceAPI.Api.Controllers
         /// <summary>
         /// Sets a discount for a product identified by its ID.
         /// </summary>
-        /// <param name="id">The ID of the product for which to set the discount.</param>
-        /// <param name="discountRequestDTO">DTO containing discount details.</param>
         [HttpPost("{id}"), ApiKeyRequired, Authorize(Roles = "Admin")]
         public async Task<IActionResult> SetProductDiscount([FromRoute] string id, [FromBody] DiscountRequestDTO discountRequestDTO)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                throw new ArgumentNullException("Product ID must be provided.");
+                return BadRequest("Product ID must be provided.");
             }
 
             var modelState = ModelValidator.ValidateModel(discountRequestDTO);
@@ -48,19 +46,18 @@ namespace EcommerceAPI.Api.Controllers
                 throw new ModelValidationException(modelState);
             }
             await _discountServices.AddDiscount(id, discountRequestDTO);
-            return StatusCode(StatusCodes.Status201Created, new { Message = "Successfully added the product discount." });
+            return StatusCode(StatusCodes.Status201Created);
         }
 
         /// <summary>
         /// Removes the discount for a product identified by its ID.
         /// </summary>
-        /// <param name="id">The ID of the product for which to remove the discount.</param>
         [HttpDelete("{id}"), ApiKeyRequired, Authorize(Roles = "Admin")]
         public async Task<IActionResult> RemoveProductDiscount([FromRoute] string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                throw new ArgumentNullException("Product ID must be provided.");
+                return BadRequest("Product ID must be provided.");
             }
             await _discountServices.RemoveDiscount(id);
             return NoContent();

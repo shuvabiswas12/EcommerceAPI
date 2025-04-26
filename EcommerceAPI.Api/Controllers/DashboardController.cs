@@ -35,7 +35,7 @@ namespace EcommerceAPI.Api.Controllers.Admin
         public async Task<IActionResult> CurrentStat()
         {
             await Task.CompletedTask;
-            return Ok();
+            return Ok(new { Message = "Unimplemented feature." });
         }
     }
 }

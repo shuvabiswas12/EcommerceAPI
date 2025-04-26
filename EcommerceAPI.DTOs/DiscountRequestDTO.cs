@@ -11,6 +11,6 @@ namespace EcommerceAPI.DTOs
     {
         [NotEmpty("DiscountRate is required.")]
         public double DiscountRate { get; set; }
-        public DateTime DiscountEndAt { get; set; }
+        [NotEmpty("Discount End Date is required.")] public DateTime DiscountEndAt { get; set; }
     }
 }

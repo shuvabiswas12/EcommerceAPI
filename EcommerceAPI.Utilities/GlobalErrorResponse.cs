@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EcommerceAPI.Utilities.Middlewares
+namespace EcommerceAPI.Utilities
 {
     public class GlobalErrorResponse
     {

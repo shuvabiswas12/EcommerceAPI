@@ -70,7 +70,7 @@ namespace EcommerceAPI.Services.Services
 
             if (!cartsToRemove.Any())
             {
-                throw new NotFoundException("No matching products found in the shopping cart.");
+                throw new ApiException(System.Net.HttpStatusCode.NotFound, "Your shopping cart does not contain any matching products.");
             }
 
             await _unitOfWork.GenericRepository<ShoppingCart>().DeleteRangeAsync(cartsToRemove);

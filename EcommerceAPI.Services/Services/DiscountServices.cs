@@ -43,7 +43,7 @@ namespace EcommerceAPI.Services.Services
             var discountToRemove = await _unitOfWork.GenericRepository<Discount>().GetTAsync(d => d.ProductId == id);
             if (discountToRemove == null)
             {
-                throw new NotFoundException(message: "There is no discount available for the product.");
+                throw new ApiException(System.Net.HttpStatusCode.NotFound, message: "Sorry, this product is not eligible for a discount right now.");
             }
 
             // Remove the discount.

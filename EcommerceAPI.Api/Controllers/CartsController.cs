@@ -15,9 +15,6 @@ namespace EcommerceAPI.Api.Controllers
     /// <summary>
     /// Controller to manage shopping carts.
     /// </summary>
-    /// <remarks>
-    /// This controller provides actions to manage shopping carts, allowing users to add, remove, and view items in their cart.
-    /// </remarks>
     [Route("api/v{version:apiVersion}/[controller]"), ApiVersion(1.0)]
     [ApiController]
     public class CartsController : ControllerBase
@@ -72,7 +69,7 @@ namespace EcommerceAPI.Api.Controllers
 
             // If the count is greater than zero, add or update the product in the cart
             await _shoppingCartServices.AddProductToShoppingCart(payload);
-            return StatusCode(StatusCodes.Status201Created, new { Message = "Product added or updated in the cart." });
+            return StatusCode(StatusCodes.Status201Created);
         }
 
         /// <summary>

@@ -34,7 +34,6 @@ namespace EcommerceAPI.Api.Controllers
         /// <summary>
         /// Creates a payment intent and returns the client secret.
         /// </summary>
-        /// <returns>Client secret for the payment intent.</returns>
         [HttpPost("payment-intent"), ApiKeyRequired, Authorize(Roles = $"{ApplicationRoles.WEB_USER}")]
         public async Task<IActionResult> CreatePaymentIntent()
         {

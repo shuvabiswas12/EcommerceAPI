@@ -42,64 +42,37 @@ namespace EcommerceAPI.Utilities.Middlewares
 
         private static Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            var response = context.Response;
-            response.ContentType = "application/json";
+            context.Response.ContentType = "application/json";
 
-            HttpStatusCode statusCode = HttpStatusCode.InternalServerError; // Default to 500 Internal Server Error
-            string result;
+            HttpStatusCode statusCode;
+            object? errors = null;
 
             switch (exception)
             {
-                case NotFoundException ex:
-                    statusCode = HttpStatusCode.NotFound;
-                    result = JsonSerializer.Serialize(new { error = ex.Message });
-                    break;
-
-                case ValidationException ex:
-                    statusCode = HttpStatusCode.BadRequest;
-                    result = JsonSerializer.Serialize(new { error = ex.Message });
-                    break;
-
-                case ModelValidationException ex:
-                    statusCode = HttpStatusCode.BadRequest;
-                    result = JsonSerializer.Serialize(new { error = ex.ValidationErrors });
+                case ApiException ex:
+                    statusCode = ex.StatusCode;
+                    errors = ex.ErrorDetails;
                     break;
 
                 case UnauthorizedAccessException ex:
                     statusCode = HttpStatusCode.Unauthorized;
-                    result = JsonSerializer.Serialize(new { error = ex.Message });
+                    errors = string.IsNullOrWhiteSpace(ex.Message) ? null : new { error = ex.Message };
                     break;
 
-                case InvalidOperationException ex:
-                    statusCode = HttpStatusCode.BadRequest;
-                    result = JsonSerializer.Serialize(new { error = ex.Message });
-                    break;
-
-                case DuplicateEntriesException ex:
-                    statusCode = HttpStatusCode.Conflict;
-                    result = JsonSerializer.Serialize(new { error = ex.Message });
-                    break;
-
-                case ArgumentNullException ex:
-                    statusCode = HttpStatusCode.BadRequest;
-                    result = JsonSerializer.Serialize(new { error = ex.Message });
-                    break;
-
-                case ArgumentOutOfRangeException ex:
-                    statusCode = HttpStatusCode.BadRequest;
-                    result = JsonSerializer.Serialize(new { error = ex.Message });
-                    break;
-
-                case ArgumentException ex:
-                    statusCode = HttpStatusCode.BadRequest;
-                    result = JsonSerializer.Serialize(new { error = ex.Message });
+                case ModelValidationException ex:
+                    statusCode = HttpStatusCode.BadGateway;
+                    errors = string.IsNullOrWhiteSpace(ex.Message) ? null : new { error = ex.Message };
                     break;
 
                 default:
-                    result = JsonSerializer.Serialize(new { error = "An unexpected error occurred." });
+                    statusCode = HttpStatusCode.InternalServerError;
+                    errors = new { error = "An unexpected error occurred." };
                     break;
             }
             context.Response.StatusCode = (int)statusCode;
+            if (errors is null) return Task.CompletedTask;
+
+            var result = JsonSerializer.Serialize(errors);
             return context.Response.WriteAsync(result);
         }
     }

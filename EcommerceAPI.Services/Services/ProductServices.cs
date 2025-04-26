@@ -49,7 +49,7 @@ namespace EcommerceAPI.Services.Services
             var productToDelete = await _unitOfWork.GenericRepository<Product>().GetTAsync(x => x.Id == id.ToString(), includeProperties: "Images");
             if (productToDelete == null)
             {
-                throw new NotFoundException("Product not found.");
+                throw new ApiException(System.Net.HttpStatusCode.NotFound, "The Product not found.");
             }
             await _unitOfWork.GenericRepository<Product>().DeleteAsync(productToDelete);
             await _unitOfWork.SaveAsync();
@@ -75,7 +75,7 @@ namespace EcommerceAPI.Services.Services
             var productResult = await _unitOfWork.GenericRepository<Product>().GetTAsync(x => x.Id == id.ToString(), includeProperties: "Images");
             if (productResult == null)
             {
-                throw new NotFoundException(message: "Product not found.");
+                throw new ApiException(System.Net.HttpStatusCode.NotFound, "The Product not found.");
             }
             return productResult;
         }
@@ -90,7 +90,7 @@ namespace EcommerceAPI.Services.Services
             var productToUpdate = await _unitOfWork.GenericRepository<Product>().GetTAsync(x => x.Id == id.ToString(), includeProperties: "Images");
             if (productToUpdate == null)
             {
-                throw new NotFoundException(message: "Product not found.");
+                throw new ApiException(System.Net.HttpStatusCode.NotFound, "The Product not found.");
             }
             if (!string.IsNullOrEmpty(productDto!.Name)) productToUpdate.Name = productDto!.Name;
             if (!string.IsNullOrEmpty(productDto!.Description)) productToUpdate.Description = productDto!.Description;
