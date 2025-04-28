@@ -64,7 +64,7 @@ namespace EcommerceAPI.Api.Controllers.Auth
                 return BadRequest(new { Error = errors });
             }
             var createdUser = await _authenticationServices.Register(registrationRequestDTO);
-            return Ok(createdUser);
+            return StatusCode(StatusCodes.Status201Created, createdUser);
         }
 
         /// <summary>

@@ -14,7 +14,7 @@ namespace EcommerceAPI.Utilities.Filters
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class ApiKeyRequiredAttribute : Attribute, IAsyncActionFilter
     {
-        private const string _apiKeyInHeader = "ApiKey";
+        private const string _apiKeyInHeader = "x-api-key";
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             if (!context.HttpContext.Request.Headers.TryGetValue(_apiKeyInHeader, out var potentialKey))

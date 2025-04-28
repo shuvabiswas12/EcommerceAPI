@@ -24,7 +24,7 @@ namespace EcommerceAPI.Services.Services
             _mapper = mapper;
         }
 
-        public async Task<Product> CreateProduct(ProductCreateDTO productDto)
+        public async Task<String> CreateProduct(ProductCreateDTO productDto)
         {
             var product = new Product
             {
@@ -37,7 +37,7 @@ namespace EcommerceAPI.Services.Services
 
             var createdProduct = await _unitOfWork.GenericRepository<Product>().AddAsync(product);
             await _unitOfWork.SaveAsync();
-            return createdProduct;
+            return createdProduct.Id;
         }
 
         public async Task DeleteProduct(object id)
@@ -57,7 +57,7 @@ namespace EcommerceAPI.Services.Services
 
         public async Task<GenericResponseDTO<ProductDTO>> GetAllProduct()
         {
-            var productsResult = await _unitOfWork.GenericRepository<Product>().GetAllAsync(includeProperties: "Images, Discount, ProductCategory, FeaturedProduct");
+            var productsResult = await _unitOfWork.GenericRepository<Product>().GetAllAsync(includeProperties: "Images, Discount, Category");
             var productsResponse = new GenericResponseDTO<ProductDTO>
             {
                 Data = _mapper.Map<IEnumerable<ProductDTO>>(productsResult),
@@ -66,18 +66,18 @@ namespace EcommerceAPI.Services.Services
             return productsResponse;
         }
 
-        public async Task<Product> GetProductById(object id)
+        public async Task<ProductDTO> GetProductById(object id)
         {
             if (id == null)
             {
                 throw new ArgumentNullException(nameof(id), "Product ID must be provided.");
             }
-            var productResult = await _unitOfWork.GenericRepository<Product>().GetTAsync(x => x.Id == id.ToString(), includeProperties: "Images");
+            var productResult = await _unitOfWork.GenericRepository<Product>().GetTAsync(x => x.Id == id.ToString(), includeProperties: "Images, Discount, Category");
             if (productResult == null)
             {
                 throw new ApiException(System.Net.HttpStatusCode.NotFound, "The Product not found.");
             }
-            return productResult;
+            return _mapper.Map<ProductDTO>(productResult);
         }
 
         public async Task<Product> UpdateProduct(Object id, ProductUpdateDTO productDto)

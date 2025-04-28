@@ -12,9 +12,9 @@ namespace EcommerceAPI.Services.IServices
     public interface IProductServices
     {
         public Task<GenericResponseDTO<ProductDTO>> GetAllProduct();
-        public Task<Product> GetProductById(object id);
+        public Task<ProductDTO> GetProductById(object id);
         public Task DeleteProduct(object id);
         public Task<Product> UpdateProduct(Object id, ProductUpdateDTO productDto);
-        public Task<Product> CreateProduct(ProductCreateDTO productDto);
+        public Task<String> CreateProduct(ProductCreateDTO productDto);
     }
 }

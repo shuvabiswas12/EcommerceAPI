@@ -45,7 +45,7 @@ namespace EcommerceAPI.Api.Controllers
         public async Task<IActionResult> CreateCategory(CategoryCreateDTO createCategory)
         {
             var category = await _categoryServices.CreateCategory(createCategory);
-            return Ok(category.Id);
+            return StatusCode(StatusCodes.Status201Created, new { Id = category.Id });
         }
 
         /// <summary>

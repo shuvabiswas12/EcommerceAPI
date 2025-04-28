@@ -61,7 +61,7 @@ namespace EcommerceAPI.Api.Controllers
             }
 
             var newProduct = await _productService.CreateProduct(productDto);
-            return Ok(newProduct.Id);
+            return StatusCode(StatusCodes.Status201Created, new { Id = newProduct });
         }
 
         /// <summary>

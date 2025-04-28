@@ -12,10 +12,14 @@ namespace EcommerceAPI.DTOs.AutoMapping
     {
         public MappingProfile()
         {
+            CreateMap<Category, CategoryDTO>();
+            CreateMap<Discount, DiscountDTO>();
+
             // Create Mapping profile with ProductDTO and Product domain model.
             CreateMap<Product, ProductDTO>()
-                .ForMember(dest => dest.IsFeatured, opt => opt.MapFrom(src => src.IsFeatured))
-                .ForMember(dest => dest.DiscountRate, opt => opt.MapFrom(src => src.Discount != null ? src.Discount.DiscountRate : 0))
+                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
+                .ForMember(dest => dest.Discount, opt => opt.MapFrom(src => src.Discount))
+                .ForMember(dest => dest.CurrentAvailability, opt => opt.MapFrom(src => src.ProductAvailability.Availability))
                 .ForMember(dest => dest.DiscountPrice, opt => opt.MapFrom(src =>
                 src.Discount != null
                 ? (double)src.Price - (src.Discount.DiscountRate / 100) * (double)src.Price
