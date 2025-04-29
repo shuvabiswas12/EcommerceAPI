@@ -12,6 +12,7 @@ namespace EcommerceAPI.DTOs
         public string? Name { get; set; } = null;
         public string? Description { get; set; } = null;
         public decimal? Price { get; set; } = 0m;
+        public string? CategoryId { get; set; }
         public ICollection<string>? ImageUrls { get; set; } = new List<string>();
     }
 }

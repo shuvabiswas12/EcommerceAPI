@@ -12,7 +12,7 @@ namespace EcommerceAPI.Api.Controllers
     /// <summary>
     /// Controller for managing products in the Shopping Basket API.
     /// </summary>
-    [ApiController, ApiVersion(1.0), ApiVersion(2.0)]
+    [ApiVersion(1.0), ApiVersion(2.0)]
     public class ProductsController : ControllerBase
     {
         private readonly IProductServices _productService;

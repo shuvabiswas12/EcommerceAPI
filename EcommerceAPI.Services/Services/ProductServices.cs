@@ -5,6 +5,7 @@ using EcommerceAPI.DTOs;
 using EcommerceAPI.DTOs.GenericResponse;
 using EcommerceAPI.Services.IServices;
 using EcommerceAPI.Utilities.Exceptions;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -96,7 +97,15 @@ namespace EcommerceAPI.Services.Services
             if (!string.IsNullOrEmpty(productDto!.Description)) productToUpdate.Description = productDto!.Description;
             if (productDto!.Price > 0) productToUpdate.Price = (decimal)productDto!.Price;
             if (productDto!.ImageUrls!.Any()) productToUpdate.Images = productDto!.ImageUrls!.Select(u => new Image { ImageUrl = u, ProductId = productToUpdate.Id }).ToList();
-
+            if (!string.IsNullOrEmpty(productDto!.CategoryId))
+            {
+                string categoryId = _unitOfWork.GenericRepository<Category>().GetTAsync(c => c.Id == productDto!.CategoryId).GetAwaiter().GetResult().Id;
+                if (string.IsNullOrEmpty(categoryId))
+                {
+                    throw new ApiException(System.Net.HttpStatusCode.NotFound, "The Category is not available.");
+                }
+                productToUpdate.CategoryId = categoryId;
+            }
             await _unitOfWork.SaveAsync();
             return productToUpdate;
         }

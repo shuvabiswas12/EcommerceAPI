@@ -60,8 +60,8 @@ namespace EcommerceAPI.Utilities.Middlewares
                     break;
 
                 case ModelValidationException ex:
-                    statusCode = HttpStatusCode.BadGateway;
-                    errors = string.IsNullOrWhiteSpace(ex.Message) ? null : new { error = ex.Message };
+                    statusCode = HttpStatusCode.BadRequest;
+                    errors = string.IsNullOrWhiteSpace(ex.Message) ? null : new { error = ex.ValidationErrors };
                     break;
 
                 default:
