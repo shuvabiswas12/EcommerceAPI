@@ -7,6 +7,8 @@ using EcommerceAPI.Utilities;
 using EcommerceAPI.Utilities.ApplicationRoles;
 using EcommerceAPI.Utilities.Filters;
 using Asp.Versioning;
+using EcommerceAPI.Utilities.Validation;
+using EcommerceAPI.Utilities.Exceptions;
 
 namespace EcommerceAPI.Api.Controllers
 {
@@ -42,9 +44,14 @@ namespace EcommerceAPI.Api.Controllers
         /// </summary>
         [MapToApiVersion(2.0)]
         [HttpPost("api/admin/v{version:apiVersion}/[controller]"), Authorize(Roles = ApplicationRoles.ADMIN), ApiKeyRequired]
-        public async Task<IActionResult> CreateCategory(CategoryCreateDTO createCategory)
+        public async Task<IActionResult> CreateCategory(CategoryCreateDTO categoryDto)
         {
-            var category = await _categoryServices.CreateCategory(createCategory);
+            var modelState = ModelValidator.ValidateModel(categoryDto);
+            if (!modelState.IsValid)
+            {
+                throw new ModelValidationException(modelState);
+            }
+            var category = await _categoryServices.CreateCategory(categoryDto);
             return StatusCode(StatusCodes.Status201Created, new { Id = category.Id });
         }
 

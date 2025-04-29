@@ -79,10 +79,6 @@ namespace EcommerceAPI.Services.Services
 
         public async Task<Category> CreateCategory(CategoryCreateDTO createCategory)
         {
-            if (string.IsNullOrWhiteSpace(createCategory.Name))
-            {
-                throw new ArgumentException("Category name cannot be empty.");
-            }
             Category category = new Category { Name = createCategory.Name.Trim() };
             var createdCategory = await _unitOfWork.GenericRepository<Category>().AddAsync(category);
             await _unitOfWork.SaveAsync();

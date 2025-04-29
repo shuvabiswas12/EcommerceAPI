@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EcommerceAPI.Utilities.Validation.CustomAttributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace EcommerceAPI.DTOs
 {
     public class CategoryCreateDTO
     {
-        public string Name { get; set; } = null!;
+        [NotEmpty("Category Name can not be empty.")] public string Name { get; set; } = null!;
     }
 }
