@@ -33,6 +33,8 @@ namespace EcommerceAPI.DTOs
         [NotEmpty(errorMessage: "Description field is required.")] public string Description { get; set; } = null!;
         [GreaterThan(0, "Price field must be greater than zero.")] public decimal Price { get; set; }
         public int? CurrentAvailability { get; set; } = 0;
+        public bool? IsFeatured { get; set; }
+        public double? DiscountRate { get; set; }
         [MinimumOneImageUrl("At least one image URL is required.")] public ICollection<string> ImageUrls { get; set; } = new List<string>();
     }
 
@@ -48,7 +50,12 @@ namespace EcommerceAPI.DTOs
         public decimal? Price { get; set; } = 0m;
         public string? CategoryId { get; set; }
         public int? CurrentAvailability { get; set; }
+        public int? IsFeatured { get; set; }
         public ICollection<string>? ImageUrls { get; set; } = new List<string>();
+        public double DiscountRate { get; set; } = 0.0;
+        public int? DiscountEnabled { get; set; }
+        public long? DiscountStartTimestamp { get; set; } = null;
+        public long? DiscountEndTimestamp { get; set; } = null;
     }
 
     public class FeaturedProductRequestDTO

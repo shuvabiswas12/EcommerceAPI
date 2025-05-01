@@ -82,7 +82,7 @@ namespace EcommerceAPI.Api.Controllers
         [HttpPut("api/admin/v{version:apiVersion}/[controller]/{id}"), Authorize(Roles = "Admin"), ApiKeyRequired]
         public async Task<IActionResult> UpdateProduct(string id, [FromBody] ProductUpdateDTO productDto)
         {
-            var product = await _productService.UpdateProduct(id, productDto);
+            await _productService.UpdateProduct(id, productDto);
             return NoContent();
         }
     }
