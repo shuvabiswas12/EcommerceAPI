@@ -117,10 +117,6 @@ namespace EcommerceAPI.Services.Services
             catch (Exception ex)
             {
                 throw new ApiException(System.Net.HttpStatusCode.NotFound, "The Category is not available.");
-                //if (string.IsNullOrEmpty(categoryId))
-                //{
-                //    throw new ApiException(System.Net.HttpStatusCode.NotFound, "The Category is not available.");
-                //}
             }
         }
     }
