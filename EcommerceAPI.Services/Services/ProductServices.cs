@@ -35,8 +35,13 @@ namespace EcommerceAPI.Services.Services
                 Description = productDto.Description.Trim(),
                 Price = productDto.Price,
             };
-            product.Images = productDto.ImageUrls.Select(url => new Image { ImageUrl = url, ProductId = product.Id }).ToList();
+            product.ProductAvailability = new ProductAvailability
+            {
+                Availability = productDto.CurrentAvailability ?? 0,
+                ProductId = product.Id,
+            };
 
+            product.Images = productDto.ImageUrls.Select(url => new Image { ImageUrl = url, ProductId = product.Id }).ToList();
             var createdProduct = await _unitOfWork.GenericRepository<Product>().AddAsync(product);
             await _unitOfWork.SaveAsync();
             return createdProduct.Id;
@@ -74,7 +79,7 @@ namespace EcommerceAPI.Services.Services
             {
                 throw new ArgumentNullException(nameof(id), "Product ID must be provided.");
             }
-            var productResult = await _unitOfWork.GenericRepository<Product>().GetTAsync(x => x.Id == id.ToString(), includeProperties: "Images, Discount, Category");
+            var productResult = await _unitOfWork.GenericRepository<Product>().GetTAsync(x => x.Id == id.ToString(), includeProperties: "Images, Discount, Category, ProductAvailability");
             if (productResult == null)
             {
                 throw new ApiException(System.Net.HttpStatusCode.NotFound, "The Product not found.");
@@ -89,7 +94,7 @@ namespace EcommerceAPI.Services.Services
                 throw new ArgumentNullException(nameof(id), "Product ID must be provided.");
             }
 
-            var productToUpdate = await _unitOfWork.GenericRepository<Product>().GetTAsync(x => x.Id == id.ToString(), includeProperties: "Images");
+            var productToUpdate = await _unitOfWork.GenericRepository<Product>().GetTAsync(x => x.Id == id.ToString(), includeProperties: "Images, ProductAvailability");
             if (productToUpdate == null)
             {
                 throw new ApiException(System.Net.HttpStatusCode.NotFound, "The Product not found.");
@@ -102,6 +107,25 @@ namespace EcommerceAPI.Services.Services
             {
                 _isCategoryExist(productDto.CategoryId);
                 productToUpdate.CategoryId = productDto.CategoryId;
+            }
+            if (productDto.CurrentAvailability != 0)
+            {
+                if (productToUpdate.ProductAvailability != null)
+                {
+                    productToUpdate.ProductAvailability.LastAvailability = productToUpdate.ProductAvailability.Availability;
+                    productToUpdate.ProductAvailability.Availability = productDto.CurrentAvailability ?? 0;
+                    productToUpdate.ProductAvailability.ProductId = productToUpdate.Id;
+                    productToUpdate.ProductAvailability.UpdatedAt = DateTime.Now;
+                }
+                else
+                {
+                    productToUpdate.ProductAvailability = new ProductAvailability
+                    {
+                        Availability = productDto.CurrentAvailability ?? 0,
+                        ProductId = productToUpdate.Id,
+                        UpdatedAt = DateTime.Now
+                    };
+                }
             }
             await _unitOfWork.SaveAsync();
             return productToUpdate;
