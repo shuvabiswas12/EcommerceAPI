@@ -27,6 +27,7 @@ namespace EcommerceAPI.Services.Services
 
         public async Task<String> CreateProduct(ProductCreateDTO productDto)
         {
+            _isCategoryExist(productDto.CategoryId);
             var product = new Product
             {
                 CategoryId = productDto.CategoryId,
@@ -99,15 +100,28 @@ namespace EcommerceAPI.Services.Services
             if (productDto!.ImageUrls!.Any()) productToUpdate.Images = productDto!.ImageUrls!.Select(u => new Image { ImageUrl = u, ProductId = productToUpdate.Id }).ToList();
             if (!string.IsNullOrEmpty(productDto!.CategoryId))
             {
-                string categoryId = _unitOfWork.GenericRepository<Category>().GetTAsync(c => c.Id == productDto!.CategoryId).GetAwaiter().GetResult().Id;
-                if (string.IsNullOrEmpty(categoryId))
-                {
-                    throw new ApiException(System.Net.HttpStatusCode.NotFound, "The Category is not available.");
-                }
-                productToUpdate.CategoryId = categoryId;
+                _isCategoryExist(productDto.CategoryId);
+                productToUpdate.CategoryId = productDto.CategoryId;
             }
             await _unitOfWork.SaveAsync();
             return productToUpdate;
+        }
+
+        private Boolean _isCategoryExist(object id)
+        {
+            try
+            {
+                Category category = _unitOfWork.GenericRepository<Category>().GetTAsync(c => c.Id == id.ToString()).GetAwaiter().GetResult();
+                return category is not null ? true : throw new Exception();
+            }
+            catch (Exception ex)
+            {
+                throw new ApiException(System.Net.HttpStatusCode.NotFound, "The Category is not available.");
+                //if (string.IsNullOrEmpty(categoryId))
+                //{
+                //    throw new ApiException(System.Net.HttpStatusCode.NotFound, "The Category is not available.");
+                //}
+            }
         }
     }
 }
