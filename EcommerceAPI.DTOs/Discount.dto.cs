@@ -1,9 +1,11 @@
 ﻿using EcommerceAPI.Utilities.Validation.CustomAttributes;
+using EcommerceAPI.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace EcommerceAPI.DTOs
 {
@@ -18,7 +20,24 @@ namespace EcommerceAPI.DTOs
     {
         public double DiscountRate { get; set; }
         public Boolean DiscountEnabled { get; set; }
-        public DateTime? DiscountStartAt { get; set; }
-        public DateTime? DiscountEndAt { get; set; }
+        public long? DiscountStartTimestamp { get; set; }
+        public long? DiscountEndTimestamp { get; set; }
+        [JsonIgnore]
+        public DateTime? DiscountEndAt
+        {
+            set
+            {
+                DiscountEndTimestamp = value.HasValue ? Utilities.Timestamps.GetTimestamp(value.Value) : null;
+            }
+        }
+
+        [JsonIgnore]
+        public DateTime? DiscountStartAt
+        {
+            set
+            {
+                DiscountStartTimestamp = value.HasValue ? Utilities.Timestamps.GetTimestamp(value.Value) : null;
+            }
+        }
     }
 }
