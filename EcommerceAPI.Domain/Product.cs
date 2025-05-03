@@ -22,7 +22,7 @@ namespace EcommerceAPI.Domain
         [JsonIgnore] public string CategoryId { get; set; } = null!;
         [ForeignKey("CategoryId"), ValidateNever] public Category Category { get; set; } = null!;
         public ProductAvailability ProductAvailability { get; set; } = null!;
-        public Discount Discount { get; set; } = null!;
+        public Discount? Discount { get; set; } = null;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

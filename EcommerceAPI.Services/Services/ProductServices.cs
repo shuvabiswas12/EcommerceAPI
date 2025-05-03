@@ -136,53 +136,68 @@ namespace EcommerceAPI.Services.Services
                 }
             }
 
-            try
-            {
-                // Update Featured functionality
-                if (productDto.IsFeatured > 1 || productDto.IsFeatured < 0) throw new();
-                if (productDto.IsFeatured == 1) productToUpdate.IsFeatured = true;
-                else if (productDto.IsFeatured == 0) productToUpdate.IsFeatured = false;
-            }
-            catch
-            {
-                throw new ApiException(System.Net.HttpStatusCode.BadRequest, "SET 'isFeatured=1' if you want to product as featured. Otherwise SET 'isFeatured=0' to remove product from featured.");
-            }
+            // Update Featured functionality
+            if (productDto.IsFeatured > 1 || productDto.IsFeatured < 0)
+                throw new ApiException(System.Net.HttpStatusCode.BadRequest, "SET 'isFeatured=1' if you want to product as featured. Otherwise SET 'isFeatured=0' to remove product from featured."); ;
 
-            // Discount update functionality
-            if (productToUpdate.Discount != null)
+            if (productDto.IsFeatured == 1) productToUpdate.IsFeatured = true;
+            else if (productDto.IsFeatured == 0) productToUpdate.IsFeatured = false;
+
+            productToUpdate.Discount = this._setDiscount(productDto, productToUpdate.Discount, productToUpdate.Id);
+            await _unitOfWork.SaveAsync();
+            return productToUpdate;
+        }
+
+        private Discount? _setDiscount(ProductUpdateDTO productDto, Discount? discount, string productId)
+        {
+            // If discount exists in DB
+            if (discount != null)
             {
-                if (productDto.DiscountRate > 0.0)
-                {
-                    productToUpdate.Discount.DiscountRate = productDto.DiscountRate;
-                }
-                try
-                {
-                    // Update Discount Status
-                    if (productDto.DiscountEnabled > 1 || productDto.DiscountEnabled < 0) throw new();
-                    if (productDto.DiscountEnabled == 1) productToUpdate.Discount.DiscountEnabled = true;
-                    else if (productDto.DiscountEnabled == 0) productToUpdate.Discount.DiscountEnabled = false;
-                }
-                catch
-                {
-                    throw new ApiException(System.Net.HttpStatusCode.BadGateway, "SET 'discountEnabled=1' if you want to resume product discount. Otherwise SET 'discountEnabled=0' to pause product discount.");
-                }
+                discount.DiscountRate = productDto.DiscountRate > 0.0 ? productDto.DiscountRate : discount.DiscountRate;
+
+                // Update Discount Status
+                if (productDto.DiscountEnabled > 1 || productDto.DiscountEnabled < 0)
+                    throw new ApiException(System.Net.HttpStatusCode.BadGateway,
+                    "SET 'discountEnabled=1' if you want to resume product discount. Otherwise SET 'discountEnabled=0' to pause product discount.");
+
+                if (productDto.DiscountEnabled == 1) discount.DiscountEnabled = true;
+                else if (productDto.DiscountEnabled == 0) discount.DiscountEnabled = false;
+
 
                 if (productDto?.DiscountStartTimestamp != null)
                 {
                     long dt = productDto.DiscountStartTimestamp ?? DateTimeOffset.Now.ToUnixTimeSeconds();
-                    productToUpdate.Discount.DiscountStartAt = DateTimeOffset.FromUnixTimeSeconds(dt).DateTime;
+                    discount.DiscountStartAt = DateTimeOffset.FromUnixTimeSeconds(dt).DateTime;
                 }
 
                 if (productDto?.DiscountEndTimestamp != null)
                 {
-                    long? dt = productDto.DiscountEndTimestamp;
-                    productToUpdate.Discount.DiscountEndAt = DateTimeOffset.FromUnixTimeSeconds((long)dt).DateTime;
+                    long dt = productDto.DiscountEndTimestamp ?? 0;
+                    discount.DiscountEndAt = DateTimeOffset.FromUnixTimeSeconds(dt).DateTime;
                 }
             }
+            // If discount does not exist in DB, create new if valid data is present
+            else
+            {
+                if (productDto.DiscountRate <= 0.0 && productDto.DiscountEnabled == 0)
+                    return null; // No discount to set
 
-            await _unitOfWork.SaveAsync();
-            return productToUpdate;
+                discount = new Discount
+                {
+                    DiscountRate = productDto.DiscountRate > 0.0 ? productDto.DiscountRate : 0.0,
+                    DiscountEnabled = true,
+                    DiscountStartAt = productDto.DiscountStartTimestamp != null
+                        ? DateTimeOffset.FromUnixTimeSeconds(productDto.DiscountStartTimestamp.Value).DateTime
+                        : DateTime.UtcNow,
+                    DiscountEndAt = productDto.DiscountEndTimestamp != null
+                        ? DateTimeOffset.FromUnixTimeSeconds(productDto.DiscountEndTimestamp.Value).DateTime
+                        : (DateTime?)null,
+                    ProductId = productId
+                };
+            }
+            return discount;
         }
+
 
         private Boolean _isCategoryExist(object id)
         {
