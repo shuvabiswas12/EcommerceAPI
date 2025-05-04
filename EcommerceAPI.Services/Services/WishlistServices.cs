@@ -25,18 +25,8 @@ namespace EcommerceAPI.Services.Services
 
         public async Task AddProductToWishlist(string productId, string userId)
         {
-            if (string.IsNullOrEmpty(productId))
-            {
-                throw new ArgumentNullException("Product id must be provided.");
-            }
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                throw new UnauthorizedAccessException("User not authenticated.");
-            }
-
+            IsIdNullOrEmpty(productId, userId);
             var existingProduct = await _unitOfWork.GenericRepository<Product>().GetTAsync(p => p.Id == productId);
-
             if (existingProduct == null)
             {
                 throw new ApiException(System.Net.HttpStatusCode.NotFound, "The Product not found.");
@@ -49,10 +39,7 @@ namespace EcommerceAPI.Services.Services
 
         public async Task<WishlistDTO> GetAllProductsFromWishlists(string userId)
         {
-            if (string.IsNullOrEmpty(userId))
-            {
-                throw new ArgumentNullException("User id must be provided.");
-            }
+            IsIdNullOrEmpty(userId: userId, checkPId: false);
 
             IEnumerable<Wishlist> wishlist = await _unitOfWork.GenericRepository<Wishlist>().GetAllAsync(includeProperties: "Product.Images", predicate: w => w.ApplicationUserId == userId);
             var products = wishlist.Select(w => w.Product);
@@ -61,27 +48,14 @@ namespace EcommerceAPI.Services.Services
 
         public async Task<Wishlist> GetWishList(string productId, string userId)
         {
-            if (string.IsNullOrEmpty(productId) || string.IsNullOrEmpty(userId))
-            {
-                throw new ArgumentNullException("Product ID and User ID must be provided.");
-            }
-
+            IsIdNullOrEmpty(productId, userId);
             return await _unitOfWork.GenericRepository<Wishlist>().GetTAsync(
                 predicate: w => w.ApplicationUserId == userId && w.ProductId == productId);
         }
 
         public async Task RemoveProductFromWishlist(string productId, string userId)
         {
-            if (string.IsNullOrEmpty(productId))
-            {
-                throw new ArgumentNullException("Product id must be provided.");
-            }
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                throw new ArgumentNullException("User id must be provided");
-            }
-
+            IsIdNullOrEmpty(productId, userId);
             var existingProduct = await _unitOfWork.GenericRepository<Wishlist>()
                 .GetTAsync(p => p.ProductId == productId && p.ApplicationUserId == userId);
 
@@ -92,6 +66,19 @@ namespace EcommerceAPI.Services.Services
 
             await _unitOfWork.GenericRepository<Wishlist>().DeleteAsync(existingProduct);
             await _unitOfWork.SaveAsync();
+        }
+
+        private void IsIdNullOrEmpty(string? productId = null, string? userId = null, bool checkPId = true, bool checkUId = true)
+        {
+            if (checkPId && string.IsNullOrEmpty(productId))
+            {
+                throw new ApiException(System.Net.HttpStatusCode.BadRequest, "Product Id must be provided.");
+            }
+
+            if (checkUId && string.IsNullOrEmpty(userId))
+            {
+                throw new ArgumentNullException("User id must be provided.");
+            }
         }
     }
 }
