@@ -1,5 +1,7 @@
-﻿using EcommerceAPI.Data.UnitOfWork;
+﻿using AutoMapper;
+using EcommerceAPI.Data.UnitOfWork;
 using EcommerceAPI.Domain;
+using EcommerceAPI.DTOs;
 using EcommerceAPI.Services.IServices;
 using EcommerceAPI.Utilities.Exceptions;
 using System;
@@ -13,10 +15,12 @@ namespace EcommerceAPI.Services.Services
     public class WishlistServices : IWishlistServices
     {
         private IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public WishlistServices(IUnitOfWork unitOfWork)
+        public WishlistServices(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public async Task AddProductToWishlist(string productId, string userId)
@@ -37,26 +41,33 @@ namespace EcommerceAPI.Services.Services
             {
                 throw new ApiException(System.Net.HttpStatusCode.NotFound, "The Product not found.");
             }
-
             var newWishlist = new Wishlist { ApplicationUserId = userId, ProductId = productId };
 
             await _unitOfWork.GenericRepository<Wishlist>().AddAsync(newWishlist);
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task<IEnumerable<Wishlist>> GetAllProductsFromWishlists(string userId)
+        public async Task<WishlistDTO> GetAllProductsFromWishlists(string userId)
         {
             if (string.IsNullOrEmpty(userId))
             {
                 throw new ArgumentNullException("User id must be provided.");
             }
 
-            return await _unitOfWork.GenericRepository<Wishlist>().GetAllAsync(includeProperties: "Product");
+            IEnumerable<Wishlist> wishlist = await _unitOfWork.GenericRepository<Wishlist>().GetAllAsync(includeProperties: "Product.Images", predicate: w => w.ApplicationUserId == userId);
+            var products = wishlist.Select(w => w.Product);
+            return new WishlistDTO { User = userId, Products = _mapper.Map<IEnumerable<ProductDTO>>(products) };
         }
 
-        public Task<Wishlist> GetWishList(string productId, string userId)
+        public async Task<Wishlist> GetWishList(string productId, string userId)
         {
-            throw new NotImplementedException("Method has not been implemented yet.");
+            if (string.IsNullOrEmpty(productId) || string.IsNullOrEmpty(userId))
+            {
+                throw new ArgumentNullException("Product ID and User ID must be provided.");
+            }
+
+            return await _unitOfWork.GenericRepository<Wishlist>().GetTAsync(
+                predicate: w => w.ApplicationUserId == userId && w.ProductId == productId);
         }
 
         public async Task RemoveProductFromWishlist(string productId, string userId)

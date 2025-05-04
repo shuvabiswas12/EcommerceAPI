@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using EcommerceAPI.DTOs;
 using EcommerceAPI.Services.IServices;
 using EcommerceAPI.Utilities;
 using EcommerceAPI.Utilities.ApplicationRoles;
@@ -47,14 +48,14 @@ namespace EcommerceAPI.Api.Controllers
         {
             var userId = User.GetUserId();
 
-            var existedWishlist = await _wishlistServices.GetWishList(userId, productId);
+            var existedWishlist = await _wishlistServices.GetWishList(productId, userId);
 
             // Delete operation
             if (HttpContext.Request.Method == HttpMethods.Delete)
             {
                 if (existedWishlist == null)
                 {
-                    return NotFound();
+                    return NoContent();
                 }
 
                 await _wishlistServices.RemoveProductFromWishlist(productId, userId!);
@@ -66,7 +67,7 @@ namespace EcommerceAPI.Api.Controllers
             {
                 if (existedWishlist != null)
                 {
-                    return NoContent();
+                    return StatusCode(StatusCodes.Status201Created);
                 }
 
                 await _wishlistServices.AddProductToWishlist(productId, userId);
