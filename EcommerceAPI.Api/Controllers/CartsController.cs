@@ -16,7 +16,7 @@ namespace EcommerceAPI.Api.Controllers
     /// Controller to manage shopping carts.
     /// </summary>
     [Route("api/v{version:apiVersion}/[controller]"), ApiVersion(1.0)]
-    [ApiController]
+    [ApiController, ApiKeyRequired, Authorize(Roles = $"{ApplicationRoles.WEB_USER}")]
     public class CartsController : ControllerBase
     {
         private readonly IShoppingCartServices _shoppingCartServices;
@@ -32,18 +32,19 @@ namespace EcommerceAPI.Api.Controllers
         /// <summary>
         /// Retrieves a shopping cart by its ID.
         /// </summary>
-        [HttpGet(""), ApiKeyRequired, Authorize(Roles = $"{ApplicationRoles.WEB_USER}")]
+        [HttpGet("")]
         public async Task<IActionResult> GetCartByUserId()
         {
             var userId = User.GetUserId();
             var response = await _shoppingCartServices.GetShoppingCartsByUserId(userId);
+            if (response.Carts?.Count() == 0) return Ok();
             return Ok(response);
         }
 
         /// <summary>
         /// Adds a product to the shopping cart or updates the product quantity in the cart.
         /// </summary>
-        [HttpPost, ApiKeyRequired, Authorize(Roles = $"{ApplicationRoles.WEB_USER}")]
+        [HttpPost]
         public async Task<IActionResult> AddProductIntoCart([FromBody] CartCreateDTO payload)
         {
             var userId = User.GetUserId();
@@ -75,16 +76,16 @@ namespace EcommerceAPI.Api.Controllers
         /// <summary>
         /// Removes products from the shopping cart.
         /// </summary>
-        [HttpDelete, ApiKeyRequired, Authorize(Roles = $"{ApplicationRoles.WEB_USER}")]
-        public async Task<IActionResult> DeleteProductsFromCart([FromBody] List<string> products)
+        [HttpDelete]
+        public async Task<IActionResult> DeleteProductsFromCart([FromBody] List<string> productsId)
         {
-            if (!products.Any())
+            if (!productsId.Any())
             {
                 return BadRequest(new { Error = "No product IDs provided." });
             }
             var userId = User.GetUserId();
 
-            await _shoppingCartServices.RemoveProductsFromShoppingCart(products, userId);
+            await _shoppingCartServices.RemoveProductsFromShoppingCart(productsId, userId);
             return NoContent();
         }
     }

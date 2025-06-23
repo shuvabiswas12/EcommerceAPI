@@ -1,4 +1,5 @@
-﻿using EcommerceAPI.Data.UnitOfWork;
+﻿using AutoMapper;
+using EcommerceAPI.Data.UnitOfWork;
 using EcommerceAPI.Domain;
 using EcommerceAPI.DTOs;
 using EcommerceAPI.Services.IServices;
@@ -15,10 +16,12 @@ namespace EcommerceAPI.Services.Services
     public class ShoppingCartServices : IShoppingCartServices
     {
         private IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public ShoppingCartServices(IUnitOfWork unitOfWork)
+        public ShoppingCartServices(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public async Task AddProductToShoppingCart(CartCreateDTO shoppingCartCreateRequestDTO)
@@ -47,14 +50,11 @@ namespace EcommerceAPI.Services.Services
 
         public async Task<CartResponseDTO> GetShoppingCartsByUserId(string userId)
         {
-            var carts = await _unitOfWork.GenericRepository<ShoppingCart>().GetAllAsync(includeProperties: "Product", c => c.ApplicationUserId == userId);
-            CartResponseDTO shoppingCartResponse = new CartResponseDTO { ShoppingCarts = carts };
-            if (carts != null)
-            {
-                shoppingCartResponse.TotalCost = carts
+            var carts = await _unitOfWork.GenericRepository<ShoppingCart>().GetAllAsync(includeProperties: "Product, Product.Images", c => c.ApplicationUserId == userId);
+            CartResponseDTO shoppingCartResponse = new CartResponseDTO { Carts = _mapper.Map<IEnumerable<CartDTO>>(carts) };
+            shoppingCartResponse.TotalCost = carts
                     .Where(cart => cart.Product != null)
-                    .Sum(cart => (double)cart.Product!.Price * cart.Count);
-            }
+                    .Sum(cart => cart.Product!.Price * cart.Count);
             return shoppingCartResponse;
         }
 
