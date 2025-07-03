@@ -1,5 +1,7 @@
 ﻿using Asp.Versioning;
+using EcommerceAPI.Domain;
 using EcommerceAPI.DTOs;
+using EcommerceAPI.DTOs.GenericResponse;
 using EcommerceAPI.Services.IServices;
 using EcommerceAPI.Utilities;
 using EcommerceAPI.Utilities.ApplicationRoles;
@@ -7,6 +9,7 @@ using EcommerceAPI.Utilities.Exceptions;
 using EcommerceAPI.Utilities.Filters;
 using EcommerceAPI.Utilities.Validation;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EcommerceAPI.Api.Controllers
@@ -20,26 +23,28 @@ namespace EcommerceAPI.Api.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly IOrderServices _orderServices;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OrdersController"/> class.
         /// </summary>
-        public OrdersController(IOrderServices orderServices)
+        public OrdersController(IOrderServices orderServices, UserManager<ApplicationUser> userManager)
         {
             _orderServices = orderServices;
+            _userManager = userManager;
         }
 
         /// <summary>
         /// Creates a new order.
         /// </summary>
         [HttpPost(""), MapToApiVersion(1.0), Authorize(Roles = $"{ApplicationRoles.WEB_USER}")]
-        public async Task<IActionResult> CreateOrder([FromBody] ShippingAddressDTO shippingAddress, [FromQuery] string paymentIntentId)
+        public async Task<IActionResult> CreateOrder([FromBody] ShippingAddressDTO shippingAddress, [FromHeader(Name = HeaderKeys.PaymentIntentId)] string paymentIntentId)
         {
             var modelState = ModelValidator.ValidateModel(shippingAddress);
             if (!modelState.IsValid) throw new ModelValidationException(modelState);
             var userId = User.GetUserId() ?? throw new UnauthorizedAccessException("User not authenticated.");
             var createdOrder = await _orderServices.CreateOrder(shippingAddress, userId, paymentIntentId);
-            return Ok(createdOrder.Id);
+            return Ok(new { message = "Order successfull.", orderId = createdOrder.Id });
         }
 
         /// <summary>
@@ -55,7 +60,7 @@ namespace EcommerceAPI.Api.Controllers
         }
 
         /// <summary>
-        /// Cancelled order by admin.
+        /// Cancel order by admin.
         /// </summary>
         [Route("/api/admin/v{version:apiVersion}/[controller]"), HttpDelete]
         [MapToApiVersion(2.0), Authorize(Roles = $"{ApplicationRoles.ADMIN}")]
@@ -70,12 +75,17 @@ namespace EcommerceAPI.Api.Controllers
         /// <summary>
         /// Retrieves all orders for the current user.
         /// </summary>
+        // These 3 lines bellow is for swagger api
+        [ProducesResponseType(typeof(GenericResponseDTO<OrderDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpGet(""), MapToApiVersion(1.0), Authorize(Roles = $"{ApplicationRoles.WEB_USER}")]
         public async Task<IActionResult> GetAllOrdersByUser()
         {
             var userId = User.GetUserId() ?? throw new UnauthorizedAccessException("User not authenticated.");
             var orders = await _orderServices.GetAllOrders(userId);
-            return Ok(orders);
+            if (orders.Count > 0) return Ok(orders);
+            return Ok();
         }
 
         /// <summary>
@@ -87,6 +97,7 @@ namespace EcommerceAPI.Api.Controllers
         public async Task<IActionResult> GetAllOrdersByAdmin()
         {
             var orders = await _orderServices.GetAllOrders();
+            if (orders == null || orders.Count == 0) return NoContent();
             return Ok(orders);
         }
 

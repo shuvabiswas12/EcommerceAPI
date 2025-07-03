@@ -14,6 +14,8 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections;
+using AutoMapper;
+using System.Net;
 
 namespace EcommerceAPI.Services.Services
 {
@@ -21,11 +23,15 @@ namespace EcommerceAPI.Services.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAuthenticationServices _authenticationServices;
+        private readonly IShoppingCartServices _shoppingCartServices;
+        private readonly IMapper _mapper;
 
-        public OrderServices(IUnitOfWork unitOfWork, IAuthenticationServices authenticationServices)
+        public OrderServices(IUnitOfWork unitOfWork, IAuthenticationServices authenticationServices, IShoppingCartServices shoppingCartServices, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _authenticationServices = authenticationServices;
+            _shoppingCartServices = shoppingCartServices;
+            _mapper = mapper;
         }
 
         public async Task<OrderHeader> CreateOrder(ShippingAddressDTO payload, string userId, string paymentIntentId)
@@ -38,6 +44,10 @@ namespace EcommerceAPI.Services.Services
             var user = await _authenticationServices.GetUserByIdAsync(userId);
             if (user == null) throw new UnauthorizedAccessException("User not authenticated.");
 
+            // Get carts and check if there are any products in the shopping cart
+            var carts = (await _shoppingCartServices.GetShoppingCartsByUserId(userId)).Carts;
+            if (carts?.Count() == 0) throw new ApiException(HttpStatusCode.BadRequest, message: "You cannot create an order without any products in your shopping cart.");
+
             var paymentIntentService = new PaymentIntentService();
             var paymentIntent = await paymentIntentService.GetAsync(paymentIntentId);
 
@@ -46,9 +56,10 @@ namespace EcommerceAPI.Services.Services
             // Create a new OrderHeader object
             var orderHeader = new OrderHeader
             {
-                OrderStatus = Status.OrderStatus_Pending,
+                // If user paid with online payment, then order status will be accepted by default. Admin can change it later and refund the money.
+                OrderStatus = Status.OrderStatus_Accepted,
                 ApplicationUserId = user.Id,
-                OrderAmount = paymentIntent.Amount,
+                OrderAmount = paymentIntent.Amount / 100,
                 Currency = paymentIntent.Currency,
                 PaymentStatus = Status.PaymentStatus_Paid,
                 PaymentType = Status.PaymentType_OnlinePayment,
@@ -73,7 +84,19 @@ namespace EcommerceAPI.Services.Services
                 LandMark = payload.LandMark
             };
 
+            orderHeader.OrderDetails = carts.Select(cart => new OrderDetail
+            {
+                ProductId = cart.ProductId,
+                Quantity = cart.Count,
+                Price = cart.Price,
+                OrderHeaderId = orderHeader.Id,
+                CreatedAt = orderHeader.OrderDate
+            }).ToList();
+
             await _unitOfWork.GenericRepository<OrderHeader>().AddAsync(orderHeader);
+
+            // Remove products from shopping cart after order creation
+            await _shoppingCartServices.RemoveProductsFromShoppingCart(productIDs: carts.Select(c => c.ProductId).ToList(), userId: userId);
             await _unitOfWork.SaveAsync();
             return orderHeader;
         }
@@ -86,30 +109,31 @@ namespace EcommerceAPI.Services.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task<GenericResponseDTO<OrderHeader>> GetAllOrders(string? userId = null)
+        public async Task<GenericResponseDTO<OrderDTO>> GetAllOrders(string? userId = null)
         {
             IEnumerable<OrderHeader> orders = new List<OrderHeader>();
 
             if (userId is not null)
             {
                 // For specific user panel uses
-                orders = await _unitOfWork.GenericRepository<OrderHeader>().GetAllAsync(predicate: o => o.ApplicationUserId == userId, includeProperties: "OrderDetails");
+                orders = await _unitOfWork.GenericRepository<OrderHeader>().GetAllAsync(predicate: o => o.ApplicationUserId == userId, includeProperties: "OrderDetails, OrderAddress, OrderDetails.Product, ApplicationUser", orderBy: o => o.OrderByDescending(x => x.OrderDate));
             }
             else
             {
                 // For admin panel uses
-                orders = await _unitOfWork.GenericRepository<OrderHeader>().GetAllAsync(includeProperties: "OrderDetails");
+                orders = await _unitOfWork.GenericRepository<OrderHeader>().GetAllAsync(includeProperties: "OrderDetails, OrderAddress, OrderDetails.Product, ApplicationUser", orderBy: o => o.OrderByDescending(x => x.OrderDate));
             }
-            return new GenericResponseDTO<OrderHeader>
+            return new GenericResponseDTO<OrderDTO>
             {
                 Count = orders.Count(),
-                Data = orders
+                Data = _mapper.Map<List<OrderDTO>>(orders)
             };
         }
 
-        public async Task<OrderHeader> GetOrder(string orderId, string userId)
+        public async Task<OrderDTO> GetOrder(string orderId, string userId)
         {
-            return await _unitOfWork.GenericRepository<OrderHeader>().GetTAsync(predicate: o => o.ApplicationUserId == userId && o.Id == orderId, includeProperties: "OrderDetails");
+            var order = await _unitOfWork.GenericRepository<OrderHeader>().GetTAsync(predicate: o => o.ApplicationUserId == userId && o.Id == orderId, includeProperties: "OrderDetails, OrderAddress, OrderDetails.Product, ApplicationUser");
+            return _mapper.Map<OrderDTO>(order);
         }
 
         public async Task UpdateOrder(OrderHeader order, string userId)

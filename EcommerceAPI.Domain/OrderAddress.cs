@@ -17,11 +17,11 @@ namespace EcommerceAPI.Domain
         public string? AlternatePhone { get; set; }
         [Required] public required string Email { get; set; } = null!;
         [Required] public required string HouseName { get; set; } = null!;
-        [Required] public required string RoadNumber { get; set; } = null!;
+        public string? RoadNumber { get; set; }
         [Required] public required string City { get; set; } = null!;
         [Required] public required string Country { get; set; } = null!;
-        [Required] public required string Province { get; set; } = null!;
-        [Required] public required string State { get; set; } = null!;
+        public string? Province { get; set; }
+        public string? State { get; set; }
         [Required] public required string PostCode { get; set; } = null!;
         public string? LandMark { get; set; }
         public string AddressLine1 { get; set; } = null!;

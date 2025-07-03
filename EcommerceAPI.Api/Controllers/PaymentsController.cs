@@ -9,13 +9,14 @@ using EcommerceAPI.Utilities.Validation.CustomAttributes;
 using Stripe;
 using System.Security.Claims;
 using EcommerceAPI.Utilities;
+using Asp.Versioning;
 
 namespace EcommerceAPI.Api.Controllers
 {
     /// <summary>
     /// Controller to handle payment-related operations.
     /// </summary>
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]"), ApiVersion(1.0)]
     [ApiController]
     public class PaymentsController : ControllerBase
     {
@@ -43,12 +44,12 @@ namespace EcommerceAPI.Api.Controllers
 
             var carts = await _shoppingCartServices.GetShoppingCartsByUserId(userId);
 
-            if (carts.TotalCost <= 0) return NotFound(new { Error = "Cart not found." });
+            if (carts.TotalCost <= 0) return NotFound(new { Error = "Cart is empty." });
 
-            long amount = (long)carts.TotalCost;
+            long amount = (long)carts.TotalCost * 100;
 
-            var clientSecret = await _paymentServices.CreatePaymentIntentAsync(amount);
-            return StatusCode(StatusCodes.Status201Created, new { clientSecret = clientSecret });
+            var paymentIntent = await _paymentServices.CreatePaymentIntentAsync(amount);
+            return StatusCode(StatusCodes.Status201Created, paymentIntent);
         }
     }
 }

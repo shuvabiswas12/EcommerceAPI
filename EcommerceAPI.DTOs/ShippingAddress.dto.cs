@@ -14,12 +14,12 @@ namespace EcommerceAPI.DTOs
         public string? AlternatePhone { get; set; }
         [NotEmpty(errorMessage: "Email must be given.")] public string Email { get; set; } = null!;
         [NotEmpty(errorMessage: "House name must be given.")] public string HouseName { get; set; } = null!;
-        [NotEmpty(errorMessage: "Road number must be given.")] public string RoadNumber { get; set; } = null!;
+        public string? RoadNumber { get; set; }
         public string? LandMark { get; set; }
         [NotEmpty(errorMessage: "City must be given.")] public string City { get; set; } = null!;
         [NotEmpty(errorMessage: "Country must be given.")] public string Country { get; set; } = null!;
-        [NotEmpty(errorMessage: "Province or Dictrict must be given.")] public string Province { get; set; } = null!;
-        [NotEmpty(errorMessage: "State must be given.")] public string State { get; set; } = null!;
+        public string? Province { get; set; }
+        public string? State { get; set; }
         [NotEmpty(errorMessage: "Post code must be given.")] public string PostCode { get; set; } = null!;
         public string AddressLine1 { get; set; } = null!;
         public string? AddressLine2 { get; set; }

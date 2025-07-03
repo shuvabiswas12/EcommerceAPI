@@ -30,5 +30,4 @@ namespace EcommerceAPI.Domain
         [ForeignKey("OrderAddressId"), ValidateNever] public OrderAddress OrderAddress { get; set; } = null!;
         [JsonIgnore] public string OrderAddressId { get; set; } = null!;
     }
-
 }

@@ -1,4 +1,5 @@
-﻿using Stripe;
+﻿using EcommerceAPI.DTOs;
+using Stripe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,6 @@ namespace EcommerceAPI.Services.IServices
         /// <param name="amount">The amount for the payment intent.</param>
         /// <returns>The client secret for the payment intent.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the amount is zero.</exception>
-        public Task<string> CreatePaymentIntentAsync(long amount);
+        public Task<PaymentIntentDTO> CreatePaymentIntentAsync(long amount);
     }
 }

@@ -12,8 +12,8 @@ namespace EcommerceAPI.Services.IServices
 {
     public interface IOrderServices
     {
-        public Task<GenericResponseDTO<OrderHeader>> GetAllOrders(string? userId = null);
-        public Task<OrderHeader> GetOrder(string orderId, string userId);
+        public Task<GenericResponseDTO<OrderDTO>> GetAllOrders(string? userId = null);
+        public Task<OrderDTO> GetOrder(string orderId, string userId);
         public Task<OrderHeader> CreateOrder(ShippingAddressDTO shippingAddressDTO, string userId, string paymentIntentId);
         public Task UpdateOrder(OrderHeader order, string userId);
         public Task CancelOrder(string orderId, string userId);
