@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
 using EcommerceAPI.Data.UnitOfWork;
 using EcommerceAPI.Domain;
 using EcommerceAPI.DTOs;
@@ -6,16 +6,17 @@ using EcommerceAPI.DTOs.GenericResponse;
 using EcommerceAPI.Services.IServices;
 using EcommerceAPI.Utilities;
 using EcommerceAPI.Utilities.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 using Stripe;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using System.Collections;
-using AutoMapper;
-using System.Net;
 
 namespace EcommerceAPI.Services.Services
 {
@@ -24,17 +25,15 @@ namespace EcommerceAPI.Services.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAuthenticationServices _authenticationServices;
         private readonly IShoppingCartServices _shoppingCartServices;
-        private readonly IMapper _mapper;
 
-        public OrderServices(IUnitOfWork unitOfWork, IAuthenticationServices authenticationServices, IShoppingCartServices shoppingCartServices, IMapper mapper)
+        public OrderServices(IUnitOfWork unitOfWork, IAuthenticationServices authenticationServices, IShoppingCartServices shoppingCartServices)
         {
             _unitOfWork = unitOfWork;
             _authenticationServices = authenticationServices;
             _shoppingCartServices = shoppingCartServices;
-            _mapper = mapper;
         }
 
-        public async Task<OrderHeader> CreateOrder(ShippingAddressDTO payload, string userId, string paymentIntentId)
+        public async Task<string> CreateOrder(ShippingAddressDTO payload, string userId, string paymentIntentId)
         {
             if (payload == null) throw new ArgumentNullException("You must provide valid shipping address data.");
 
@@ -57,12 +56,12 @@ namespace EcommerceAPI.Services.Services
             var orderHeader = new OrderHeader
             {
                 // If user paid with online payment, then order status will be accepted by default. Admin can change it later and refund the money.
-                OrderStatus = Status.OrderStatus_Accepted,
+                OrderStatus = OrdersStatus.Accepted.ToString(),
                 ApplicationUserId = user.Id,
                 OrderAmount = paymentIntent.Amount / 100,
                 Currency = paymentIntent.Currency,
-                PaymentStatus = Status.PaymentStatus_Paid,
-                PaymentType = Status.PaymentType_OnlinePayment,
+                PaymentStatus = PaymentStatus.Paid.ToString(),
+                PaymentType = PaymentType.OnlinePayment.ToString(),
                 PaymentIntentId = paymentIntent.Id,
             };
 
@@ -98,42 +97,61 @@ namespace EcommerceAPI.Services.Services
             // Remove products from shopping cart after order creation
             await _shoppingCartServices.RemoveProductsFromShoppingCart(productIDs: carts.Select(c => c.ProductId).ToList(), userId: userId);
             await _unitOfWork.SaveAsync();
-            return orderHeader;
+            return orderHeader.Id;
         }
 
-        public async Task CancelOrder(string orderId, string userId)
+        public async Task CancelOrder(string orderId, string? userId = null)
         {
             var orderToCancel = await this.GetOrder(orderId, userId);
             if (orderToCancel == null) return;
-            orderToCancel.OrderStatus = Status.OrderStatus_Canceled;
+            orderToCancel.OrderStatus = OrdersStatus.Canceled.ToString();
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task<GenericResponseDTO<OrderDTO>> GetAllOrders(string? userId = null)
+        public async Task<IEnumerable<OrderHeader>> GetAllOrders(string? userId = null, OrdersStatus? orderStatus = null, PaymentStatus? paymentStatus = null, PaymentType? paymentType = null, SortBy? sortBy = SortBy.DateDESC)
         {
+            // filter logic based on the provided parameters
+            Expression<Func<OrderHeader, bool>> filter = o =>
+                (userId == null || o.ApplicationUserId == userId)
+                && (!orderStatus.HasValue || o.OrderStatus == orderStatus.ToString())
+                && (!paymentStatus.HasValue || o.PaymentStatus == paymentStatus.ToString())
+                && (!paymentType.HasValue || o.PaymentType == paymentType.ToString());
+
+            // sorting logic based on the provided SortBy enum
+            Func<IQueryable<OrderHeader>, IOrderedQueryable<OrderHeader>> orderBy = sortBy switch
+            {
+                SortBy.DateASC => q => q.OrderBy(o => o.OrderDate),
+                SortBy.DateDESC => q => q.OrderByDescending(o => o.OrderDate),
+
+                SortBy.AmountASC => q => q.OrderBy(o => o.OrderAmount),
+                SortBy.AmountDESC => q => q.OrderByDescending(o => o.OrderAmount),
+
+                _ => q => q.OrderByDescending(o => o.OrderDate)   // fallback
+            };
+
+            const string includes = "OrderDetails, OrderAddress, OrderDetails.Product, ApplicationUser";
+
             IEnumerable<OrderHeader> orders = new List<OrderHeader>();
 
             if (userId is not null)
             {
                 // For specific user panel uses
-                orders = await _unitOfWork.GenericRepository<OrderHeader>().GetAllAsync(predicate: o => o.ApplicationUserId == userId, includeProperties: "OrderDetails, OrderAddress, OrderDetails.Product, ApplicationUser", orderBy: o => o.OrderByDescending(x => x.OrderDate));
+                return await _unitOfWork.GenericRepository<OrderHeader>().GetAllAsync(predicate: o => o.ApplicationUserId == userId, includeProperties: includes, orderBy: orderBy);
             }
-            else
-            {
-                // For admin panel uses
-                orders = await _unitOfWork.GenericRepository<OrderHeader>().GetAllAsync(includeProperties: "OrderDetails, OrderAddress, OrderDetails.Product, ApplicationUser", orderBy: o => o.OrderByDescending(x => x.OrderDate));
-            }
-            return new GenericResponseDTO<OrderDTO>
-            {
-                Count = orders.Count(),
-                Data = _mapper.Map<List<OrderDTO>>(orders)
-            };
+            // For admin panel uses
+            return await _unitOfWork.GenericRepository<OrderHeader>().GetAllAsync(predicate: filter, includeProperties: includes, orderBy: orderBy);
         }
 
-        public async Task<OrderDTO> GetOrder(string orderId, string userId)
+        public async Task<OrderHeader> GetOrder(string orderId, string? userId)
         {
-            var order = await _unitOfWork.GenericRepository<OrderHeader>().GetTAsync(predicate: o => o.ApplicationUserId == userId && o.Id == orderId, includeProperties: "OrderDetails, OrderAddress, OrderDetails.Product, ApplicationUser");
-            return _mapper.Map<OrderDTO>(order);
+            const string includes = "OrderDetails, OrderAddress, OrderDetails.Product, ApplicationUser";
+            if (string.IsNullOrEmpty(userId))
+            {
+                // For admin panel uses
+                return await _unitOfWork.GenericRepository<OrderHeader>().GetTAsync(predicate: o => o.Id == orderId, includeProperties: includes);
+            }
+            // For specific user panel uses
+            return await _unitOfWork.GenericRepository<OrderHeader>().GetTAsync(predicate: o => o.ApplicationUserId == userId && o.Id == orderId, includeProperties: includes);
         }
 
         public async Task UpdateOrder(OrderHeader order, string userId)
@@ -143,7 +161,7 @@ namespace EcommerceAPI.Services.Services
             if (order.OrderStatus != null) orderToUpdate.OrderStatus = order.OrderStatus;
             if (order.PaymentStatus != null) orderToUpdate.PaymentStatus = order.PaymentStatus;
             if (order.PaymentType != null) orderToUpdate.PaymentType = order.PaymentType;
-            if (orderToUpdate.OrderStatus == Status.OrderStatus_Accepted) orderToUpdate.TrackingNumber = TrackingNumberGenerator.GenerateTrackingNumber();
+            if (orderToUpdate.OrderStatus == OrdersStatus.Accepted.ToString()) orderToUpdate.TrackingNumber = TrackingNumberGenerator.GenerateTrackingNumber();
             await _unitOfWork.SaveAsync();
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using AutoMapper;
 using EcommerceAPI.Domain;
 using EcommerceAPI.DTOs;
 using EcommerceAPI.DTOs.GenericResponse;
@@ -24,14 +25,16 @@ namespace EcommerceAPI.Api.Controllers
     {
         private readonly IOrderServices _orderServices;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IMapper _mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OrdersController"/> class.
         /// </summary>
-        public OrdersController(IOrderServices orderServices, UserManager<ApplicationUser> userManager)
+        public OrdersController(IOrderServices orderServices, UserManager<ApplicationUser> userManager, IMapper mapper)
         {
             _orderServices = orderServices;
             _userManager = userManager;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -44,19 +47,27 @@ namespace EcommerceAPI.Api.Controllers
             if (!modelState.IsValid) throw new ModelValidationException(modelState);
             var userId = User.GetUserId() ?? throw new UnauthorizedAccessException("User not authenticated.");
             var createdOrder = await _orderServices.CreateOrder(shippingAddress, userId, paymentIntentId);
-            return Ok(new { message = "Order successfull.", orderId = createdOrder.Id });
+            return Ok(new { message = "Order successfull.", orderId = createdOrder });
         }
 
         /// <summary>
-        /// Cancels an order.
+        /// Cancels an order by user own if the order's payment is cash on delivery and order status is pending.
         /// </summary>
         [HttpDelete("{orderId}"), MapToApiVersion(1.0), Authorize(Roles = $"{ApplicationRoles.WEB_USER}")]
         public async Task<IActionResult> CancelOrder(string orderId)
         {
             if (string.IsNullOrEmpty(orderId)) return BadRequest(new { Error = "Route value 'order-id' must be given." });
             var userId = User.GetUserId() ?? throw new UnauthorizedAccessException("User not authenticated.");
-            await _orderServices.CancelOrder(orderId, userId);
-            return NoContent();
+
+            // if user select cash on delivery payment method, then order status will be pending by default. In this case, user can cancel the order.
+            var order = await _orderServices.GetOrder(orderId, userId);
+            if (order == null) return NotFound(new { Error = "Order not found." });
+            if (order.OrderStatus == OrdersStatus.Pending.ToString() && order.PaymentStatus == PaymentStatus.Due.ToString() && order.PaymentType == PaymentType.CashOnDelivery.ToString())
+            {
+                await _orderServices.CancelOrder(order.Id, userId);
+                return Ok(new { message = "Order cancelled successfully." });
+            }
+            return StatusCode(StatusCodes.Status400BadRequest, "This order could not be canceled. Try to take admin support to cancel.");
         }
 
         /// <summary>
@@ -64,12 +75,17 @@ namespace EcommerceAPI.Api.Controllers
         /// </summary>
         [Route("/api/admin/v{version:apiVersion}/[controller]"), HttpDelete]
         [MapToApiVersion(2.0), Authorize(Roles = $"{ApplicationRoles.ADMIN}")]
-        public async Task<IActionResult> CancelOrderByAdmin([FromQuery] string orderId, [FromQuery] string userId)
+        public async Task<IActionResult> CancelOrderByAdmin([FromQuery] string orderId)
         {
             if (string.IsNullOrEmpty(orderId)) return BadRequest(new { Error = "Route value 'orderid' must be given." });
-            if (string.IsNullOrEmpty(userId)) return BadRequest(new { Error = "Route value 'userid' must be given." });
-            await _orderServices.CancelOrder(orderId, userId);
-            return NoContent();
+
+            // Validate if the order exists
+            var order = await _orderServices.GetOrder(orderId: orderId, null);
+            if (order == null) return NotFound(new { Error = "Order not found." });
+
+            // Admin can cancel any types of order
+            await _orderServices.CancelOrder(orderId, null);
+            return Ok(new { message = "Order cancelled successfully." });
         }
 
         /// <summary>
@@ -80,12 +96,15 @@ namespace EcommerceAPI.Api.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpGet(""), MapToApiVersion(1.0), Authorize(Roles = $"{ApplicationRoles.WEB_USER}")]
-        public async Task<IActionResult> GetAllOrdersByUser()
+        public async Task<IActionResult> GetAllOrdersByUser([FromQuery] SortBy? sortBy = SortBy.DateDESC)
         {
             var userId = User.GetUserId() ?? throw new UnauthorizedAccessException("User not authenticated.");
-            var orders = await _orderServices.GetAllOrders(userId);
-            if (orders.Count > 0) return Ok(orders);
-            return Ok();
+            var orders = await _orderServices.GetAllOrders(userId: userId, sortBy: sortBy);
+            return Ok(new GenericResponseDTO<OrderDTO>
+            {
+                Data = _mapper.Map<IEnumerable<OrderDTO>>(orders),
+                Count = orders?.Count() ?? 0,
+            });
         }
 
         /// <summary>
@@ -94,11 +113,14 @@ namespace EcommerceAPI.Api.Controllers
         [Route("/api/admin/v{version:apiVersion}/[controller]")]
         [HttpGet]
         [MapToApiVersion(2.0), Authorize(Roles = $"{ApplicationRoles.ADMIN}")]
-        public async Task<IActionResult> GetAllOrdersByAdmin()
+        public async Task<IActionResult> GetAllOrdersByAdmin([FromQuery] OrdersStatus? orderStatus, [FromQuery] PaymentStatus? paymentStatus, [FromQuery] PaymentType? paymentType, [FromQuery] SortBy? sortBy = SortBy.DateDESC)
         {
-            var orders = await _orderServices.GetAllOrders();
-            if (orders == null || orders.Count == 0) return NoContent();
-            return Ok(orders);
+            var orders = await _orderServices.GetAllOrders(userId: null, orderStatus: orderStatus, paymentStatus: paymentStatus, paymentType: paymentType, sortBy: sortBy);
+            return Ok(new GenericResponseDTO<OrderDTO>
+            {
+                Data = _mapper.Map<IEnumerable<OrderDTO>>(orders),
+                Count = orders?.Count() ?? 0,
+            });
         }
 
         /// <summary>

@@ -24,12 +24,15 @@ using EcommerceAPI.DTOs;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers()
     .ConfigureApiBehaviorOptions(options =>
     {
         // To disable the automatic 400 behavior, set the SuppressModelStateInvalidFilter property to true.
         options.SuppressModelStateInvalidFilter = true;
+    })
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -22,7 +22,7 @@ namespace EcommerceAPI.Domain
         [Required] public DateTime OrderDate { get; set; } = DateTime.UtcNow;
         [Required] public required double OrderAmount { get; set; }
         [Required] public required string Currency { get; set; }
-        [Required] public required string OrderStatus { get; set; } = Status.OrderStatus_Pending;
+        [Required] public required string OrderStatus { get; set; } = OrdersStatus.Pending.ToString();
         public string? PaymentStatus { get; set; }
         public string? PaymentType { get; set; }
         public string? TrackingNumber { get; set; }
