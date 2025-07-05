@@ -9,6 +9,7 @@ using System.Security.Claims;
 using EcommerceAPI.Utilities.Exceptions;
 using Asp.Versioning;
 using EcommerceAPI.Utilities.ApplicationRoles;
+using AutoMapper;
 
 namespace EcommerceAPI.Api.Controllers
 {
@@ -20,13 +21,15 @@ namespace EcommerceAPI.Api.Controllers
     public class CartsController : ControllerBase
     {
         private readonly IShoppingCartServices _shoppingCartServices;
+        private readonly IMapper _mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CartsController"/> class.
         /// </summary>
-        public CartsController(IShoppingCartServices shoppingCartServices)
+        public CartsController(IShoppingCartServices shoppingCartServices, IMapper mapper)
         {
             _shoppingCartServices = shoppingCartServices;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -37,8 +40,12 @@ namespace EcommerceAPI.Api.Controllers
         {
             var userId = User.GetUserId();
             var response = await _shoppingCartServices.GetShoppingCartsByUserId(userId);
-            if (response.Carts?.Count() == 0) return Ok();
-            return Ok(response);
+            return Ok(new CartResponseDTO
+            {
+                Carts = _mapper.Map<IEnumerable<CartDTO>>(response),
+                TotalCost = response.Where(cart => cart.Product != null)
+                                    .Sum(cart => cart.Product!.Price * cart.Count)
+            });
         }
 
         /// <summary>

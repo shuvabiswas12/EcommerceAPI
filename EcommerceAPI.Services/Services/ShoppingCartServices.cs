@@ -16,12 +16,10 @@ namespace EcommerceAPI.Services.Services
     public class ShoppingCartServices : IShoppingCartServices
     {
         private IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
 
-        public ShoppingCartServices(IUnitOfWork unitOfWork, IMapper mapper)
+        public ShoppingCartServices(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
         }
 
         public async Task AddProductToShoppingCart(CartCreateDTO shoppingCartCreateRequestDTO)
@@ -48,14 +46,9 @@ namespace EcommerceAPI.Services.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task<CartResponseDTO> GetShoppingCartsByUserId(string userId)
+        public async Task<IEnumerable<ShoppingCart>> GetShoppingCartsByUserId(string userId)
         {
-            var carts = await _unitOfWork.GenericRepository<ShoppingCart>().GetAllAsync(includeProperties: "Product, Product.Images", c => c.ApplicationUserId == userId);
-            CartResponseDTO shoppingCartResponse = new CartResponseDTO { Carts = _mapper.Map<IEnumerable<CartDTO>>(carts) };
-            shoppingCartResponse.TotalCost = carts
-                    .Where(cart => cart.Product != null)
-                    .Sum(cart => cart.Product!.Price * cart.Count);
-            return shoppingCartResponse;
+            return await _unitOfWork.GenericRepository<ShoppingCart>().GetAllAsync(includeProperties: "Product, Product.Images", c => c.ApplicationUserId == userId);
         }
 
         public async Task RemoveProductsFromShoppingCart(List<string> productIDs, string userId)
