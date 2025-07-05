@@ -134,5 +134,15 @@ namespace EcommerceAPI.Api.Controllers
             var order = await _orderServices.GetOrder(orderId, userId);
             return Ok(_mapper.Map<OrderDTO>(order));
         }
+
+        /// <summary>
+        /// Generate and set a tracking number after confirming each order.
+        /// </summary>
+        [HttpGet("/api/admin/v{version:apiVersion}/[controller]/{orderId}"), MapToApiVersion(2.0), Authorize(Roles = $"{ApplicationRoles.ADMIN}")]
+        public async Task<IActionResult> GenerateAndSetOrderTrackingNumber(string orderId)
+        {
+            await _orderServices.SetOrderTrackingId(orderId);
+            return Ok(new { Message = "Tracking ID has been successfully generated and assigned. Order status updated to 'Preparing'." });
+        }
     }
 }

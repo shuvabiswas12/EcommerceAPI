@@ -154,6 +154,18 @@ namespace EcommerceAPI.Services.Services
             return await _unitOfWork.GenericRepository<OrderHeader>().GetTAsync(predicate: o => o.ApplicationUserId == userId && o.Id == orderId, includeProperties: includes);
         }
 
+        public async Task SetOrderTrackingId(string orderId)
+        {
+            var orderToSetTrackingId = await this.GetOrder(orderId, null);
+            if (orderToSetTrackingId != null && orderToSetTrackingId.TrackingNumber == null)
+            {
+                orderToSetTrackingId.TrackingNumber = TrackingIdGenerator.GenerateTrackingId();
+                orderToSetTrackingId.OrderStatus = OrdersStatus.Preparing.ToString();
+                await _unitOfWork.SaveAsync();
+            }
+            return; // If tracking number already exists, do nothing.
+        }
+
         public async Task UpdateOrder(OrderHeader order, string userId)
         {
             var orderToUpdate = await this.GetOrder(order.Id, userId);

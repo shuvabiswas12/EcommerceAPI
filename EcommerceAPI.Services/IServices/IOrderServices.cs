@@ -18,5 +18,6 @@ namespace EcommerceAPI.Services.IServices
         public Task<string> CreateOrder(ShippingAddressDTO shippingAddressDTO, string userId, string paymentIntentId);
         public Task UpdateOrder(OrderHeader order, string userId);
         public Task CancelOrder(string orderId, string? userId);
+        public Task SetOrderTrackingId(string orderId);
     }
 }

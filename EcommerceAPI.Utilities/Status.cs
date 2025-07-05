@@ -10,7 +10,11 @@ namespace EcommerceAPI.Utilities
     {
         Pending,
         Accepted,
-        Canceled
+        Canceled,
+        Preparing,
+        Shiifted,
+        Delivered,
+        Returned,
     }
 
     public enum PaymentStatus
