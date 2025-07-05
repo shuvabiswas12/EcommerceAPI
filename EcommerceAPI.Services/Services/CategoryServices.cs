@@ -17,12 +17,10 @@ namespace EcommerceAPI.Services.Services
     public class CategoryServices : ICategoryServices
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
 
-        public CategoryServices(IUnitOfWork unitOfWork, IMapper mapper)
+        public CategoryServices(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
         }
 
         public async Task DeleteCategory(object id)

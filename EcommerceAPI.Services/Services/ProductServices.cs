@@ -17,12 +17,10 @@ namespace EcommerceAPI.Services.Services
     public class ProductServices : IProductServices
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
 
-        public ProductServices(IUnitOfWork unitOfWork, IMapper mapper)
+        public ProductServices(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
         }
 
         public async Task<String> CreateProduct(ProductCreateDTO productDto)
@@ -134,7 +132,6 @@ namespace EcommerceAPI.Services.Services
 
             productToUpdate.Discount = this._setDiscount(productDto, productToUpdate.Discount, productToUpdate.Id);
             await _unitOfWork.SaveAsync();
-            return productToUpdate;
         }
 
         private Discount? _setDiscount(ProductUpdateDTO productDto, Discount? discount, string productId)
