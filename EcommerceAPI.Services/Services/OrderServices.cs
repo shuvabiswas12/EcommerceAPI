@@ -58,7 +58,7 @@ namespace EcommerceAPI.Services.Services
                 // If user paid with online payment, then order status will be accepted by default. Admin can change it later and refund the money.
                 OrderStatus = OrdersStatus.Accepted.ToString(),
                 ApplicationUserId = user.Id,
-                OrderAmount = paymentIntent.Amount / 100,
+                OrderAmount = Convert.ToDecimal(paymentIntent.Amount) / 100,
                 Currency = paymentIntent.Currency,
                 PaymentStatus = PaymentStatus.Paid.ToString(),
                 PaymentType = PaymentType.OnlinePayment.ToString(),

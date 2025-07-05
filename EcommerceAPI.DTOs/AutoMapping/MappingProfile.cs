@@ -42,7 +42,7 @@ namespace EcommerceAPI.DTOs.AutoMapping
                 .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => src.OrderStatus))
                 .ForMember(dest => dest.PaymentStatus, opt => opt.MapFrom(src => src.PaymentStatus))
                 .ForMember(dest => dest.PaymentType, opt => opt.MapFrom(src => src.PaymentType))
-                .ForMember(dest => dest.OrderAmount, opt => opt.MapFrom(src => Convert.ToDecimal(src.OrderAmount) / 100))
+                .ForMember(dest => dest.OrderAmount, opt => opt.MapFrom(src => src.OrderAmount))
                 .ForMember(dest => dest.Currency, opt => opt.MapFrom(src => src.Currency))
                 .ForMember(dest => dest.ShippingAddress, opt => opt.MapFrom(src => src.OrderAddress))
                 .ForMember(dest => dest.OrderDetails, opt => opt.MapFrom(src => src.OrderDetails));

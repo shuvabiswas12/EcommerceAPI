@@ -132,7 +132,7 @@ namespace EcommerceAPI.Api.Controllers
             if (string.IsNullOrEmpty(orderId)) return BadRequest(new { Error = "Route value 'order-id' must be given." });
             var userId = User.GetUserId() ?? throw new UnauthorizedAccessException("User not authenticated.");
             var order = await _orderServices.GetOrder(orderId, userId);
-            return Ok(order);
+            return Ok(_mapper.Map<OrderDTO>(order));
         }
     }
 }

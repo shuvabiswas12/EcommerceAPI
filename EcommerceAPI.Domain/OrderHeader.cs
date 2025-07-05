@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 
 namespace EcommerceAPI.Domain
 {
@@ -20,7 +21,7 @@ namespace EcommerceAPI.Domain
         [Required] public required string ApplicationUserId { get; set; } = null!;
         [ForeignKey("ApplicationUserId"), ValidateNever] public ApplicationUser ApplicationUser { get; set; } = null!;
         [Required] public DateTime OrderDate { get; set; } = DateTime.UtcNow;
-        [Required] public required double OrderAmount { get; set; }
+        [Required, Precision(10, 2)] public required decimal OrderAmount { get; set; }
         [Required] public required string Currency { get; set; }
         [Required] public required string OrderStatus { get; set; } = OrdersStatus.Pending.ToString();
         public string? PaymentStatus { get; set; }

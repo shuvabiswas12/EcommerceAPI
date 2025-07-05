@@ -46,7 +46,7 @@ namespace EcommerceAPI.Api.Controllers
 
             if (carts.TotalCost <= 0) return NotFound(new { Error = "Cart is empty." });
 
-            long amount = (long)carts.TotalCost * 100;
+            long amount = (long) Math.Round(carts.TotalCost * 100m);
 
             var paymentIntent = await _paymentServices.CreatePaymentIntentAsync(amount);
             return StatusCode(StatusCodes.Status201Created, paymentIntent);
