@@ -76,7 +76,7 @@ namespace EcommerceAPI.Services.Services
             return await _unitOfWork.GenericRepository<Product>().GetTAsync(x => x.Id == id.ToString(), includeProperties: "Images, Discount, Category, ProductAvailability");
         }
 
-        public async Task<Product> UpdateProduct(Object id, ProductUpdateDTO productDto)
+        public async Task UpdateProduct(Object id, ProductUpdateDTO productDto)
         {
             if (id == null)
             {

@@ -14,7 +14,7 @@ namespace EcommerceAPI.Services.IServices
         public Task<IEnumerable<Product>> GetAllProduct();
         public Task<Product> GetProductById(object id);
         public Task DeleteProduct(object id);
-        public Task<Product> UpdateProduct(Object id, ProductUpdateDTO productDto);
+        public Task UpdateProduct(Object id, ProductUpdateDTO productDto);
         public Task<String> CreateProduct(ProductCreateDTO productDto);
     }
 }
