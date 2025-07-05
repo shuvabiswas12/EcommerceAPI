@@ -11,8 +11,8 @@ namespace EcommerceAPI.Services.IServices
 {
     public interface IProductServices
     {
-        public Task<GenericResponseDTO<ProductDTO>> GetAllProduct();
-        public Task<ProductDTO> GetProductById(object id);
+        public Task<IEnumerable<Product>> GetAllProduct();
+        public Task<Product> GetProductById(object id);
         public Task DeleteProduct(object id);
         public Task<Product> UpdateProduct(Object id, ProductUpdateDTO productDto);
         public Task<String> CreateProduct(ProductCreateDTO productDto);

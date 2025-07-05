@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using AutoMapper;
 using EcommerceAPI.DTOs;
 using EcommerceAPI.Services.IServices;
 using EcommerceAPI.Utilities.Exceptions;
@@ -16,13 +17,15 @@ namespace EcommerceAPI.Api.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IProductServices _productService;
+        private readonly IMapper _mapper;
 
         /// <summary>
         /// Constructor for ProductsController.
         /// </summary>
-        public ProductsController(IProductServices productService)
+        public ProductsController(IProductServices productService, IMapper mapper)
         {
             this._productService = productService;
+            this._mapper = mapper;
         }
 
         /// <summary>
@@ -32,8 +35,8 @@ namespace EcommerceAPI.Api.Controllers
         [HttpGet("api/v{version:apiVersion}/[controller]")]
         public async Task<IActionResult> GetAllProducts()
         {
-            var productsResult = await _productService.GetAllProduct();
-            return Ok(productsResult);
+            var products = await _productService.GetAllProduct();
+            return Ok(_mapper.Map<IEnumerable<ProductDTO>>(products));
         }
 
         /// <summary>
@@ -43,8 +46,8 @@ namespace EcommerceAPI.Api.Controllers
         [HttpGet("api/v{version:apiVersion}/[controller]/{id}")]
         public async Task<IActionResult> GetProductById([FromRoute] string id)
         {
-            var productResult = await _productService.GetProductById(id);
-            return Ok(productResult);
+            var product = await _productService.GetProductById(id);
+            return Ok(_mapper.Map<ProductDTO>(product));
         }
 
         /// <summary>

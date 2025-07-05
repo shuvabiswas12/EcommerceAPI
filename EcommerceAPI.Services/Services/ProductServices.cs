@@ -62,29 +62,18 @@ namespace EcommerceAPI.Services.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task<GenericResponseDTO<ProductDTO>> GetAllProduct()
+        public async Task<IEnumerable<Product>> GetAllProduct()
         {
-            var productsResult = await _unitOfWork.GenericRepository<Product>().GetAllAsync(includeProperties: "Images, Discount, Category, ProductAvailability");
-            var productsResponse = new GenericResponseDTO<ProductDTO>
-            {
-                Data = _mapper.Map<IEnumerable<ProductDTO>>(productsResult),
-                Count = productsResult.Count()
-            };
-            return productsResponse;
+            return await _unitOfWork.GenericRepository<Product>().GetAllAsync(includeProperties: "Images, Discount, Category, ProductAvailability");
         }
 
-        public async Task<ProductDTO> GetProductById(object id)
+        public async Task<Product> GetProductById(object id)
         {
             if (id == null)
             {
                 throw new ArgumentNullException(nameof(id), "Product ID must be provided.");
             }
-            var productResult = await _unitOfWork.GenericRepository<Product>().GetTAsync(x => x.Id == id.ToString(), includeProperties: "Images, Discount, Category, ProductAvailability");
-            if (productResult == null)
-            {
-                throw new ApiException(System.Net.HttpStatusCode.NotFound, "The Product not found.");
-            }
-            return _mapper.Map<ProductDTO>(productResult);
+            return await _unitOfWork.GenericRepository<Product>().GetTAsync(x => x.Id == id.ToString(), includeProperties: "Images, Discount, Category, ProductAvailability");
         }
 
         public async Task<Product> UpdateProduct(Object id, ProductUpdateDTO productDto)
