@@ -23,7 +23,6 @@ namespace EcommerceAPI.DTOs
     {
         public IEnumerable<CartDTO>? Carts { get; set; }
         public decimal TotalCost { get; set; }
-        public string? UserId { get; set; } = default;
     }
 
     public class CartDTO
