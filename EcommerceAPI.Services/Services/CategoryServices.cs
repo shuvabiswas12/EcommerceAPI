@@ -40,28 +40,21 @@ namespace EcommerceAPI.Services.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task<GenericResponseDTO<CategoryDTO>> GetAllCategories()
+        public async Task<IEnumerable<Category>> GetAllCategories()
         {
-            var result = await _unitOfWork.GenericRepository<Category>().GetAllAsync(orderBy: x => x.OrderByDescending(x => x.CreatedAt));
-            var categoriesResponse = new GenericResponseDTO<CategoryDTO>
-            {
-                Data = _mapper.Map<IEnumerable<CategoryDTO>>(result),
-                Count = result.Count()
-            };
-            return categoriesResponse;
+            return await _unitOfWork.GenericRepository<Category>().GetAllAsync(orderBy: x => x.OrderByDescending(x => x.CreatedAt));
         }
 
-        public async Task<CategoryDTO> GetCategoryById(object id)
+        public async Task<Category> GetCategoryById(object id)
         {
             if (id == null)
             {
                 throw new ArgumentNullException(nameof(id), "Please provide a Category ID.");
             }
-            var results = await _unitOfWork.GenericRepository<Category>().GetTAsync(predicate: x => x.Id == id.ToString());
-            return _mapper.Map<CategoryDTO>(results);
+            return await _unitOfWork.GenericRepository<Category>().GetTAsync(predicate: x => x.Id == id.ToString());
         }
 
-        public async Task<Category> UpdateCategory(object id, string categoryName)
+        public async Task UpdateCategory(object id, string categoryName)
         {
             if (id == null || string.IsNullOrWhiteSpace(categoryName))
             {
@@ -74,15 +67,14 @@ namespace EcommerceAPI.Services.Services
             }
             dataToUpdate.Name = categoryName;
             await _unitOfWork.SaveAsync();
-            return dataToUpdate;
         }
 
-        public async Task<Category> CreateCategory(CategoryCreateDTO createCategory)
+        public async Task<string> CreateCategory(CategoryCreateDTO createCategory)
         {
             Category category = new Category { Name = createCategory.Name.Trim() };
             var createdCategory = await _unitOfWork.GenericRepository<Category>().AddAsync(category);
             await _unitOfWork.SaveAsync();
-            return createdCategory;
+            return createdCategory.Id;
         }
     }
 }

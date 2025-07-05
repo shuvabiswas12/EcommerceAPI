@@ -11,10 +11,10 @@ namespace EcommerceAPI.Services.IServices
 {
     public interface ICategoryServices
     {
-        public Task<GenericResponseDTO<CategoryDTO>> GetAllCategories();
-        public Task<CategoryDTO> GetCategoryById(object id);
+        public Task<IEnumerable<Category>> GetAllCategories();
+        public Task<Category> GetCategoryById(object id);
         public Task DeleteCategory(object id);
-        public Task<Category> UpdateCategory(object id, string categoryName);
-        public Task<Category> CreateCategory(CategoryCreateDTO createCategory);
+        public Task UpdateCategory(object id, string categoryName);
+        public Task<string> CreateCategory(CategoryCreateDTO createCategory);
     }
 }

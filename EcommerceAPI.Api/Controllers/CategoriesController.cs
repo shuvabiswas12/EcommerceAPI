@@ -9,6 +9,8 @@ using EcommerceAPI.Utilities.Filters;
 using Asp.Versioning;
 using EcommerceAPI.Utilities.Validation;
 using EcommerceAPI.Utilities.Exceptions;
+using EcommerceAPI.DTOs.GenericResponse;
+using AutoMapper;
 
 namespace EcommerceAPI.Api.Controllers
 {
@@ -19,13 +21,15 @@ namespace EcommerceAPI.Api.Controllers
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryServices _categoryServices;
+        private readonly IMapper _mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CategoriesController"/> class.
         /// </summary>
-        public CategoriesController(ICategoryServices categoryServices)
+        public CategoriesController(ICategoryServices categoryServices, IMapper mapper)
         {
             this._categoryServices = categoryServices;
+            this._mapper = mapper;
         }
 
         /// <summary>
@@ -36,7 +40,11 @@ namespace EcommerceAPI.Api.Controllers
         public async Task<IActionResult> GetAll()
         {
             var result = await _categoryServices.GetAllCategories();
-            return Ok(result);
+            return Ok(new GenericResponseDTO<CategoryDTO>
+            {
+                Data = _mapper.Map<IEnumerable<CategoryDTO>>(result),
+                Count = result.Count()
+            });
         }
 
         /// <summary>
@@ -51,8 +59,8 @@ namespace EcommerceAPI.Api.Controllers
             {
                 throw new ModelValidationException(modelState);
             }
-            var category = await _categoryServices.CreateCategory(categoryDto);
-            return StatusCode(StatusCodes.Status201Created, new { Id = category.Id });
+            var categoryId = await _categoryServices.CreateCategory(categoryDto);
+            return StatusCode(StatusCodes.Status201Created, new { Id = categoryId });
         }
 
         /// <summary>
@@ -74,7 +82,7 @@ namespace EcommerceAPI.Api.Controllers
         public async Task<IActionResult> GetCategoryById(string id)
         {
             var result = await _categoryServices.GetCategoryById(id);
-            return Ok(result);
+            return Ok(_mapper.Map<CategoryDTO>(result));
         }
 
         /// <summary>
