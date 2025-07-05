@@ -14,10 +14,10 @@ namespace EcommerceAPI.Services.IServices
     public interface IPaymentServices
     {
         /// <summary>
-        /// Creates a payment intent asynchronously.
+        /// Creates a payment intent and payment secret asynchronously.
         /// </summary>
         /// <param name="amount">The amount for the payment intent.</param>
-        /// <returns>The client secret for the payment intent.</returns>
+        /// <returns>The client secret and Payment Intent id for the payment intent.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the amount is zero.</exception>
         public Task<PaymentIntentDTO> CreatePaymentIntentAsync(long amount);
     }

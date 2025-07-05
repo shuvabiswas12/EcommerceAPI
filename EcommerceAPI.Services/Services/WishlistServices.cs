@@ -15,12 +15,10 @@ namespace EcommerceAPI.Services.Services
     public class WishlistServices : IWishlistServices
     {
         private IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
 
-        public WishlistServices(IUnitOfWork unitOfWork, IMapper mapper)
+        public WishlistServices(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
         }
 
         public async Task AddProductToWishlist(string productId, string userId)
@@ -37,13 +35,10 @@ namespace EcommerceAPI.Services.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task<WishlistDTO> GetAllProductsFromWishlists(string userId)
+        public async Task<IEnumerable<Wishlist>> GetAllProductsFromWishlists(string userId)
         {
             IsIdNullOrEmpty(userId: userId, checkPId: false);
-
-            IEnumerable<Wishlist> wishlist = await _unitOfWork.GenericRepository<Wishlist>().GetAllAsync(includeProperties: "Product.Images", predicate: w => w.ApplicationUserId == userId);
-            var products = wishlist.Select(w => w.Product);
-            return new WishlistDTO { User = userId, Products = _mapper.Map<IEnumerable<ProductDTO>>(products) };
+            return await _unitOfWork.GenericRepository<Wishlist>().GetAllAsync(includeProperties: "Product.Images", predicate: w => w.ApplicationUserId == userId);
         }
 
         public async Task<Wishlist> GetWishList(string productId, string userId)

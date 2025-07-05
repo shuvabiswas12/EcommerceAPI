@@ -1,4 +1,6 @@
 ﻿using Asp.Versioning;
+using AutoMapper;
+using EcommerceAPI.Domain;
 using EcommerceAPI.DTOs;
 using EcommerceAPI.Services.IServices;
 using EcommerceAPI.Utilities;
@@ -18,13 +20,15 @@ namespace EcommerceAPI.Api.Controllers
     public class WishlistController : ControllerBase
     {
         private readonly IWishlistServices _wishlistServices;
+        private readonly IMapper _mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WishlistController"/> class.
         /// </summary>
-        public WishlistController(IWishlistServices wishlistServices)
+        public WishlistController(IWishlistServices wishlistServices, IMapper mapper)
         {
             _wishlistServices = wishlistServices;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -36,7 +40,12 @@ namespace EcommerceAPI.Api.Controllers
         {
             var userId = User.GetUserId();
             var wishlists = await _wishlistServices.GetAllProductsFromWishlists(userId);
-            return Ok(wishlists);
+            var products = wishlists.Select(w => w.Product);
+            return Ok(new WishlistDTO
+            {
+                User = userId,
+                Products = _mapper.Map<IEnumerable<ProductDTO>>(products)
+            });
         }
 
         /// <summary>
