@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using AutoMapper;
 using EcommerceAPI.DTOs;
+using EcommerceAPI.DTOs.GenericResponse;
 using EcommerceAPI.Services.IServices;
 using EcommerceAPI.Utilities.Exceptions;
 using EcommerceAPI.Utilities.Filters;
@@ -36,7 +37,11 @@ namespace EcommerceAPI.Api.Controllers
         public async Task<IActionResult> GetAllProducts()
         {
             var products = await _productService.GetAllProduct();
-            return Ok(_mapper.Map<IEnumerable<ProductDTO>>(products));
+            return Ok(new GenericResponseDTO<ProductDTO>
+            {
+                Data = _mapper.Map<IEnumerable<ProductDTO>>(products),
+                Count = products.Count()
+            });
         }
 
         /// <summary>
