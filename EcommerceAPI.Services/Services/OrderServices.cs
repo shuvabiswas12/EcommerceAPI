@@ -44,7 +44,7 @@ namespace EcommerceAPI.Services.Services
             if (user == null) throw new UnauthorizedAccessException("User not authenticated.");
 
             // Get carts and check if there are any products in the shopping cart
-            var carts = (await _shoppingCartServices.GetShoppingCartsByUserId(userId)).Carts;
+            var carts = (await _shoppingCartServices.GetShoppingCartsByUserId(userId));
             if (carts?.Count() == 0) throw new ApiException(HttpStatusCode.BadRequest, message: "You cannot create an order without any products in your shopping cart.");
 
             var paymentIntentService = new PaymentIntentService();
@@ -87,7 +87,7 @@ namespace EcommerceAPI.Services.Services
             {
                 ProductId = cart.ProductId,
                 Quantity = cart.Count,
-                Price = cart.Price,
+                Price = cart.Product.Price,
                 OrderHeaderId = orderHeader.Id,
                 CreatedAt = orderHeader.OrderDate
             }).ToList();

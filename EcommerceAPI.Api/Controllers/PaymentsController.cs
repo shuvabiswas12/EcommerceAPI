@@ -43,10 +43,11 @@ namespace EcommerceAPI.Api.Controllers
             if (userId == null) throw new UnauthorizedAccessException("User not authenticated.");
 
             var carts = await _shoppingCartServices.GetShoppingCartsByUserId(userId);
+            var totalCost = carts.Sum(cart => cart.Product?.Price * cart.Count ?? 0);
 
-            if (carts.TotalCost <= 0) return NotFound(new { Error = "Cart is empty." });
+            if (carts.Count() <= 0) return NotFound(new { Error = "Cart is empty." });
 
-            long amount = (long) Math.Round(carts.TotalCost * 100m);
+            long amount = (long)Math.Round(totalCost * 100m);
 
             var paymentIntent = await _paymentServices.CreatePaymentIntentAsync(amount);
             return StatusCode(StatusCodes.Status201Created, paymentIntent);
