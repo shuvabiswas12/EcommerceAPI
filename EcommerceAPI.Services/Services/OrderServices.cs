@@ -7,6 +7,7 @@ using EcommerceAPI.Services.IServices;
 using EcommerceAPI.Utilities;
 using EcommerceAPI.Utilities.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Stripe;
 using System;
 using System.Collections;
@@ -166,15 +167,18 @@ namespace EcommerceAPI.Services.Services
             return; // If tracking number already exists, do nothing.
         }
 
-        public async Task UpdateOrder(string orderId, string? userId = null, OrdersStatus? orderStatus = null, PaymentStatus? paymentStatus = null, PaymentType? paymentType = null)
+        public async Task UpdateOrder(string orderId, string? userId = null, OrderUpdateDTO? order = null)
         {
             var orderToUpdate = await this.GetOrder(orderId, userId);
             if (orderToUpdate == null) throw new ApiException(System.Net.HttpStatusCode.NotFound, message: "The requested order could not be found.");
 
-            if (orderStatus != null) orderToUpdate.OrderStatus = orderStatus.ToString();
-            if (paymentStatus != null) orderToUpdate.PaymentStatus = paymentStatus.ToString();
-            if (paymentType != null) orderToUpdate.PaymentType = paymentType.ToString();
+            if (order == null) throw new ApiException(statusCode: HttpStatusCode.NoContent, message: "No property found to update.");
 
+            if (order.orderStatus != null) orderToUpdate.OrderStatus = order.orderStatus.ToString();
+            if (orderToUpdate.OrderStatus == OrdersStatus.Preparing.ToString() && orderToUpdate.TrackingNumber == null)
+            {
+                orderToUpdate.TrackingNumber = TrackingIdGenerator.GenerateTrackingId();
+            }
             await _unitOfWork.SaveAsync();
         }
     }

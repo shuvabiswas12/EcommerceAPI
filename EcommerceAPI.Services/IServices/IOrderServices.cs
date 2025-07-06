@@ -16,7 +16,7 @@ namespace EcommerceAPI.Services.IServices
         public Task<IEnumerable<OrderHeader>> GetAllOrders(string? userId = null, OrdersStatus? orderStatus = null, PaymentStatus? paymentStatus = null, PaymentType? paymentType = null, SortBy? sortBy = SortBy.DateDESC);
         public Task<OrderHeader> GetOrder(string orderId, string? userId);
         public Task<string> CreateOrder(ShippingAddressDTO shippingAddressDTO, string userId, string paymentIntentId);
-        public Task UpdateOrder(string orderId, string? userId = null, OrdersStatus? orderStatus = null, PaymentStatus? paymentStatus = null, PaymentType? paymentType = null);
+        public Task UpdateOrder(string orderId, string? userId = null, OrderUpdateDTO? order = null);
         public Task CancelOrder(string orderId, string? userId);
         public Task SetOrderTrackingId(string orderId);
     }

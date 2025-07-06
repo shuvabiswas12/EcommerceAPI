@@ -153,7 +153,7 @@ namespace EcommerceAPI.Api.Controllers
         [Authorize(Roles = $"{ApplicationRoles.ADMIN}"), MapToApiVersion(2.0)]
         public async Task<IActionResult> UpdateOrderStatus(string orderId, [FromQuery] OrdersStatus orderStatus)
         {
-            await _orderServices.UpdateOrder(orderId, orderStatus: orderStatus);
+            await _orderServices.UpdateOrder(orderId: orderId, order: new OrderUpdateDTO { orderStatus = orderStatus });
             return Ok();
         }
     }

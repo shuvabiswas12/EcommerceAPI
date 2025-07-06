@@ -56,4 +56,9 @@ namespace EcommerceAPI.DTOs
         [Precision(10, 2)] public decimal Price { get; set; }
         [Precision(10, 2)] public decimal Total => Quantity * Price;
     }
+
+    public class OrderUpdateDTO
+    {
+        public OrdersStatus? orderStatus { get; set; }
+    }
 }
