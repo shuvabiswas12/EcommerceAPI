@@ -16,6 +16,10 @@ namespace EcommerceAPI.Utilities
             Guid guid = Guid.NewGuid();
             int hash = guid.GetHashCode(); // May be negative
 
+            // Testing explain
+            //var tempHash = hash % 1000000000;  // 9 digits -> 9's 0 means 9's digit
+            //var tempHash3 = hash % 1_000_000_0000;  // 10 digits -> 10's 0 means 10's digit
+
             // Make it absolute and fit into 10 digits
             long number = Math.Abs((long)hash) % 1_000_000_0000; // Max 10 digits
 
