@@ -138,11 +138,23 @@ namespace EcommerceAPI.Api.Controllers
         /// <summary>
         /// Generate and set a tracking number after confirming each order.
         /// </summary>
-        [HttpGet("/api/admin/v{version:apiVersion}/[controller]/{orderId}"), MapToApiVersion(2.0), Authorize(Roles = $"{ApplicationRoles.ADMIN}")]
+        [HttpPut("/api/admin/v{version:apiVersion}/[controller]/{orderId}/tracking-id"), MapToApiVersion(2.0), Authorize(Roles = $"{ApplicationRoles.ADMIN}")]
         public async Task<IActionResult> GenerateAndSetOrderTrackingNumber(string orderId)
         {
             await _orderServices.SetOrderTrackingId(orderId);
             return Ok(new { Message = "Tracking ID has been successfully generated and assigned. Order status updated to 'Preparing'." });
+        }
+
+        /// <summary>
+        /// For Updating order status by admin.
+        /// OrderStatus can be updated to Accepted, Preparing, Shipped, Delivered, or Returned.
+        /// </summary>
+        [HttpPut("/api/admin/v{version:apiVersion}/[controller]/{orderId}/status")]
+        [Authorize(Roles = $"{ApplicationRoles.ADMIN}"), MapToApiVersion(2.0)]
+        public async Task<IActionResult> UpdateOrderStatus(string orderId, [FromQuery] OrdersStatus orderStatus)
+        {
+            await _orderServices.UpdateOrder(orderId, orderStatus: orderStatus);
+            return Ok();
         }
     }
 }

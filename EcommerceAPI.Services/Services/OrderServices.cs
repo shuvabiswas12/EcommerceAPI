@@ -166,14 +166,15 @@ namespace EcommerceAPI.Services.Services
             return; // If tracking number already exists, do nothing.
         }
 
-        public async Task UpdateOrder(OrderHeader order, string userId)
+        public async Task UpdateOrder(string orderId, string? userId = null, OrdersStatus? orderStatus = null, PaymentStatus? paymentStatus = null, PaymentType? paymentType = null)
         {
-            var orderToUpdate = await this.GetOrder(order.Id, userId);
+            var orderToUpdate = await this.GetOrder(orderId, userId);
             if (orderToUpdate == null) throw new ApiException(System.Net.HttpStatusCode.NotFound, message: "The requested order could not be found.");
-            if (order.OrderStatus != null) orderToUpdate.OrderStatus = order.OrderStatus;
-            if (order.PaymentStatus != null) orderToUpdate.PaymentStatus = order.PaymentStatus;
-            if (order.PaymentType != null) orderToUpdate.PaymentType = order.PaymentType;
-            if (orderToUpdate.OrderStatus == OrdersStatus.Accepted.ToString()) orderToUpdate.TrackingNumber = TrackingNumberGenerator.GenerateTrackingNumber();
+
+            if (orderStatus != null) orderToUpdate.OrderStatus = orderStatus.ToString();
+            if (paymentStatus != null) orderToUpdate.PaymentStatus = paymentStatus.ToString();
+            if (paymentType != null) orderToUpdate.PaymentType = paymentType.ToString();
+
             await _unitOfWork.SaveAsync();
         }
     }
