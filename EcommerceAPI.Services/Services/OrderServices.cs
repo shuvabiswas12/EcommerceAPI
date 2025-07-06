@@ -174,11 +174,19 @@ namespace EcommerceAPI.Services.Services
 
             if (order == null) throw new ApiException(statusCode: HttpStatusCode.NoContent, message: "No property found to update.");
 
+            // Updating Order status by admin
             if (order.orderStatus != null) orderToUpdate.OrderStatus = order.orderStatus.ToString();
             if (orderToUpdate.OrderStatus == OrdersStatus.Preparing.ToString() && orderToUpdate.TrackingNumber == null)
             {
                 orderToUpdate.TrackingNumber = TrackingIdGenerator.GenerateTrackingId();
             }
+
+            // Updating Adress details by admin
+            if (order.ShippingAddress?.Province != null) orderToUpdate.OrderAddress.Province = order.ShippingAddress.Province;
+            if (order.ShippingAddress?.State != null) orderToUpdate.OrderAddress.State = order.ShippingAddress.State;
+            if (order.ShippingAddress?.AddressLine1 != null) orderToUpdate.OrderAddress.AddressLine1 = order.ShippingAddress.AddressLine1;
+            if (order.ShippingAddress?.AddressLine2 != null) orderToUpdate.OrderAddress.AddressLine2 = order.ShippingAddress.AddressLine2;
+
             await _unitOfWork.SaveAsync();
         }
     }

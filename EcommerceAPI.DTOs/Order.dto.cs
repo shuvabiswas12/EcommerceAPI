@@ -60,5 +60,14 @@ namespace EcommerceAPI.DTOs
     public class OrderUpdateDTO
     {
         public OrdersStatus? orderStatus { get; set; }
+        public OrderAddressUpdateDTO? ShippingAddress { get; set; }
+    }
+
+    public class OrderAddressUpdateDTO
+    {
+        public string? State { get; set; }
+        public string? Province { get; set; }
+        public string? AddressLine1 { get; set; }
+        public string? AddressLine2 { get; set; }
     }
 }
