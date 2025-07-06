@@ -149,7 +149,7 @@ namespace EcommerceAPI.Api.Controllers
         /// For Updating order status by admin.
         /// OrderStatus can be updated to Accepted, Preparing, Shipped, Delivered, or Returned.
         /// </summary>
-        [HttpPut("/api/admin/v{version:apiVersion}/[controller]/{orderId}/status")]
+        [HttpPut("/api/admin/v{version:apiVersion}/[controller]/{orderId}/update")]
         [Authorize(Roles = $"{ApplicationRoles.ADMIN}"), MapToApiVersion(2.0)]
         public async Task<IActionResult> UpdateOrder(string orderId, [FromQuery] OrdersStatus? orderStatus, [FromBody] OrderAddressUpdateDTO orderAddress)
         {
