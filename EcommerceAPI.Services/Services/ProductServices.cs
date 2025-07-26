@@ -4,11 +4,13 @@ using EcommerceAPI.Domain;
 using EcommerceAPI.DTOs;
 using EcommerceAPI.DTOs.GenericResponse;
 using EcommerceAPI.Services.IServices;
+using EcommerceAPI.Utilities;
 using EcommerceAPI.Utilities.Exceptions;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -60,9 +62,22 @@ namespace EcommerceAPI.Services.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task<IEnumerable<Product>> GetAllProduct()
+        public async Task<IEnumerable<Product>> GetAllProduct(string? name = null, string? category = null, PriceFilter? price = PriceFilter.LowToHigh, bool? discount = false)
         {
-            return await _unitOfWork.GenericRepository<Product>().GetAllAsync(includeProperties: "Images, Discount, Category, ProductAvailability");
+            // Filter expression
+            Expression<Func<Product, bool>> filter = p =>
+                (string.IsNullOrEmpty(name) || p.Name.Contains(name)) &&
+                (string.IsNullOrEmpty(category) || p.Category.Name == category) &&
+                (!discount.HasValue || !discount.Value || (p.Discount != null && p.Discount.DiscountRate > 0));
+
+            // Sorting
+            Func<IQueryable<Product>, IOrderedQueryable<Product>> orderBy = query =>
+            {
+                return price == PriceFilter.HighToLow
+                    ? query.OrderByDescending(p => p.Price)
+                    : query.OrderBy(p => p.Price);
+            };
+            return await _unitOfWork.GenericRepository<Product>().GetAllAsync(includeProperties: "Images, Discount, Category, ProductAvailability", predicate: filter, orderBy: orderBy);
         }
 
         public async Task<Product> GetProductById(object id)

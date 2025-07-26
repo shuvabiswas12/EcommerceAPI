@@ -3,6 +3,7 @@ using AutoMapper;
 using EcommerceAPI.DTOs;
 using EcommerceAPI.DTOs.GenericResponse;
 using EcommerceAPI.Services.IServices;
+using EcommerceAPI.Utilities;
 using EcommerceAPI.Utilities.Exceptions;
 using EcommerceAPI.Utilities.Filters;
 using EcommerceAPI.Utilities.Validation;
@@ -34,9 +35,9 @@ namespace EcommerceAPI.Api.Controllers
         /// </summary>
         [MapToApiVersion(1.0)]
         [HttpGet("api/v{version:apiVersion}/[controller]")]
-        public async Task<IActionResult> GetAllProducts()
+        public async Task<IActionResult> GetAllProducts([FromQuery] string? name = null, [FromQuery] string? category = null, [FromQuery] PriceFilter? price = PriceFilter.LowToHigh, [FromQuery] bool? discount = false)
         {
-            var products = await _productService.GetAllProduct();
+            var products = await _productService.GetAllProduct(name: name, category: category, price: price, discount: discount);
             return Ok(new GenericResponseDTO<ProductDTO>
             {
                 Data = _mapper.Map<IEnumerable<ProductDTO>>(products),

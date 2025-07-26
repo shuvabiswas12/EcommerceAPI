@@ -1,6 +1,7 @@
 ﻿using EcommerceAPI.Domain;
 using EcommerceAPI.DTOs;
 using EcommerceAPI.DTOs.GenericResponse;
+using EcommerceAPI.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace EcommerceAPI.Services.IServices
 {
     public interface IProductServices
     {
-        public Task<IEnumerable<Product>> GetAllProduct();
+        public Task<IEnumerable<Product>> GetAllProduct(string? name = null, string? category = null, PriceFilter? price = PriceFilter.LowToHigh, bool? discount = false);
         public Task<Product> GetProductById(object id);
         public Task DeleteProduct(object id);
         public Task UpdateProduct(Object id, ProductUpdateDTO productDto);
